@@ -1,0 +1,17 @@
+# 过滤掉 Java 的编译垃圾
+target/
+*.class
+.idea/
+*.iml
+
+# 过滤掉前端的巨型依赖包 (这个最重要！)
+node_modules/
+dist/
+unpackage/
+
+# 过滤掉系统垃圾
+.DS_Store
+Thumbs.db
+
+# 过滤掉编辑器配置
+.vscode/
