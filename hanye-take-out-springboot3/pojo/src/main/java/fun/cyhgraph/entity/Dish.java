@@ -16,6 +16,16 @@ public class Dish implements Serializable {
     private Integer id;
     private String name;
     private String pic;
+
+    // --- 新增营养分析字段 (开始) ---
+    private Integer calories; // 热量(大卡)
+    private Double protein; // 蛋白质(克)
+    private Double fat; // 脂肪(克)
+    private Double carbonWater; // 碳水化合物(克)
+    private String mainIngredients; // 主要成分
+    // --- 新增营养分析字段 (结束) ---
+
+
     private String detail;
     private BigDecimal price;
     private Integer status;
