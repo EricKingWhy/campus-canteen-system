@@ -18,10 +18,10 @@
       <view class="info1">
         <view class="status">{{ status === true ? '营业中' : '打烊中' }}</view>
         <uni-icons custom-prefix="iconfont" type="icon-qian" size="15"></uni-icons>
-        <text class="price">配送费6元</text>
+        <text class="price" style="font-size:12px">财金食堂温馨相聚！</text>
       </view>
       <view class="info2">
-        <text class="address">餐厅地址：广州市番禺区亚运城广场</text>
+        <text class="address">餐厅地址：河南财政金融学院</text>
         <uni-icons @click="phone" custom-prefix="iconfont" type="icon-dianhua" size="20"></uni-icons>
       </view>
     </view>

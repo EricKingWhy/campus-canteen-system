@@ -91,7 +91,7 @@
       <image src="../../static/images/cart_empty.png" class="order_number_icon"></image>
     </view>
     <view class="order_price"> <text class="ico">￥</text> 0 </view>
-    <view class="order_btn"> ￥0起送 </view>
+    <view class="order_btn"> 任意金额可取 </view>
   </view>
   <!-- 亮起的购物车 -->
   <view class="footer_order_buttom" @click="() => (openCartList = !openCartList)" v-else>

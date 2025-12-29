@@ -22,11 +22,41 @@
         </view>
         <!-- 下部 -->
         <view class="bottom">
-          <text class="word_bottom">预计{{ arrivalTime }}送达</text>
+          <!-- <text class="word_bottom">预计{{ arrivalTime }}可取</text> -->
+          <view class="bottom">
+          <picker mode="selector" :range="timeRange" @change="bindTimeChange">
+            <view class="word_bottom" style="display: flex; justify-content: space-between; width: 100%;">
+              <text>预计取餐时间</text>
+              <view style="color: #00aaff; font-weight: bold; display: flex; align-items: center;">
+                {{ estimatedDeliveryTime.includes(':') ? estimatedDeliveryTime : '立即取餐' }}
+                <image src="../../static/icon/toRight.png" style="width: 20rpx; height: 20rpx; margin-left: 10rpx;" />
+              </view>
+            </view>
+          </picker>
+        </view>
         </view>
       </view>
       <!-- 两个白框栏 -->
       <view class="order_list_cont">
+        <view class="order_list" style="padding: 20rpx; margin-bottom: 20rpx;">
+          <view style="font-weight: bold; margin-bottom: 20rpx; font-size: 30rpx;">就餐方式</view>
+          <view style="display: flex; gap: 20rpx;">
+            <view @click="changeDiningType(1)" 
+              :style="{flex: 1, textAlign: 'center', padding: '20rpx', borderRadius: '10rpx', background: diningType === 1 ? '#00aaff' : '#f5f5f5', color: diningType === 1 ? '#fff' : '#333', fontWeight: diningType === 1 ? 'bold' : 'normal', fontSize: '28rpx'}">
+              堂食 (无打包费)
+            </view>
+            <view @click="changeDiningType(2)" 
+              :style="{flex: 1, textAlign: 'center', padding: '20rpx', borderRadius: '10rpx', background: diningType === 2 ? '#00aaff' : '#f5f5f5', color: diningType === 2 ? '#fff' : '#333', fontWeight: diningType === 2 ? 'bold' : 'normal', fontSize: '28rpx'}">
+              打包自取 (+0.5元)
+            </view>
+          </view>
+          <view style="margin-top: 20rpx; font-size: 24rpx; color: #666; background: #e6f7ff; padding: 15rpx; border-radius: 8rpx;">
+            📍 <text style="font-weight:bold">取餐地点：</text>二楼食堂 3号档口
+            <view v-if="diningType === 2" style="margin-top:5rpx; color:#00aaff">⚠️ 请凭【取餐号】打包取餐</view>
+            <view v-else style="margin-top:5rpx; color:#00aaff">⚠️ 请凭【取餐号】在窗口取餐</view>
+          </view>
+        </view>
+
         <!-- 1、订单菜品列表 -->
         <view class="order_list">
           <view class="word_text">
@@ -46,13 +76,17 @@
                 <view class="dish_price"> <text class="ico">￥</text> {{ obj.amount }} </view>
               </view>
             </view>
-            <view class="word_text">
+            <!-- <view class="word_text">
               <view class="word_left">打包费</view>
               <view class="word_right">￥{{ CartAllNumber }}</view>
-            </view>
+            </view> -->
+            <!-- <view class="word_text">
+              <view class="word_left">打包费</view>
+              <view class="word_right">￥0.5</view>
+            </view> -->
             <view class="word_text">
-              <view class="word_left">配送费</view>
-              <view class="word_right">￥6</view>
+              <view class="word_left">打包费</view>
+              <view class="word_right">￥{{ diningType === 2 ? 0.5 : 0 }}</view>
             </view>
             <view class="all_price">
               <text class="word_right">总价 ￥{{ CartAllPrice }}</text>
@@ -141,6 +175,9 @@ import {ref} from 'vue'
 // store
 const store = useAddressStore()
 
+// 【新增】定义就餐方式：1=堂食，2=自取 (默认自取)
+const diningType = ref(2)
+
 // 购物车列表
 const cartList = ref<CartItem[]>([])
 const CartAllNumber = ref(0)
@@ -156,6 +193,9 @@ const phoneNumber = ref('')
 // 预计送达时间
 const estimatedDeliveryTime = ref('')
 
+// 【新增】时间选择相关变量
+const timeRange = ref<string[]>([]) // 存放可选时间段，如 ['立即取餐', '11:30', '12:00']
+
 const platform = ref('ios')
 
 const openCooker = ref(false)
@@ -169,16 +209,46 @@ const arrivalTime = ref('')
 const addressId = ref(0)
 
 // 查询获取购物车列表
+// const getCartList = async () => {
+//   const res = await getCartAPI()
+//   console.log('初始化购物车列表', res)
+//   cartList.value = res.data
+//   // 计算总数量
+//   CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0)
+//   // 计算总价格 = 菜品总价 + 打包费 + 配送费
+//   CartAllPrice.value = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0) + CartAllNumber.value + 6
+//   console.log('CartAllNumber', CartAllNumber.value)
+//   console.log('CartAllPrice', CartAllPrice.value)
+// }
+// 【修改】计算价格：只计算菜品总价 + 动态打包费
 const getCartList = async () => {
   const res = await getCartAPI()
   console.log('初始化购物车列表', res)
   cartList.value = res.data
-  // 计算总数量
+  
+  // 1. 计算总数量 (用于显示)
   CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0)
-  // 计算总价格 = 菜品总价 + 打包费 + 配送费
-  CartAllPrice.value = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0) + CartAllNumber.value + 6
-  console.log('CartAllNumber', CartAllNumber.value)
-  console.log('CartAllPrice', CartAllPrice.value)
+  
+  // 2. 重新计算总价
+  calculateTotalPrice()
+}
+
+// 【新增】总价计算函数
+const calculateTotalPrice = () => {
+  // 纯菜品价格
+  const dishTotal = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0)
+  // 打包费：自取是0.5，堂食是0
+  const packFee = diningType.value === 2 ? 0.5 : 0
+  
+  // 最终总价 = 菜品 + 打包费 (去掉了原来的 +6 和 +CartAllNumber)
+  CartAllPrice.value = dishTotal + packFee
+}
+
+// 【新增】切换就餐方式
+const changeDiningType = (type: number) => {
+  diningType.value = type
+  // 切换后重新算钱
+  calculateTotalPrice()
 }
 
 onLoad(async (options: any) => {
@@ -201,7 +271,9 @@ onLoad(async (options: any) => {
   // 获取购物车列表
   await getCartList()
   // 获取一小时以后的时间，作为预计送达的时间
-  getHarfAnOur()
+ generateTimeSlots()
+
+ 
   // 默认选择的餐具状态
   if (store.defaultCook === '无需餐具') {
     cookerNum.value = -1
@@ -244,17 +316,54 @@ const DateToStr = (date: Date) => {
   )
 }
 // 获取一小时以后的时间
-const getHarfAnOur = () => {
-  const date = new Date()
-  date.setTime(date.getTime() + 3600000)
-  const formattedDate = DateToStr(date)
-  estimatedDeliveryTime.value = formattedDate
-  let hours = date.getHours()
-  let minutes = date.getMinutes()
-  if (hours < 10) hours = parseInt('0' + hours)
-  if (minutes < 10) minutes = parseInt('0' + minutes)
-  arrivalTime.value = hours + ':' + minutes
+// const getHarfAnOur = () => {
+//   const date = new Date()
+//   date.setTime(date.getTime() + 3600000)
+//   const formattedDate = DateToStr(date)
+//   estimatedDeliveryTime.value = formattedDate
+//   let hours = date.getHours()
+//   let minutes = date.getMinutes()
+//   if (hours < 10) hours = parseInt('0' + hours)
+//   if (minutes < 10) minutes = parseInt('0' + minutes)
+//   arrivalTime.value = hours + ':' + minutes
+// }
+// 【修改】生成取餐时间段 (模拟美团逻辑)
+const generateTimeSlots = () => {
+  const times = ['立即取餐']
+  const now = new Date()
+  let currentHour = now.getHours()
+  let currentMinute = now.getMinutes()
+  
+  // 从当前时间往后推 3 小时，每 30 分钟一个节点
+  for (let i = 0; i < 6; i++) {
+    // 逻辑：如果当前是 10:12，下一个节点就是 10:30，再下一个 11:00
+    if (currentMinute < 30) {
+      currentMinute = 30
+    } else {
+      currentMinute = 0
+      currentHour += 1
+    }
+    
+    // 超过晚上 22:00 食堂关门，就不生成了
+    if (currentHour >= 22) break; 
+    
+    // 格式化时间 HH:mm
+    const h = currentHour < 10 ? '0' + currentHour : currentHour
+    const m = currentMinute < 10 ? '0' + currentMinute : currentMinute
+    times.push(`${h}:${m}`)
+  }
+  timeRange.value = times
+  // 默认选中第一个
+  estimatedDeliveryTime.value = '立即取餐'
 }
+
+// 【新增】用户改变时间选择
+const bindTimeChange = (e: any) => {
+  const index = e.detail.value
+  const selected = timeRange.value[index]
+  estimatedDeliveryTime.value = selected
+}
+
 // 默认地址查询
 const getAddressBookDefault = async () => {
   const res = await getDefaultAddressAPI()
@@ -331,68 +440,154 @@ const closeMask = () => {
 }
 
 // 支付下单
+// const payOrderHandle = async () => {
+//   // 先去后端查询一下是否有未支付但没取消的订单，如果有的话无法下单
+//   const unPayRes = await getUnPayOrderAPI()
+//   console.log('未支付订单', unPayRes)
+//   if (unPayRes.data !== 0) {
+//     console.log('有未支付订单', unPayRes.data)
+//     uni.showToast({
+//       title: '有未支付订单，请先支付或取消！',
+//       icon: 'none',
+//     })
+//     return false
+//   }
+//   if (!address.value) {
+//     uni.showToast({
+//       title: '请选择收货地址',
+//       icon: 'none',
+//     })
+//     return false
+//   }
+//   // 餐具： -2未选择，-1无需餐具，0商家依据餐量提供，其他数字具体数量
+//   if (cookerNum.value === -2) {
+//     uni.showToast({
+//       title: '请选择餐具份数',
+//       icon: 'none',
+//     })
+//     return false
+//   }
+//   console.log('我传地址id了啊2--------------', addressId.value)
+//   const params = {
+//     payMethod: 1,
+//     addressId: addressId.value,
+//     remark: remark.value,
+//     estimatedDeliveryTime: estimatedDeliveryTime.value, // 预计到达时间
+//     deliveryStatus: 1, // 立即送出
+//     tablewareNumber: cookerNum.value, // 餐具份数
+//     tablewareStatus: cookerNum.value === 0 ? 1 : 0, // 餐具状态: 1按餐量提供，0选择具体数量
+//     // packAmount: CartAllNumber.value,
+//     // 【修改】打包费：根据当前选择传 0.5 或 0
+//     packAmount: diningType.value === 2 ? 0.5 : 0,
+//     // amount: CartAllPrice.value,
+//     // 【修改】总金额：直接用算好的价格
+//     amount: CartAllPrice.value,
+//   }
+//   console.log('生成订单params', params)
+//   const res = await submitOrderAPI(params)
+//   if (res.code === 0) {
+//     console.log('订单生成成功', res.data)
+//     // 此时订单已生成，跳转到支付页面
+//     // uni.navigateTo({url: '/pages/order/success'})
+//     // uni.redirectTo({
+//     //   url:
+//     //     '/pages/pay/pay?' +
+//     //     'orderId=' +
+//     //     res.data!.id +
+//     //     '&orderAmount=' +
+//     //     res.data!.orderAmount +
+//     //     '&orderNumber=' +
+//     //     res.data!.orderNumber +
+//     //     '&orderTime=' +
+//     //     res.data!.orderTime,
+//     // })
+//     uni.redirectTo({
+//       url:
+//         '/pages/pay/pay?' +
+//         'orderId=' + res.data!.id +
+//         '&orderAmount=' + res.data!.orderAmount +
+//         '&orderNumber=' + res.data!.orderNumber +
+//         // 【注意】这里 orderTime 是下单时间，我们额外传一个 pickupTime (预约时间)
+//         '&pickupTime=' + (estimatedDeliveryTime.value === '立即取餐' ? '尽快' : estimatedDeliveryTime.value)
+//     })
+
+
+//   } else {
+//     uni.showToast({
+//       title: res.msg || '操作失败',
+//       icon: 'none',
+//     })
+//   }
+// }
+// 支付下单
 const payOrderHandle = async () => {
-  // 先去后端查询一下是否有未支付但没取消的订单，如果有的话无法下单
+  // 1. 检查是否有未支付订单
   const unPayRes = await getUnPayOrderAPI()
-  console.log('未支付订单', unPayRes)
   if (unPayRes.data !== 0) {
-    console.log('有未支付订单', unPayRes.data)
-    uni.showToast({
-      title: '有未支付订单，请先支付或取消！',
-      icon: 'none',
-    })
+    uni.showToast({ title: '有未支付订单，请先支付或取消！', icon: 'none' })
     return false
   }
+  // 2. 校验地址和餐具
   if (!address.value) {
-    uni.showToast({
-      title: '请选择收货地址',
-      icon: 'none',
-    })
+    uni.showToast({ title: '请选择收货地址', icon: 'none' })
     return false
   }
-  // 餐具： -2未选择，-1无需餐具，0商家依据餐量提供，其他数字具体数量
   if (cookerNum.value === -2) {
-    uni.showToast({
-      title: '请选择餐具份数',
-      icon: 'none',
-    })
+    uni.showToast({ title: '请选择餐具份数', icon: 'none' })
     return false
   }
-  console.log('我传地址id了啊2--------------', addressId.value)
+
+  // ============== 【核心修复开始】 ==============
+  // 3. 处理时间格式 (后端不认识"立即取餐"，我们要翻译给它听)
+  let finalTime = estimatedDeliveryTime.value
+  const now = new Date()
+
+  if (finalTime === '立即取餐' || !finalTime) {
+    // 如果是立即取餐，我们就传：当前时间 + 15分钟 (作为预计送达时间)
+    now.setMinutes(now.getMinutes() + 15)
+    finalTime = DateToStr(now)
+  } else if (finalTime.includes(':') && finalTime.length < 10) {
+    // 如果选的是 "18:30" 这种短时间，后端需要完整的 "2025-12-29 18:30:00"
+    const year = now.getFullYear()
+    const month = (now.getMonth() + 1).toString().padStart(2, '0')
+    const day = now.getDate().toString().padStart(2, '0')
+    // 拼接成完整格式
+    finalTime = `${year}-${month}-${day} ${finalTime}:00`
+  }
+  // ============== 【核心修复结束】 ==============
+
+  console.log('转换后的提交时间:', finalTime) // 可以在控制台看看变没变
+
+  // 4. 组装参数
   const params = {
     payMethod: 1,
     addressId: addressId.value,
     remark: remark.value,
-    estimatedDeliveryTime: estimatedDeliveryTime.value, // 预计到达时间
-    deliveryStatus: 1, // 立即送出
-    tablewareNumber: cookerNum.value, // 餐具份数
-    tablewareStatus: cookerNum.value === 0 ? 1 : 0, // 餐具状态: 1按餐量提供，0选择具体数量
-    packAmount: CartAllNumber.value,
+    estimatedDeliveryTime: finalTime, // <--- 这里传转换后的时间
+    deliveryStatus: 1, 
+    tablewareNumber: cookerNum.value, 
+    tablewareStatus: cookerNum.value === 0 ? 1 : 0, 
+    packAmount: diningType.value === 2 ? 0.5 : 0,
     amount: CartAllPrice.value,
   }
+
   console.log('生成订单params', params)
   const res = await submitOrderAPI(params)
+  
   if (res.code === 0) {
-    console.log('订单生成成功', res.data)
-    // 此时订单已生成，跳转到支付页面
-    // uni.navigateTo({url: '/pages/order/success'})
+    // 跳转支付页
     uni.redirectTo({
-      url:
-        '/pages/pay/pay?' +
-        'orderId=' +
-        res.data!.id +
-        '&orderAmount=' +
-        res.data!.orderAmount +
-        '&orderNumber=' +
-        res.data!.orderNumber +
-        '&orderTime=' +
-        res.data!.orderTime,
+      url: '/pages/pay/pay?' +
+        'orderId=' + res.data!.id +
+        '&orderAmount=' + res.data!.orderAmount +
+        '&orderNumber=' + res.data!.orderNumber +
+        '&orderTime=' + res.data!.orderTime +
+        // 注意：这里我们还是传原来的 estimatedDeliveryTime.value 给下一个页面显示
+        // 因为给用户看还是要看 "立即取餐" 或 "18:30"，不用给用户看 "2025-..."
+        '&pickupTime=' + (estimatedDeliveryTime.value === '立即取餐' ? '尽快' : estimatedDeliveryTime.value)
     })
   } else {
-    uni.showToast({
-      title: res.msg || '操作失败',
-      icon: 'none',
-    })
+    uni.showToast({ title: res.msg || '操作失败', icon: 'none' })
   }
 }
 </script>

@@ -36,9 +36,11 @@ const countdownStore = useCountdownStore()
 
 const orderId = ref(0) // 订单id
 const orderNumber = ref('') // 订单号
+
 const orderAmount = ref(0) // 订单金额
 const orderTime = ref<Date>() // 订单时间
-
+  // 【新增】定义预约取餐时间变量
+const pickupTime = ref('')
 const countdownRef = ref(null)
 
 onLoad(async (options: any) => {
@@ -47,6 +49,10 @@ onLoad(async (options: any) => {
   orderNumber.value = options.orderNumber
   orderAmount.value = options.orderAmount
   orderTime.value = options.orderTime.replace(' ', 'T')
+  // 【新增】接收上一页传来的预约时间
+  if (options.pickupTime) {
+    pickupTime.value = options.pickupTime
+  }
 })
 
 // 支付成功
@@ -71,6 +77,15 @@ const toSuccess = async () => {
     countdownStore.timer = undefined
   }
   uni.redirectTo({
+    // url:
+    //   '/pages/submit/success?orderId=' +
+    //   orderId.value +
+    //   '&orderNumber=' +
+    //   orderNumber.value +
+    //   '&orderAmount=' +
+    //   orderAmount.value +
+    //   '&orderTime=' +
+    //   orderTime.value,
     url:
       '/pages/submit/success?orderId=' +
       orderId.value +
@@ -79,7 +94,10 @@ const toSuccess = async () => {
       '&orderAmount=' +
       orderAmount.value +
       '&orderTime=' +
-      orderTime.value,
+      orderTime.value +
+      // 【新增】把预约时间传给成功页
+      '&pickupTime=' + 
+      pickupTime.value,
   })
 }
 
