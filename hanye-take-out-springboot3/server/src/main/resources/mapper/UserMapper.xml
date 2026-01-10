@@ -4,8 +4,8 @@
 <mapper namespace="fun.cyhgraph.mapper.UserMapper">
 
     <insert id="insert">
-        insert into user (name, openid, phone, gender, id_number, pic, create_time) VALUES
-        (#{name}, #{openid}, #{phone}, #{gender}, #{idNumber}, #{pic}, #{createTime})
+        insert into user (name, openid, phone, gender, age, activity_factor, height, weight, allergies, id_number, pic, create_time) VALUES
+        (#{name}, #{openid}, #{phone}, #{gender}, #{age}, #{activityFactor}, #{height}, #{weight}, #{allergies}, #{idNumber}, #{pic}, #{createTime})
     </insert>
 
     <update id="update">
@@ -13,6 +13,11 @@
         <set>
             <if test="name != null">name = #{name},</if>
             <if test="gender != null">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="activityFactor != null">activity_factor = #{activityFactor},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="allergies != null">allergies = #{allergies},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="pic != null">pic = #{pic}</if>
         </set>

@@ -4,9 +4,9 @@
 <mapper namespace="fun.cyhgraph.mapper.DishMapper">
 
     <insert id="addDish" useGeneratedKeys="true" keyProperty="id">
-        insert into dish (name, pic, detail, price, category_id, create_user, update_user, create_time, update_time)
+        insert into dish (name, pic, detail, price, calories, protein, fat, carbohydrates, stall_name, nutrition_tags, category_id, create_user, update_user, create_time, update_time)
         VALUES
-        (#{name}, #{pic}, #{detail}, #{price}, #{categoryId},
+        (#{name}, #{pic}, #{detail}, #{price}, #{calories}, #{protein}, #{fat}, #{carbohydrates}, #{stallName}, #{nutritionTags}, #{categoryId},
          #{createUser}, #{updateUser}, #{createTime}, #{updateTime})
     </insert>
 
@@ -17,6 +17,12 @@
             <if test="pic != null">pic = #{pic},</if>
             <if test="detail != null">detail = #{detail},</if>
             <if test="price != null">price = #{price},</if>
+            <if test="calories != null">calories = #{calories},</if>
+            <if test="protein != null">protein = #{protein},</if>
+            <if test="fat != null">fat = #{fat},</if>
+            <if test="carbohydrates != null">carbohydrates = #{carbohydrates},</if>
+            <if test="stallName != null">stall_name = #{stallName},</if>
+            <if test="nutritionTags != null">nutrition_tags = #{nutritionTags},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
             <if test="createUser != null">create_user = #{createUser},</if>
             <if test="updateUser != null">update_user = #{updateUser},</if>
@@ -62,6 +68,14 @@
             </if>
         </where>
 
+    </select>
+
+    <select id="getByNames" resultType="fun.cyhgraph.entity.Dish">
+        select * from dish
+        where name in
+        <foreach collection="names" item="name" separator="," open="(" close=")">
+            #{name}
+        </foreach>
     </select>
 
 </mapper>

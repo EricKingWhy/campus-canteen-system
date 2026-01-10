@@ -1,6 +1,9 @@
 <template>
   <view class="white_box">
     <view class="orderDetail">{{ statusList[order.status].name }}</view>
+    <view class="pickup_box" v-if="pickupNo">
+      <view class="pickup_number">取餐码: {{ pickupNo }}</view>
+    </view>
     <view class="time_box" v-if="order.status === 1">
       <view class="time" v-if="countdownStore.showM <= 0 && countdownStore.showS <= 0">订单已超时</view>
       <view class="time" v-else>
@@ -134,7 +137,13 @@
     packAmount: 0, 
     amount: 0
   })
-  
+
+  const pickupNo = computed(() => {
+    const str = (order.number ?? '').toString()
+    if (!str) return ''
+    return str.length > 4 ? str.substring(str.length - 4) : str
+  })
+
   // 【新增】智能计算真实的打包费
   // 逻辑：总价 - 菜品总价 = 打包费
   const realPackFee = computed(() => {
@@ -225,6 +234,25 @@
       color: #333333;
       font-weight: bold;
       text-align: center;
+    }
+
+    .pickup_box {
+      padding: 10rpx 0 30rpx 0;
+      text-align: center;
+
+      .pickup_label {
+        font-size: 28rpx;
+        color: #888888;
+      }
+
+      .pickup_number {
+        margin-top: 10rpx;
+        font-size: 64rpx;
+        font-weight: bold;
+        color: #00aaff;
+        letter-spacing: 4rpx;
+        font-family: Arial, Helvetica, sans-serif;
+      }
     }
 
     .time_box {

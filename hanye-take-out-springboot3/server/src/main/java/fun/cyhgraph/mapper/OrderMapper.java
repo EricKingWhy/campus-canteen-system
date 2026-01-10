@@ -41,6 +41,9 @@ public interface OrderMapper {
     @Select("select count(id) from orders where status = #{status}")
     Integer countByStatus(Integer status);
 
+    @Select("select * from orders where user_id = #{userId} and status = 5 order by order_time desc limit #{limit}")
+    List<Order> getRecentCompletedByUser(Integer userId, Integer limit);
+
     /**
      * 根据状态和下单时间查询订单
      * @param status

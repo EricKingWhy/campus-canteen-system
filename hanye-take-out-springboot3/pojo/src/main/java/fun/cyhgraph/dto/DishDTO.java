@@ -20,11 +20,14 @@ public class DishDTO implements Serializable {
     private String pic;
 
     // --- 新增营养分析字段 (开始) ---
-    private Integer calories; // 热量(大卡)
+    private Double calories; // 热量(大卡)
     private Double protein; // 蛋白质(克)
-    private Double fat; // 脂肪(克)
+    private Double fat; //
+    private Double carbohydrates; // 脂肪(克)
     private Double carbonWater; // 碳水化合物(克)
-    private String mainIngredients; // 主要成分
+    private String mainIngredients; //
+    private String stallName; //
+    private String nutritionTags; //
     // --- 新增营养分析字段 (结束) ---
 
     private String detail;

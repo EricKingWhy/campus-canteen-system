@@ -8,12 +8,18 @@ import fun.cyhgraph.dto.DishDTO;
 import fun.cyhgraph.dto.DishPageDTO;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.entity.DishFlavor;
+import fun.cyhgraph.entity.Order;
+import fun.cyhgraph.entity.OrderDetail;
 import fun.cyhgraph.entity.Setmeal;
+import fun.cyhgraph.entity.User;
 import fun.cyhgraph.exception.DeleteNotAllowedException;
 import fun.cyhgraph.mapper.DishFlavorMapper;
 import fun.cyhgraph.mapper.DishMapper;
+import fun.cyhgraph.mapper.OrderDetailMapper;
+import fun.cyhgraph.mapper.OrderMapper;
 import fun.cyhgraph.mapper.SetmealDishMapper;
 import fun.cyhgraph.mapper.SetmealMapper;
+import fun.cyhgraph.mapper.UserMapper;
 import fun.cyhgraph.result.PageResult;
 import fun.cyhgraph.service.DishService;
 import fun.cyhgraph.vo.DishVO;
@@ -22,7 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DishServiceImpl implements DishService {
@@ -33,6 +42,12 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 新增菜品
@@ -42,6 +57,11 @@ public class DishServiceImpl implements DishService {
         // 不仅要向dish表添加数据，还要向dish_flavor表添加口味数据
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
+        if (dishDTO.getCarbohydrates() != null) {
+            dish.setCarbohydrates(dishDTO.getCarbohydrates());
+        } else if (dishDTO.getCarbonWater() != null) {
+            dish.setCarbohydrates(dishDTO.getCarbonWater());
+        }
         dish.setStatus(1);
         dishMapper.addDish(dish);
         System.out.println("新增dish成功！");
@@ -156,6 +176,174 @@ public class DishServiceImpl implements DishService {
             dishVOList.add(dishVO);
         }
         return dishVOList;
+    }
+
+    public List<DishVO> getRecommendation(Long userId) {
+        if (userId == null) {
+            return new ArrayList<>();
+        }
+        User user = userMapper.getById(userId.intValue());
+        if (user == null) {
+            return new ArrayList<>();
+        }
+
+        // ???????????????
+        double tdee = calcTdee(user);
+        boolean needProtein = needProtein(userId.intValue());
+
+        Dish filter = new Dish();
+        filter.setStatus(1);
+        List<Dish> allDishes = dishMapper.getList(filter);
+        List<DishScore> candidates = new ArrayList<>();
+
+        for (Dish d : allDishes) {
+            if (d.getCalories() == null || tdee <= 0) {
+                continue;
+            }
+            double target = tdee / 3.0;
+            double min = target * 0.8;
+            double max = target * 1.2;
+            if (d.getCalories() < min || d.getCalories() > max) {
+                continue;
+            }
+
+            int score = 30;
+            String reason = "??????";
+            if (needProtein && d.getProtein() != null && d.getProtein() > 25) {
+                score += 50;
+                reason = "???????????????";
+            }
+
+            candidates.add(new DishScore(d, score, reason));
+        }
+
+        // ???????????
+        candidates.sort(Comparator.comparingInt(DishScore::getScore).reversed());
+        List<DishVO> result = new ArrayList<>();
+        Set<Integer> addedIds = new HashSet<>();
+
+        for (DishScore ds : candidates) {
+            if (result.size() >= 10) {
+                break;
+            }
+            DishVO vo = toDishVO(ds.getDish(), ds.getReason());
+            result.add(vo);
+            addedIds.add(ds.getDish().getId());
+        }
+
+        // ??????????
+        if (result.size() < 10) {
+            List<Dish> topDishes = listTop10();
+            for (Dish d : topDishes) {
+                if (result.size() >= 10) {
+                    break;
+                }
+                if (addedIds.contains(d.getId())) {
+                    continue;
+                }
+                DishVO vo = toDishVO(d, "???? Top ??");
+                result.add(vo);
+                addedIds.add(d.getId());
+            }
+        }
+
+        return result;
+    }
+
+    private DishVO toDishVO(Dish dish, String reason) {
+        DishVO vo = new DishVO();
+        BeanUtils.copyProperties(dish, vo);
+        // 第四步：显性化输出推荐理由
+        vo.setRecommendReason(reason);
+        return vo;
+    }
+
+    private double calcTdee(User user) {
+        double weight = user.getWeight() == null ? 0 : user.getWeight();
+        double height = user.getHeight() == null ? 0 : user.getHeight();
+        int age = user.getAge() == null ? 0 : user.getAge();
+        int gender = user.getGender() == null ? 1 : user.getGender();
+        double bmr;
+        if (gender == 1) {
+            bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        } else {
+            bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        }
+        double activity = user.getActivityFactor() == null ? 1.2 : user.getActivityFactor();
+        return bmr * activity;
+    }
+
+    private boolean needProtein(Integer userId) {
+        List<Order> orders = orderMapper.getRecentCompletedByUser(userId, 5);
+        double totalProtein = 0;
+        int totalCount = 0;
+        for (Order o : orders) {
+            List<OrderDetail> details = orderDetailMapper.getById(o.getId());
+            for (OrderDetail detail : details) {
+                if (detail.getDishId() == null) {
+                    continue;
+                }
+                Dish dish = dishMapper.getById(detail.getDishId());
+                if (dish == null || dish.getProtein() == null) {
+                    continue;
+                }
+                int count = detail.getNumber() == null ? 0 : detail.getNumber();
+                totalProtein += dish.getProtein() * count;
+                totalCount += count;
+            }
+        }
+        double avgProtein = totalCount == 0 ? 0 : totalProtein / totalCount;
+        return avgProtein < 20;
+    }
+
+    private List<Dish> listTop10() {
+        List<Dish> result = new ArrayList<>();
+        List<fun.cyhgraph.dto.GoodsSalesDTO> sales = orderMapper.getSalesTop10(null, null);
+        if (sales == null || sales.isEmpty()) {
+            return result;
+        }
+        List<String> names = new ArrayList<>();
+        for (fun.cyhgraph.dto.GoodsSalesDTO dto : sales) {
+            if (dto.getName() != null) {
+                names.add(dto.getName());
+            }
+        }
+        if (!names.isEmpty()) {
+            List<Dish> dishes = dishMapper.getByNames(names);
+            for (String name : names) {
+                for (Dish d : dishes) {
+                    if (name.equals(d.getName())) {
+                        result.add(d);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static class DishScore {
+        private final Dish dish;
+        private final int score;
+        private final String reason;
+
+        private DishScore(Dish dish, int score, String reason) {
+            this.dish = dish;
+            this.score = score;
+            this.reason = reason;
+        }
+
+        private Dish getDish() {
+            return dish;
+        }
+
+        private int getScore() {
+            return score;
+        }
+
+        private String getReason() {
+            return reason;
+        }
     }
 
 }

@@ -41,6 +41,11 @@ const form = reactive({
   dishFlavors: [] as DishFlavor[],
   detail: '',
   price: '',
+  calories: '',
+  mainIngredients: '',
+  protein: '',
+  fat: '',
+  carbonWater: '',
   status: '',
   categoryId: ''
 })
@@ -201,6 +206,11 @@ const submit = async (keep: any) => {
         form.dishFlavors = []
         form.detail = ''
         form.price = ''
+        form.calories = ''
+        form.mainIngredients = ''
+        form.protein = ''
+        form.fat = ''
+        form.carbonWater = ''
         form.status = ''
         form.categoryId = ''
         getLeftDishFlavors()
@@ -324,6 +334,23 @@ init()
       <el-form-item label="价格" :label-width="formLabelWidth" prop="price">
         <el-input v-model="form.price" autocomplete="off" />
       </el-form-item>
+      <el-form-item label="热量" :label-width="formLabelWidth" prop="calories">
+        <el-input v-model="form.calories" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="主要成分" :label-width="formLabelWidth" prop="mainIngredients">
+        <el-input v-model="form.mainIngredients" autocomplete="off" />
+      </el-form-item>
+      <div class="nutrition-row">
+        <el-form-item label="蛋白质" :label-width="formLabelWidth" prop="protein" class="nutrition-item">
+          <el-input v-model="form.protein" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="脂肪" :label-width="formLabelWidth" prop="fat" class="nutrition-item">
+          <el-input v-model="form.fat" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="碳水" :label-width="formLabelWidth" prop="carbonWater" class="nutrition-item">
+          <el-input v-model="form.carbonWater" autocomplete="off" />
+        </el-form-item>
+      </div>
       <el-form-item label="分类" :label-width="formLabelWidth" prop="categoryId">
         <el-select clearable v-model="form.categoryId" placeholder="选择分类类型">
           <el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id" />
@@ -373,6 +400,15 @@ img {
   width: 100px;
   height: 40px;
   margin: 30px 0 0 300px;
+}
+
+.nutrition-row {
+  display: flex;
+  gap: 10px;
+}
+
+.nutrition-item {
+  flex: 1;
 }
 
 .flavorBox {

@@ -19,13 +19,20 @@ import java.util.List;
 @NoArgsConstructor
 public class DishVO implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private Integer id;
     private String name;
     private String pic;
     private String detail;
+    private Double calories;
+    private Double protein;
+    private String stallName;
+    private String nutritionTags;
     private BigDecimal price;
     private String status;
     private Integer categoryId;
+    private String recommendReason;
     // 修改了数据，要返回更新时间的字段
     private LocalDateTime updateTime;
     private List<DishFlavor> flavors = new ArrayList<>();

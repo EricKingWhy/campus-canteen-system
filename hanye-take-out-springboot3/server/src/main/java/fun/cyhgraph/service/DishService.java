@@ -22,4 +22,6 @@ public interface DishService {
     void onOff(Integer id);
 
     List<DishVO> getDishesWithFlavorById(Dish dish);
+
+    List<DishVO> getRecommendation(Long userId);
 }

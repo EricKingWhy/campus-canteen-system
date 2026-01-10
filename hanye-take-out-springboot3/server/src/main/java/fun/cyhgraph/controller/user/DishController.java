@@ -1,6 +1,7 @@
 package fun.cyhgraph.controller.user;
 
 import fun.cyhgraph.constant.StatusConstant;
+import fun.cyhgraph.context.BaseContext;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.result.Result;
 import fun.cyhgraph.service.DishService;
@@ -34,7 +35,7 @@ public class DishController {
     public Result<List<DishVO>> getDishList(@PathVariable Integer id) {
         log.info("要查询当前的分类categoryId下的所有商品：{}", id);
         // 构造redis中的key，规则：dish_分类id
-        String key = "dish_" + id;
+        String key = "dish_v2_" + id;
         // 查询redis中是否存在菜品数据
         List<DishVO> dishes = (List<DishVO>) redisTemplate.opsForValue().get(key);
         if (dishes != null && !dishes.isEmpty()) {
@@ -62,6 +63,18 @@ public class DishController {
         log.info("用户根据菜品id查询菜品详情和对应口味：{}", id);
         DishVO dishVO = dishService.getDishWithFlavorById(id);
         return Result.success(dishVO);
+    }
+
+
+    /**
+     * ???????????
+     * @return
+     */
+    @GetMapping("/recommend")
+    public Result<List<DishVO>> getRecommendation() {
+        Integer userId = BaseContext.getCurrentId();
+        List<DishVO> dishVOS = dishService.getRecommendation(userId == null ? null : userId.longValue());
+        return Result.success(dishVOS);
     }
 
 }

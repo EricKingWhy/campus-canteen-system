@@ -7,6 +7,9 @@ export type DishItem = {
   detail: string
   categoryId: number
   flavors: FlavorItem[]
+  calories?: number
+  stallName?: string
+  recommendReason?: string
 }
 
 // 口味列表
@@ -26,4 +29,12 @@ export type DishToCartItem = {
   detail: string
   categoryId: number
   flavors?: string
+}
+
+// 健康看板数据
+export type HealthStats = {
+  bmi: number | null
+  bmiStatus: string
+  targetCalories: number | null
+  suggestion: string
 }

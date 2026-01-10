@@ -1,4 +1,4 @@
-import type { DishItem } from '@/types/dish'
+import type { DishItem, HealthStats } from '@/types/dish'
 import { http } from '@/utils/http'
 
 /**
@@ -18,5 +18,25 @@ export const getDishByIdAPI = (id: number) => {
   return http<DishItem>({
     method: 'GET',
     url: `/user/dish/dish/${id}`,
+  })
+}
+
+/**
+ * 健康看板
+ */
+export const getHealthStatsAPI = () => {
+  return http<HealthStats>({
+    method: 'GET',
+    url: '/user/health/stats',
+  })
+}
+
+/**
+ * 智能推荐
+ */
+export const getRecommendDishAPI = () => {
+  return http<DishItem[]>({
+    method: 'GET',
+    url: '/user/dish/recommend',
   })
 }

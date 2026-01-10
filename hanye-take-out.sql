@@ -41,6 +41,12 @@ create table dish(
     pic longtext null,
     detail varchar(255) not null,
     price decimal(10, 2) not null,
+    calories double null,
+    protein double null,
+    fat double null,
+    carbohydrates double null,
+    stall_name varchar(64) null,
+    nutrition_tags varchar(255) null,
     status tinyint not null default 1, -- 1启用，0禁用
     category_id int not null,  -- fk 关联的菜品分类
     create_user int not null,  -- 存的是user的id
@@ -97,6 +103,11 @@ create table user(
     openid varchar(45) not null,
     phone varchar(11) null,
     gender tinyint null,
+    age int null,
+    activity_factor double null,
+    height double null,
+    weight double null,
+    allergies varchar(255) null,
     id_number varchar(18) null,
     pic longtext null,
     create_time datetime not null

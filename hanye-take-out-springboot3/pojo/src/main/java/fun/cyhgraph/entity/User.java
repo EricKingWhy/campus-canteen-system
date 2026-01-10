@@ -19,6 +19,11 @@ public class User implements Serializable {
     private String openid;
     private String phone;
     private Integer gender;
+    private Integer age;
+    private Double activityFactor;
+    private Double height;
+    private Double weight;
+    private String allergies;
     private String idNumber;
     private String pic;
     private LocalDateTime createTime;

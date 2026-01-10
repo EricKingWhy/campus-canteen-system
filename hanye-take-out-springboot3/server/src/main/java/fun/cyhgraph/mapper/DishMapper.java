@@ -34,4 +34,6 @@ public interface DishMapper {
 
     @Select("select count(id) from dish where status = #{i}")
     Integer getByStatus(int i);
+
+    List<Dish> getByNames(List<String> names);
 }
