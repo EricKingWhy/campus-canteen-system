@@ -1,39 +1,33 @@
 package fun.cyhgraph.vo;
 
 import fun.cyhgraph.entity.DishFlavor;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 由于根据菜品id查询出来的dish不够，还要有对应的口味信息，因此把返回的数据封装成VO进行规范化处理
- */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class DishVO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private Integer id;
+    private Long id;
     private String name;
-    private String pic;
-    private String detail;
+    private Long categoryId;
+    private BigDecimal price;
+    private String image;
+    private String description;
+    private Integer status;
+    private LocalDateTime updateTime;
+    private String categoryName;
+    private List<DishFlavor> flavors = new ArrayList<>();
+    private Integer copies;
+
+    // 营养成分
     private Double calories;
     private Double protein;
-    private String stallName;
-    private String nutritionTags;
-    private BigDecimal price;
-    private String status;
-    private Integer categoryId;
-    private String recommendReason;
-    // 修改了数据，要返回更新时间的字段
-    private LocalDateTime updateTime;
-    private List<DishFlavor> flavors = new ArrayList<>();
+    private Double fat;
+    private Double carbohydrates;
+
+    // 销量
+    private Integer sold;
 }

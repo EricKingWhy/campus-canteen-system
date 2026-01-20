@@ -1,237 +1,298 @@
 <template>
-  <view class="pay_box">
-    <view class="time" v-if="countdownStore.showM == 0 && countdownStore.showS == 0">订单已超时</view>
-    <view class="time" v-else>
-      支付剩余时间
-      <uni-countdown
-        color="#888"
-        :show-day="false"
-        :show-hour="false"
-        :minute="countdownStore.showM"
-        :second="countdownStore.showS"
-        @timeup="timeup()"
+  <view class="page-container">
+    <!-- Custom Navbar -->
+    <view class="custom-nav" :style="{ paddingTop: safeAreaTop + 'px' }">
+      <view class="back-btn" @click="goBack">
+        <uni-icons type="back" size="22" color="#333"></uni-icons>
+      </view>
+      <text class="page-title">支付</text>
+      <view class="placeholder"></view>
+    </view>
+
+    <!-- Amount Section -->
+    <view class="amount-section">
+      <text class="amount-label">支付金额</text>
+      <text class="amount-value">¥{{ amount }}</text>
+    </view>
+
+    <!-- Payment Methods -->
+    <view class="payment-methods">
+      <!-- WeChat Pay -->
+      <view 
+        class="method-item" 
+        :class="{ active: payMethod === 1 }"
+        @click="payMethod = 1"
       >
-      </uni-countdown>
+        <view class="method-left">
+          <image class="method-icon" src="/static/wechat_pay.png" mode="aspectFit"></image>
+          <view class="method-info">
+            <text class="method-name">微信支付</text>
+            <text class="method-desc">推荐使用微信支付</text>
+          </view>
+        </view>
+        <view class="method-check" v-if="payMethod === 1">
+          <uni-icons type="checkbox-filled" size="24" color="#07c160"></uni-icons>
+        </view>
+        <view class="method-check-empty" v-else>
+          <view class="empty-circle"></view>
+        </view>
+      </view>
+
+      <!-- Cash/Offline -->
+      <view 
+        class="method-item" 
+        :class="{ active: payMethod === 2 }"
+        @click="payMethod = 2"
+      >
+        <view class="method-left">
+          <image class="method-icon" src="/static/cash_pay.png" mode="aspectFit"></image>
+          <view class="method-info">
+            <text class="method-name">线下支付(到付)</text>
+            <text class="method-desc">取餐时付款</text>
+          </view>
+        </view>
+        <view class="method-check" v-if="payMethod === 2">
+          <uni-icons type="checkbox-filled" size="24" color="#f59e0b"></uni-icons>
+        </view>
+        <view class="method-check-empty" v-else>
+          <view class="empty-circle"></view>
+        </view>
+      </view>
     </view>
-    <view class="price">￥{{ orderAmount }}</view>
-    <view class="shop">寒夜餐厅 - {{ orderNumber }}</view>
-    <view class="wechat">
-      <image class="pay" src="../../static/icon/pay.png" />
-      微信支付
-      <image class="choose" src="../../static/icon/choose.png" />
+
+    <!-- Order Info Preview -->
+    <view class="order-preview" v-if="orderNumber">
+      <view class="preview-row">
+        <text class="preview-label">订单编号</text>
+        <text class="preview-value">{{ orderNumber }}</text>
+      </view>
     </view>
-    <view class="bottom">
-      <button class="comfirm_btn" type="primary" :plain="true" @click="toSuccess()">确认支付</button>
+
+    <!-- Bottom Button -->
+    <view class="bottom-bar" :style="{ paddingBottom: safeAreaBottom + 'px' }">
+      <button class="pay-btn" :class="{ 'offline': payMethod === 2 }" @click="confirmPay">
+        <text>{{ payMethod === 1 ? '确认支付' : '确认下单' }}</text>
+      </button>
     </view>
   </view>
 </template>
 
-<script lang="ts" setup>
-import {getOrderAPI, payOrderAPI, cancelOrderAPI} from '@/api/order'
-import {onLoad, onShow} from '@dcloudio/uni-app'
-import {useCountdownStore} from '@/stores/modules/countdown'
-import {ref} from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 
-const countdownStore = useCountdownStore()
+const baseUrl = 'http://localhost:8081'
+const safeAreaTop = ref(44)
+const safeAreaBottom = ref(34)
 
-const orderId = ref(0) // 订单id
-const orderNumber = ref('') // 订单号
+const orderId = ref('')
+const orderNumber = ref('')
+const amount = ref('0.00')
+const diningType = ref(1) // 1=堂食, 2=打包
+const payMethod = ref(1) // 1=微信, 2=线下
 
-const orderAmount = ref(0) // 订单金额
-const orderTime = ref<Date>() // 订单时间
-  // 【新增】定义预约取餐时间变量
-const pickupTime = ref('')
-const countdownRef = ref(null)
+onLoad((options: any) => {
+  const sysInfo = uni.getSystemInfoSync()
+  if (sysInfo.safeArea) {
+    safeAreaTop.value = sysInfo.safeArea.top + 10
+    safeAreaBottom.value = sysInfo.screenHeight - sysInfo.safeArea.bottom + 10
+  }
 
-onLoad(async (options: any) => {
-  console.log('orderTime什么东西？', options)
-  orderId.value = options.orderId
-  orderNumber.value = options.orderNumber
-  orderAmount.value = options.orderAmount
-  orderTime.value = options.orderTime.replace(' ', 'T')
-  // 【新增】接收上一页传来的预约时间
-  if (options.pickupTime) {
-    pickupTime.value = options.pickupTime
+  console.log('Pay page options:', options)
+  if (options) {
+    orderId.value = options.orderId || ''
+    orderNumber.value = options.orderNumber || ''
+    amount.value = options.amount || '0.00'
+    diningType.value = parseInt(options.diningType) || 1
   }
 })
 
-// 支付成功
-const toSuccess = async () => {
-  // 若订单已超时，跳转到订单已取消页面
-  if (countdownStore.showM == -1 && countdownStore.showS == -1) {
-    uni.redirectTo({
-      url: '/pages/orderDetail/orderDetail?orderId=' + orderId.value,
-    })
+const goBack = () => uni.navigateBack()
+
+const confirmPay = () => {
+  if (!orderNumber.value) {
+    uni.showToast({ title: '订单信息缺失', icon: 'none' })
     return
   }
-  console.log('支付成功')
-  // 支付后修改订单状态
-  const payDTO = {
-    orderNumber: orderNumber.value,
-    payMethod: 1, // 本平台默认微信支付
-  }
-  await payOrderAPI(payDTO)
-  // 关闭定时器
-  if (countdownStore.timer !== undefined) {
-    clearInterval(countdownStore.timer)
-    countdownStore.timer = undefined
-  }
-  uni.redirectTo({
-    // url:
-    //   '/pages/submit/success?orderId=' +
-    //   orderId.value +
-    //   '&orderNumber=' +
-    //   orderNumber.value +
-    //   '&orderAmount=' +
-    //   orderAmount.value +
-    //   '&orderTime=' +
-    //   orderTime.value,
-    url:
-      '/pages/submit/success?orderId=' +
-      orderId.value +
-      '&orderNumber=' +
-      orderNumber.value +
-      '&orderAmount=' +
-      orderAmount.value +
-      '&orderTime=' +
-      orderTime.value +
-      // 【新增】把预约时间传给成功页
-      '&pickupTime=' + 
-      pickupTime.value,
-  })
-}
 
-// 倒计时
-const timeup = () => {
-  console.log('------------ 执行了一次倒计时timeup ---------------')
-  // setInterval间歇调用，每隔一秒调用一次
-  let timeupSecond = ref(20)
-  // 如果 timer 已经存在，先清除它
-  if (countdownStore.timer !== undefined) {
-    clearInterval(countdownStore.timer)
-  }
-  countdownStore.timer = setInterval(() => {
-    console.log('什么timer？', countdownStore.timer)
-    console.log('看看是不是一秒执行一次', orderTime.value)
-    // 订单下单时间
-    let buy_time = new Date(orderTime.value as Date).getTime()
-    // 计算剩余时间
-    // 测试20秒就够，正式15分钟
-    // let time = buy_time + 20 * 1000 - new Date().getTime()
-    // 最终代码是15分钟，测试时我才没那个功夫时间等！
-    let time = buy_time + 15 * 60 * 1000 - new Date().getTime()
-    console.log('time', time)
-    if (time > 0 && countdownStore.timer !== undefined) {
-      // 计算剩余的分钟
-      var m = (time / 1000 / 60) % 60
-      console.log('m', m)
-      // 计算剩余的秒数
-      var s = (time / 1000) % 60
-      console.log('s', s)
-      timeupSecond.value = time / 1000
-      console.log('timeupSecond小于0？', timeupSecond.value)
-      countdownStore.showM = Math.floor(m)
-      countdownStore.showS = Math.floor(s)
-      // showTime.value = minutes.value + ':' + seconds.value
-    } else {
-      console.log('订单已超时！')
-      clearInterval(countdownStore.timer) // 停止计时器
-      // 再重置pinia中的倒计时的分秒初始值
-      countdownStore.showM = -1
-      countdownStore.showS = -1
-      // uni.showToast({
-      //   title: '时间到',
-      // })
-      // 取消订单
-      cancelOrder()
+  uni.showLoading({ title: '支付中...' })
+
+  // 调用支付接口
+  uni.request({
+    url: `${baseUrl}/user/order/payment`,
+    method: 'PUT',
+    header: { 
+      'authentication': uni.getStorageSync('token'),
+      'Content-Type': 'application/json'
+    },
+    data: {
+      orderNumber: orderNumber.value,
+      payMethod: payMethod.value
+    },
+    success: (res: any) => {
+      uni.hideLoading()
+      console.log('Payment response:', res.data)
+      
+      if (res.data.code === 1 || res.data.code === 0) {
+        uni.showToast({ title: '支付成功', icon: 'success' })
+        
+        // 跳转到成功页
+        setTimeout(() => {
+          uni.redirectTo({
+            url: `/pages/pay/success?orderId=${orderId.value}&amount=${amount.value}&packAmount=${diningType.value === 2 ? 1 : 0}&orderTime=${new Date().toISOString()}`
+          })
+        }, 1000)
+      } else {
+        uni.showToast({ title: res.data.msg || '支付失败', icon: 'none' })
+      }
+    },
+    fail: (err) => {
+      uni.hideLoading()
+      console.error('Payment failed:', err)
+      uni.showToast({ title: '网络错误', icon: 'none' })
     }
-  }, 1000)
-}
-
-// 超时要取消订单
-const cancelOrder = async () => {
-  await cancelOrderAPI(orderId.value)
-  // uni.redirectTo({
-  //   url: '/pages/orderDetail/orderDetail?orderId=' + orderId.value,
-  // })
+  })
 }
 </script>
 
-<style lang="less" scoped>
-.pay_box {
+<style lang="scss">
+.page-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.custom-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 32rpx;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+.placeholder {
+  width: 60rpx;
+}
+
+.amount-section {
+  background: #fff;
+  padding: 60rpx 32rpx;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  margin-bottom: 20rpx;
+}
+.amount-label {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+}
+.amount-value {
+  font-size: 72rpx;
+  font-weight: bold;
   color: #333;
-  .time {
-    display: flex;
-    margin-top: 100rpx;
-    color: #888;
-    font-size: 28rpx;
-  }
-  .price {
-    font-size: 80rpx;
-    font-weight: bold;
-    margin-top: 20rpx;
-  }
-  .shop {
-    display: flex;
-    margin-top: 20rpx;
-    font-size: 28rpx;
-    color: #888;
-  }
-  .wechat {
-    display: flex;
-    width: 90%;
-    height: 80rpx;
-    line-height: 80rpx;
-    background-color: #fff;
-    border-radius: 10rpx;
-    margin: 100rpx 20rpx;
-    position: relative;
-    .pay {
-      width: 40rpx;
-      height: 40rpx;
-      padding: 20rpx;
-    }
-    .choose {
-      position: absolute;
-      width: 40rpx;
-      height: 40rpx;
-      top: 20rpx;
-      right: 20rpx;
-    }
-  }
 }
 
-.bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100rpx;
+.payment-methods {
+  background: #fff;
+  padding: 0 32rpx;
+}
+.method-item {
   display: flex;
-  justify-content: center;
   align-items: center;
-  .comfirm_btn {
-    position: absolute;
-    bottom: 30rpx;
-    width: 600rpx;
-    height: 80rpx;
-    line-height: 80rpx;
-    border-radius: 40rpx;
-    background: #00aaff;
-    border: none;
-    color: #fff;
-    font-size: 30rpx;
-    text-align: center;
-  }
+  justify-content: space-between;
+  padding: 32rpx 0;
+  border-bottom: 1px solid #f0f0f0;
 }
-</style>
+.method-item:last-child {
+  border-bottom: none;
+}
+.method-item.active {
+  background: rgba(7, 193, 96, 0.02);
+}
+.method-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.method-icon {
+  width: 60rpx;
+  height: 60rpx;
+}
+.method-info {
+  display: flex;
+  flex-direction: column;
+}
+.method-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+.method-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+.empty-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 50%;
+}
 
-<style>
-page {
-  background-color: #f8f8f8;
+.order-preview {
+  background: #fff;
+  margin-top: 20rpx;
+  padding: 24rpx 32rpx;
+}
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26rpx;
+}
+.preview-label {
+  color: #999;
+}
+.preview-value {
+  color: #333;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  padding: 20rpx 32rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+.pay-btn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(90deg, #07c160, #10b981);
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+.pay-btn.offline {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+.pay-btn text {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
 }
 </style>

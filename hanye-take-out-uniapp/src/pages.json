@@ -1,24 +1,32 @@
 {
-	// 组件自动导入
 	"easycom": {
 		"autoscan": true,
 		"custom": {
-			// uni-ui 规则如下配置
 			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
 		}
 	},
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "首页",
-				"navigationBarTextStyle": "white"
-			}
-		},
+	"pages": [
 		{
 			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "登录页"
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/index/index_v2",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationBarTextStyle": "white",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/category/category",
+			"style": {
+				"navigationBarTitleText": "点餐",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black"
 			}
 		},
 		{
@@ -30,20 +38,8 @@
 		{
 			"path": "pages/order/order",
 			"style": {
-				"navigationStyle": "custom", // 隐藏默认导航
-				"navigationBarTitleText": "点餐",
-				// "app-plus": {
-				// 	"titleNView": {
-				// 		"buttons": [
-				// 			{
-				// 				"fontSrc": "/static/styles/iconfont.ttf",
-				// 				"float": "right",
-				// 				"text": "\ue70c",
-				// 				"color": "#3855FB"
-				// 			}
-				// 		]
-				// 	}
-				// }
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "点餐"
 			}
 		},
 		{
@@ -85,13 +81,23 @@
 		{
 			"path": "pages/pay/pay",
 			"style": {
-				"navigationBarTitleText": "支付订单"
+				"navigationBarTitleText": "支付订单",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/pay/success",
+			"style": {
+				"navigationBarTitleText": "支付成功",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/orderDetail/orderDetail",
 			"style": {
-				"navigationBarTitleText": "订单详情"
+				"navigationBarTitleText": "订单详情",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
@@ -107,18 +113,23 @@
 			}
 		}
 	],
-	// 设置 TabBar
 	"tabBar": {
 		"color": "#333",
-		"selectedColor": "#00aaff",
+		"selectedColor": "#FF6B00",
 		"backgroundColor": "#fff",
 		"borderStyle": "white",
 		"list": [
 			{
 				"text": "首页",
-				"pagePath": "pages/index/index",
+				"pagePath": "pages/index/index_v2",
 				"iconPath": "static/tabs/home_default.png",
 				"selectedIconPath": "static/tabs/home_selected.png"
+			},
+			{
+				"text": "点餐",
+				"pagePath": "pages/category/category",
+				"iconPath": "static/tabbar/order.png",
+				"selectedIconPath": "static/tabbar/order_active.png"
 			},
 			{
 				"text": "我的",
@@ -131,7 +142,7 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#00aaff",
+		"navigationBarBackgroundColor": "#FF9F43",
 		"backgroundColor": "#F8F8F8"
 	}
 }

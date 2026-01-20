@@ -237,14 +237,30 @@ const getDishOrSetmealList = async (index: number) => {
   dishList.value = res.data
 }
 
-const getCartList = async () => {
-  const res = await getCartAPI()
-  cartList.value = res.data
-  CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0)
-  CartAllPrice.value = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0)
-  if (cartList.value.length === 0) {
-    openCartList.value = false
-  }
+const getCartList = () => {
+  console.log('=== Index getCartList called ===');
+  uni.request({
+    url: 'http://localhost:8081/user/shoppingCart/list',
+    method: 'GET',
+    header: { authentication: uni.getStorageSync('token') },
+    success: (res: any) => {
+      console.log('Index Cart API Response:', res.data);
+      if (res.data.code === 0 || res.data.code === 1) { // 兼容两种成功码
+        cartList.value = res.data.data
+        CartAllNumber.value = cartList.value.reduce((acc: number, cur: any) => acc + cur.number, 0)
+        CartAllPrice.value = cartList.value.reduce((acc: number, cur: any) => acc + cur.amount * cur.number, 0)
+        console.log('Index Cart items loaded:', cartList.value.length, 'items, totalNum:', CartAllNumber.value, 'totalPrice:', CartAllPrice.value);
+        if (cartList.value.length === 0) {
+          openCartList.value = false
+        }
+      } else {
+        console.error('Index Cart API Failed:', res.data);
+      }
+    },
+    fail: (err) => {
+      console.error('Index Cart API Network Error:', err);
+    }
+  })
 }
 
 const chooseNorm = async (dish: DishItem) => {
@@ -404,8 +420,11 @@ onLoad(async () => {
 })
 
 onShow(async () => {
+  console.log('=== INDEX PAGE onShow ===');
+  // 调试提示 - 删除后取消注释
+  // uni.showToast({ title: '首页onShow触发', icon: 'none', duration: 1500 });
   await getCategoryData()
-  await getCartList()
+  getCartList() // 不需要 await，因为 getCartList 不是 Promise
   await fetchRecommend()
 })
 </script>

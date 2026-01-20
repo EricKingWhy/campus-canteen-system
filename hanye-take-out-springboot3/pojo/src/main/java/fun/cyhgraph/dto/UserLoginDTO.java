@@ -1,14 +1,10 @@
 package fun.cyhgraph.dto;
 
 import lombok.Data;
-
 import java.io.Serializable;
 
-/**
- * Client端用户登录
- */
 @Data
 public class UserLoginDTO implements Serializable {
-
-    private String code;
+    private String username; // 用户名/学号
+    private String password; // 密码
 }

@@ -1,13 +1,25 @@
 package fun.cyhgraph.service;
 
-import fun.cyhgraph.dto.UserDTO;
+import com.baomidou.mybatisplus.extension.service.IService;
 import fun.cyhgraph.dto.UserLoginDTO;
+import fun.cyhgraph.dto.UserRegisterDTO;
 import fun.cyhgraph.entity.User;
 
-public interface UserService {
-    User wxLogin(UserLoginDTO userLoginDTO);
+public interface UserService extends IService<User> {
 
-    User getUser(Integer id);
+    /**
+     * 用户注册
+     * 
+     * @param userRegisterDTO 注册信息
+     * @return 注册成功的用户
+     */
+    User register(UserRegisterDTO userRegisterDTO);
 
-    void update(UserDTO userDTO);
+    /**
+     * 用户登录
+     * 
+     * @param userLoginDTO 登录信息
+     * @return 登录成功的用户
+     */
+    User login(UserLoginDTO userLoginDTO);
 }

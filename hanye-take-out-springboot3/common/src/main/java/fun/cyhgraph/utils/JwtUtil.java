@@ -6,7 +6,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
@@ -19,45 +21,53 @@ public class JwtUtil {
      * @param secretKey jwt秘钥
      * @param ttlMillis jwt过期时间(毫秒)
      * @param claims    设置的信息
-     * @return
+     * @return JWT Token 字符串
      */
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims) {
-        // 1. header：指定签名的时候使用的签名算法，至于token名称-那不就是JWT嘛！
+        log.info("开始生成JWT Token...");
+
+        // 1. 指定签名算法
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        // 生成JWT的时间
+
+        // 2. 计算过期时间
         long expMillis = System.currentTimeMillis() + ttlMillis;
         Date exp = new Date(expMillis);
-        // 设置jwt的 payload 和 signature
+
+        // 3. 【核心修复】使用 SecretKeySpec 创建密钥，避免 JAXB Base64Codec 问题
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        Key signingKey = new SecretKeySpec(keyBytes, signatureAlgorithm.getJcaName());
+
+        // 4. 构建 JWT 【注意：jjwt 0.9.1 参数顺序是 (SignatureAlgorithm, Key)】
         JwtBuilder builder = Jwts.builder()
-                // 2. payload: 如果有私有声明，一定要先设置这个自己创建的私有的声明
-                // 这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
                 .setClaims(claims)
-                // 3. signature: 设置签名使用的签名算法和签名使用的秘钥
-                .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8))
-                // 设置过期时间
+                .signWith(signatureAlgorithm, signingKey) // 正确的参数顺序！
                 .setExpiration(exp);
-        // 至于转成base64，这个Jwts.builder会自动帮我们做的
-        // 信息整合构建好，生成JWT字符串并返回
-        return builder.compact();
+
+        String token = builder.compact();
+        log.info("JWT Token 生成成功！");
+        return token;
     }
 
     /**
      * Token解密
      *
-     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
+     * @param secretKey jwt秘钥
      * @param token     加密后的token
-     * @return
+     * @return Claims 对象
      */
     public static Claims parseJWT(String secretKey, String token) {
-        // 得到DefaultJwtParser
-        log.info("来到这里校验token是否一致");
-        System.out.println(token);
+        log.info("开始解析JWT Token...");
+
+        // 使用 SecretKeySpec 创建密钥
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        Key signingKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+
         Claims claims = Jwts.parser()
-                // 设置签名的秘钥
-                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-                // 设置需要解析的jwt
-                .parseClaimsJws(token).getBody();
-        System.out.println("claims " + claims);
+                .setSigningKey(signingKey)
+                .parseClaimsJws(token)
+                .getBody();
+
+        log.info("JWT Token 解析成功，claims: {}", claims);
         return claims;
     }
 }

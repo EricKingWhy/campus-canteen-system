@@ -1,27 +1,17 @@
 package fun.cyhgraph.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import fun.cyhgraph.dto.DishDTO;
-import fun.cyhgraph.dto.DishPageDTO;
 import fun.cyhgraph.entity.Dish;
-import fun.cyhgraph.result.PageResult;
-import fun.cyhgraph.vo.DishVO;
-
 import java.util.List;
 
-public interface DishService {
+public interface DishService extends IService<Dish> {
     void addDishWithFlavor(DishDTO dishDTO);
 
-    PageResult getPageList(DishPageDTO dishPageDTO);
+    DishDTO getByIdWithFlavor(Integer id);
 
-    DishVO getDishWithFlavorById(Integer id);
+    List<Dish> getRecommendation(Integer id);
 
+    // 【核心修复】补全 Controller 调用的修改方法
     void updateDishWithFlavor(DishDTO dishDTO);
-
-    void deleteBatch(List<Integer> ids);
-
-    void onOff(Integer id);
-
-    List<DishVO> getDishesWithFlavorById(Dish dish);
-
-    List<DishVO> getRecommendation(Long userId);
 }

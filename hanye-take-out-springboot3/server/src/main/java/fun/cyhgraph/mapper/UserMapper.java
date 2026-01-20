@@ -1,23 +1,16 @@
 package fun.cyhgraph.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import fun.cyhgraph.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.Map;
-
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends BaseMapper<User> {
 
-    @Select("select * from user where openid = #{openid}")
-    User getByOpenid(String openid);
+    @Select("SELECT * FROM user WHERE username = #{username}")
+    User selectByUsername(String username);
 
-    void insert(User user);
-
-    @Select("select * from user where id = #{id}")
-    User getById(Integer id);
-
-    void update(User user);
-
-    Integer countByMap(Map map);
+    @Select("SELECT * FROM user WHERE openid = #{openid}")
+    User selectByOpenid(String openid);
 }

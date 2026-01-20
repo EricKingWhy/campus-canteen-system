@@ -1,24 +1,21 @@
 package fun.cyhgraph.service;
 
-import fun.cyhgraph.dto.CategoryDTO;
-import fun.cyhgraph.dto.CategoryTypePageDTO;
+import com.baomidou.mybatisplus.extension.service.IService;
+import fun.cyhgraph.dto.CategoryPageDTO;
 import fun.cyhgraph.entity.Category;
 import fun.cyhgraph.result.PageResult;
-
 import java.util.List;
 
-public interface CategoryService {
-    void addCategory(CategoryDTO categoryDTO);
+public interface CategoryService extends IService<Category> {
+    void save(fun.cyhgraph.dto.CategoryDTO categoryDTO);
 
-    PageResult getPageList(CategoryTypePageDTO categoryTypePageDTO);
+    PageResult page(CategoryPageDTO categoryPageDTO);
 
-    List<Category> getList(Integer type);
+    void deleteById(Long id);
 
-    Category getById(Integer id);
-    void onOff(Integer id);
+    void update(fun.cyhgraph.dto.CategoryDTO categoryDTO);
 
-    void udpate(CategoryDTO categoryDTO);
+    void startOrStop(Integer status, Long id);
 
-    void delete(Integer id);
-
+    List<Category> list(Integer type);
 }

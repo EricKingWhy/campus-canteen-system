@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import pushMsg from '../../components/message/pushMsg.vue'
 import {ref} from 'vue'
-import {onLoad, onReachBottom} from '@dcloudio/uni-app'
+import {onLoad, onReachBottom, onShow} from '@dcloudio/uni-app'
 import {getOrderPageAPI, reOrderAPI} from '@/api/order'
 import {cleanCartAPI} from '@/api/cart'
 import type {OrderPageDTO, OrderVO} from '@/types/order'
@@ -122,6 +122,15 @@ onLoad(async () => {
   const res = await getOrderPage(0)
 })
 
+// 【核心修复】用 onShow 实现实时状态同步
+// 每次页面显示时重新拉取订单列表，确保管理员取消的订单状态同步
+onShow(async () => {
+  console.log('History onShow - 刷新订单列表获取最新状态')
+  orderDTO.value.page = 1
+  historyOrders.value = []
+  await getOrderPage(activeIndex.value)
+})
+
 // 页面上拉触底事件的处理函数
 onReachBottom(() => {
   console.log('Page:', orderDTO.value.page)
@@ -159,9 +168,10 @@ const getOrderPage = async (index: number, type?: string) => {
   total.value = res.data.total
 }
 
-const toOrderDetail = (id: number) => {
+const toOrderDetail = (id: number | string) => {
+  // 【核心修复】确保传递字符串ID，防止JS精度丢失
   uni.navigateTo({
-    url: '/pages/orderDetail/orderDetail?orderId=' + id,
+    url: '/pages/orderDetail/orderDetail?orderId=' + String(id),
   })
 }
 

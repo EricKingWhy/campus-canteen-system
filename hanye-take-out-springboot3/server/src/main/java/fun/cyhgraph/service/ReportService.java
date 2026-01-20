@@ -1,14 +1,11 @@
 package fun.cyhgraph.service;
 
-import fun.cyhgraph.vo.OrderReportVO;
-import fun.cyhgraph.vo.SalesTop10ReportVO;
-import fun.cyhgraph.vo.TurnoverReportVO;
-import fun.cyhgraph.vo.UserReportVO;
-
+import fun.cyhgraph.vo.*;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 public interface ReportService {
+    // 修正方法名以匹配 Controller
     TurnoverReportVO getTurnover(LocalDate begin, LocalDate end);
 
     UserReportVO getUser(LocalDate begin, LocalDate end);

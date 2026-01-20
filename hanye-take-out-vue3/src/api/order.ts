@@ -55,7 +55,7 @@ export const orderAcceptAPI = (params: any) => {
 // 拒单
 export const orderRejectAPI = (params: any) => {
   return request({
-    url: '/order/reject',
+    url: '/order/rejection',  // 【修复】与后端端点一致
     method: 'put',
     data: { ...params }
   })

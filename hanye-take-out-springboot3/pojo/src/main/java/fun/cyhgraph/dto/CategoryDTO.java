@@ -1,17 +1,19 @@
 package fun.cyhgraph.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class CategoryDTO {
+public class CategoryDTO implements Serializable {
+    // 主键
+    private Long id;
 
-    private Integer id;
-    private String name;
+    // 类型 1 菜品分类 2 套餐分类
     private Integer type;
-    private Integer sort;
 
+    // 分类名称
+    private String name;
+
+    // 排序
+    private Integer sort;
 }

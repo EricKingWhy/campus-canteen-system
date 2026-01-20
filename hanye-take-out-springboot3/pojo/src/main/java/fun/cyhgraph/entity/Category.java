@@ -1,24 +1,26 @@
 package fun.cyhgraph.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class Category {
-
-    private Integer id;
-    private String name;
+@AllArgsConstructor
+public class Category implements Serializable {
+    private Long id;
     private Integer type;
+    private String name;
     private Integer sort;
     private Integer status;
-    private Integer createUser;
-    private Integer updateUser;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 
+    // 【核心修复】统一为 Long
+    private Long createUser;
+    private Long updateUser;
 }

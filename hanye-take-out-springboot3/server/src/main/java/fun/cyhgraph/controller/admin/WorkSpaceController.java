@@ -1,7 +1,7 @@
 package fun.cyhgraph.controller.admin;
 
 import fun.cyhgraph.result.Result;
-import fun.cyhgraph.service.WorkSpaceService;
+import fun.cyhgraph.service.WorkspaceService; // 【核心修复】引用正确的 WorkspaceService
 import fun.cyhgraph.vo.BusinessDataVO;
 import fun.cyhgraph.vo.DishOverViewVO;
 import fun.cyhgraph.vo.OrderOverViewVO;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -21,47 +20,27 @@ import java.time.LocalTime;
 public class WorkSpaceController {
 
     @Autowired
-    private WorkSpaceService workSpaceService;
+    private WorkspaceService workspaceService;
 
-    /**
-     * 工作台今日数据查询
-     * @return
-     */
     @GetMapping("/businessData")
-    public Result<BusinessDataVO> businessData(){
+    public Result<BusinessDataVO> businessData() {
         LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
         LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);
-        BusinessDataVO businessDataVO = workSpaceService.getBusinessData(begin, end);
-        return Result.success(businessDataVO);
+        return Result.success(workspaceService.getBusinessData(begin, end));
     }
 
-    /**
-     * 查询订单管理数据
-     * @return
-     */
     @GetMapping("/overviewOrders")
-    public Result<OrderOverViewVO> orderOverView(){
-        OrderOverViewVO orderOverViewVO = workSpaceService.getOrderOverView();
-        return Result.success(orderOverViewVO);
+    public Result<OrderOverViewVO> orderOverView() {
+        return Result.success(workspaceService.getOverviewOrders());
     }
 
-    /**
-     * 查询菜品总览
-     * @return
-     */
     @GetMapping("/overviewDishes")
-    public Result<DishOverViewVO> dishOverView(){
-        DishOverViewVO dishOverViewVO = workSpaceService.getDishOverView();
-        return Result.success(dishOverViewVO);
+    public Result<DishOverViewVO> dishOverView() {
+        return Result.success(workspaceService.getOverviewDishes());
     }
 
-    /**
-     * 查询套餐总览
-     * @return
-     */
     @GetMapping("/overviewSetmeals")
-    public Result<SetmealOverViewVO> setmealOverView(){
-        SetmealOverViewVO setmealOverViewVO = workSpaceService.getSetmealOverView();
-        return Result.success(setmealOverViewVO);
+    public Result<SetmealOverViewVO> setmealOverView() {
+        return Result.success(workspaceService.getOverviewSetmeals());
     }
 }

@@ -7,7 +7,7 @@ import { http } from '@/utils/http'
 export const addToCartAPI = (cartDTO: CartDTO) => {
   return http({
     method: 'POST',
-    url: '/user/cart/add',
+    url: '/user/shoppingCart/add',
     data: cartDTO,
   })
 }
@@ -18,7 +18,7 @@ export const addToCartAPI = (cartDTO: CartDTO) => {
 export const subCartAPI = (cartDTO: CartDTO) => {
   return http({
     method: 'PUT',
-    url: '/user/cart/sub',
+    url: '/user/shoppingCart/sub',
     data: cartDTO,
   })
 }
@@ -29,7 +29,7 @@ export const subCartAPI = (cartDTO: CartDTO) => {
 export const getCartAPI = () => {
   return http<CartItem[]>({
     method: 'GET',
-    url: '/user/cart/list',
+    url: '/user/shoppingCart/list',
   })
 }
 
@@ -39,6 +39,6 @@ export const getCartAPI = () => {
 export const cleanCartAPI = () => {
   return http({
     method: 'DELETE',
-    url: '/user/cart/clean',
+    url: '/user/shoppingCart/clean',
   })
 }

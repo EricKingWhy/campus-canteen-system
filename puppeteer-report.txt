@@ -1,0 +1,28 @@
+=== Puppeteer 测试报告 ===
+URL: http://localhost:5173
+页面标题: 寒夜外卖
+截图路径: C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\screenshot.png
+
+=== 控制台消息 ===
+[1] [DEBUG] [vite] connecting...
+[2] [LOG] 当前路由的路径-------------- /dashboard
+[3] [LOG] 当前路由的路径-------------- /dashboard
+[4] [LOG] socketUrl ws://localhost:8081/ws/5w1drjfso7q
+[5] [DEBUG] [vite] connected.
+[6] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[7] [DIR] JSHandle@object
+[8] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[9] [DIR] JSHandle@object
+[10] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[11] [DIR] JSHandle@object
+[12] [ERROR] 初始化数据时出错:  JSHandle@object
+[13] [ERROR] WebSocket connection to 'ws://localhost:8081/ws/5w1drjfso7q' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[14] [LOG] WebSocket已关闭
+
+=== 页面错误 ===
+[1] AxiosError: AxiosError
+[2] AxiosError: AxiosError
+
+=== 失败的请求 ===
+[1] http://localhost:5173/src/assets/preview.mp3
+    错误: net::ERR_ABORTED

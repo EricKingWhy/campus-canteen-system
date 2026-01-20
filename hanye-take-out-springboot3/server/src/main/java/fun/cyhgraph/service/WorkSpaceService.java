@@ -4,15 +4,15 @@ import fun.cyhgraph.vo.BusinessDataVO;
 import fun.cyhgraph.vo.DishOverViewVO;
 import fun.cyhgraph.vo.OrderOverViewVO;
 import fun.cyhgraph.vo.SetmealOverViewVO;
-
 import java.time.LocalDateTime;
 
-public interface WorkSpaceService {
+// 【关键】类名 WorkspaceService 必须与文件名 WorkspaceService.java (小写s) 一致
+public interface WorkspaceService {
     BusinessDataVO getBusinessData(LocalDateTime begin, LocalDateTime end);
 
-    OrderOverViewVO getOrderOverView();
+    OrderOverViewVO getOverviewOrders();
 
-    DishOverViewVO getDishOverView();
+    DishOverViewVO getOverviewDishes();
 
-    SetmealOverViewVO getSetmealOverView();
+    SetmealOverViewVO getOverviewSetmeals();
 }

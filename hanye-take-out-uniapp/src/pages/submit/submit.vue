@@ -1,1371 +1,331 @@
 <template>
-  <view class="order_content">
-    <scroll-view class="order_content_box" scroll-y scroll-top="0rpx">
-      <!-- 地址栏 -->
-      <view class="new_address">
-        <!-- 上部 -->
-        <view class="top" @click="goAddress">
-          <view v-if="!address" class="address_name_disabled"> 请选择收货地址 </view>
-          <view v-if="address" class="address_name">
-            <view class="address">
-              <text class="tag" :class="'tag' + trans(label as string)"> {{ label || '其他' }} </text>
-              <text class="word">{{ address }}</text>
-            </view>
-            <view class="name">
-              <text class="name_1">{{ consignee }}</text>
-              <text class="name_2">{{ phoneNumber }}</text>
-            </view>
+  <view class="page-container">
+    <!-- Decorational Blobs -->
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+    <view class="blob blob-3"></view>
+
+    <!-- Main Content -->
+    <view class="content-wrapper">
+      
+      <!-- 1. Header (Custom Navbar) -->
+      <view class="custom-nav" :style="{ paddingTop: safeAreaTop + 'px' }">
+        <view class="back-btn glass-panel" @click="goBack">
+          <uni-icons type="back" size="24" color="#333"></uni-icons>
+        </view>
+        <text class="page-title">提交订单</text>
+        <view class="placeholder"></view>
+      </view>
+
+      <!-- 2. Dining Toggle -->
+      <view class="section-padding">
+        <view class="dining-toggle glass-panel">
+          <view class="toggle-item" :class="{ active: diningType === 1 }" @click="diningType = 1">
+            <view class="active-bg" v-if="diningType === 1"></view>
+            <text class="toggle-text">🍽️ 堂食</text>
           </view>
-          <view class="address_image">
-            <image class="to_right" src="../../static/icon/toRight.png"></image>
+          <view class="toggle-item" :class="{ active: diningType === 2 }" @click="diningType = 2">
+            <view class="active-bg" v-if="diningType === 2"></view>
+            <text class="toggle-text">🥡 打包自取</text>
           </view>
         </view>
-        <!-- 下部 -->
-        <view class="bottom">
-          <!-- <text class="word_bottom">预计{{ arrivalTime }}可取</text> -->
-          <view class="bottom">
-          <picker mode="selector" :range="timeRange" @change="bindTimeChange">
-            <view class="word_bottom" style="display: flex; justify-content: space-between; width: 100%;">
-              <text>预计取餐时间</text>
-              <view style="color: #00aaff; font-weight: bold; display: flex; align-items: center;">
-                {{ estimatedDeliveryTime.includes(':') ? estimatedDeliveryTime : '立即取餐' }}
-                <image src="../../static/icon/toRight.png" style="width: 20rpx; height: 20rpx; margin-left: 10rpx;" />
+      </view>
+
+      <!-- 3. Smart Pickup Card -->
+      <view class="section-padding">
+        <view class="glass-card smart-card">
+          <view class="card-header">
+            <view>
+              <text class="sub-label">取餐地点</text>
+              <text class="main-value">{{ pickupLocation }}</text>
+            </view>
+            <view class="edit-btn">
+               <uni-icons type="location-filled" size="20" color="#00BA9D"></uni-icons>
+            </view>
+          </view>
+          
+          <view class="divider"></view>
+
+          <!-- Time Selector (Native Picker) -->
+          <picker mode="selector" :range="timeSlots" @change="onTimeChange">
+            <view class="time-trigger">
+              <view class="icon-circle">
+                 <uni-icons type="calendar" size="20" color="#00BA9D"></uni-icons>
               </view>
+              <view class="time-info">
+                <text class="sub-label">预计取餐时间</text>
+                <text class="main-value highlight">
+                  {{ selectedTimeStr }} 
+                  <text class="hint" v-if="selectedTimeStr === '立即取餐'"> (预计 {{ estimatedTimeStr }})</text>
+                </text>
+              </view>
+              <uni-icons type="right" size="16" color="#999"></uni-icons>
             </view>
           </picker>
         </view>
-        </view>
       </view>
-      <!-- 两个白框栏 -->
-      <view class="order_list_cont">
-        <view class="order_list" style="padding: 20rpx; margin-bottom: 20rpx;">
-          <view style="font-weight: bold; margin-bottom: 20rpx; font-size: 30rpx;">就餐方式</view>
-          <view style="display: flex; gap: 20rpx;">
-            <view @click="changeDiningType(1)" 
-              :style="{flex: 1, textAlign: 'center', padding: '20rpx', borderRadius: '10rpx', background: diningType === 1 ? '#00aaff' : '#f5f5f5', color: diningType === 1 ? '#fff' : '#333', fontWeight: diningType === 1 ? 'bold' : 'normal', fontSize: '28rpx'}">
-              堂食 (无打包费)
-            </view>
-            <view @click="changeDiningType(2)" 
-              :style="{flex: 1, textAlign: 'center', padding: '20rpx', borderRadius: '10rpx', background: diningType === 2 ? '#00aaff' : '#f5f5f5', color: diningType === 2 ? '#fff' : '#333', fontWeight: diningType === 2 ? 'bold' : 'normal', fontSize: '28rpx'}">
-              打包自取 (+0.5元)
-            </view>
-          </view>
-          <view style="margin-top: 20rpx; font-size: 24rpx; color: #666; background: #e6f7ff; padding: 15rpx; border-radius: 8rpx;">
-            📍 <text style="font-weight:bold">取餐地点：</text>二楼食堂 3号档口
-            <view v-if="diningType === 2" style="margin-top:5rpx; color:#00aaff">⚠️ 请凭【取餐号】打包取餐</view>
-            <view v-else style="margin-top:5rpx; color:#00aaff">⚠️ 请凭【取餐号】在窗口取餐</view>
-          </view>
-        </view>
 
-        <!-- 1、订单菜品列表 -->
-        <view class="order_list">
-          <view class="word_text">
-            <text class="word_style">订单明细</text>
-          </view>
-          <view class="order-type">
-            <view class="type_item" v-for="(obj, index) in cartList" :key="index">
-              <view class="dish_img">
-                <image mode="aspectFill" :src="obj.pic" class="dish_img_url"></image>
+      <!-- 4. Order List -->
+      <view class="section-padding">
+        <view class="glass-card list-card">
+          <view class="cart-item" v-for="(item, index) in cartList" :key="index">
+            <image class="item-img" :src="item.image || item.pic" mode="aspectFill"></image>
+            <view class="item-info">
+              <view class="info-top">
+                <text class="item-name">{{ item.name }}</text>
+                <text class="item-price">¥{{ item.amount }}</text>
               </view>
-              <view class="dish_info">
-                <view class="dish_name"> {{ obj.name }} </view>
-                <view v-if="obj.dishFlavor" class="dish_flavor"> {{ obj.dishFlavor }} </view>
-                <view class="dish_amount">
-                  <text v-if="obj.number && obj.number > 0" class="dish_number">x {{ obj.number }}</text>
-                </view>
-                <view class="dish_price"> <text class="ico">￥</text> {{ obj.amount }} </view>
+              <text class="item-desc">{{ item.dishFlavor || '正常' }}</text>
+              <view class="item-count">
+                <text class="count-tag">x{{ item.number }}</text>
               </view>
-            </view>
-            <!-- <view class="word_text">
-              <view class="word_left">打包费</view>
-              <view class="word_right">￥{{ CartAllNumber }}</view>
-            </view> -->
-            <!-- <view class="word_text">
-              <view class="word_left">打包费</view>
-              <view class="word_right">￥0.5</view>
-            </view> -->
-            <view class="word_text">
-              <view class="word_left">打包费</view>
-              <view class="word_right">￥{{ diningType === 2 ? 0.5 : 0 }}</view>
-            </view>
-            <view class="all_price">
-              <text class="word_right">总价 ￥{{ CartAllPrice }}</text>
             </view>
           </view>
         </view>
-        <!-- 2、备注+餐具份数+发票 -->
-        <view class="order_list">
-          <view class="bottom_text" @click="goRemark">
-            <view class="text_left">备注</view>
-            <view class="text_right">{{ remark || '选择口味等' }}</view>
-            <view class="right_image">
-              <image class="to_right" src="../../static/icon/toRight.png"></image>
-            </view>
+      </view>
+
+      <!-- 5. Options -->
+      <view class="section-padding">
+        <view class="glass-card options-card">
+          <view class="option-row">
+             <uni-icons type="compose" size="24" color="#94a3b8"></uni-icons>
+             <input class="input-field" type="text" v-model="remark" placeholder="添加备注 (如: 不要香菜)" />
+             <text class="field-label">备注</text>
           </view>
-          <view class="bottom_text" @click="chooseCooker">
-            <view class="text_left">餐具份数</view>
-            <view class="text_right">{{ getCookerInfo() }}</view>
-            <view class="right_image">
-              <image class="to_right" src="../../static/icon/toRight.png"></image>
+          <view class="divider"></view>
+          <view class="option-row">
+            <view class="left-group">
+               <uni-icons type="staff-filled" size="24" color="#94a3b8"></uni-icons>
+               <text class="row-label" style="margin-left: 10rpx;">餐具份数</text>
             </view>
-          </view>
-          <view class="bottom_text">
-            <view class="text_left">发票</view>
-            <view class="text_right">本店不支持线上发票，请致电商家提供</view>
+            <view class="stepper">
+              <view class="step-btn" @click="updateTableware(-1)">-</view>
+              <text class="step-val">{{ tablewareNumber }}</text>
+              <view class="step-btn active" @click="updateTableware(1)">+</view>
+            </view>
           </view>
         </view>
       </view>
-      <view class="blank"></view>
-    </scroll-view>
-    <!-- 底部购物车 -->
-    <view class="footer_order_buttom order_form">
-      <view class="order_number">
-        <image src="../../static/images/cart_active.png" class="order_number_icon"></image>
-        <view class="order_dish_num"> {{ CartAllNumber }} </view>
-      </view>
-      <view class="order_price">
-        <text class="ico">￥ </text> {{ parseFloat((Math.round(CartAllPrice * 100) / 100).toFixed(2)) }}</view
-      >
-      <view class="order_but">
-        <view class="order_but_rit" @click="payOrderHandle()"> 去支付 </view>
-      </view>
+
+      <view style="height: 180rpx;"></view>
     </view>
-    <view class="mask-box"></view>
 
-    <!-- 选择餐具遮罩层 -->
-    <view class="pop_mask" v-show="openCooker" @click="openCooker = !openCooker">
-      <view class="cook_pop" @click.stop="openCooker = openCooker">
-        <view class="top_title">
-          <view class="title"> 选择餐具份数 </view>
-          <view class="tips"> 应监管条例要求，商家不能主动提供一次性餐具 </view>
-          <view class="close" @click="closeMask">
-            <image src="../../static/icon/close.png" class="close_img" />
-          </view>
+    <!-- 6. Footer -->
+    <view class="footer-wrapper">
+      <view class="glass-bar">
+        <view class="total-info">
+           <text class="total-label">合计 Total</text>
+           <view class="price-display">
+             <text class="symbol">¥</text>
+             <text class="amount">{{ totalPrice }}</text>
+           </view>
         </view>
-        <picker-view class="picker" indicator-style="height: 50px;" :value="cookers" @change="pickerChange">
-          <picker-view-column>
-            <view v-for="item in cookers" :key="item" style="line-height: 50px; text-align: center">
-              {{ item === -1 ? '无需餐具' : item === 0 ? '商家依据餐量提供' : item === 11 ? '10份以上' : item + '份' }}
-            </view>
-          </picker-view-column>
-        </picker-view>
-        <view class="comfirm">
-          <view class="after_action">
-            <label class="checkbox">
-              <radio class="radio" color="#00aaff" value="cb" :checked="radioStatus" @click="radioChange" />
-              {{ cookerNum === -2 || cookerNum === -1 ? '以后都无需餐具' : '以后都需要餐具，商家依据餐量提供' }}
-            </label>
-            <button class="comfirm_btn" @click="openCooker = !openCooker">确定</button>
-          </view>
-        </view>
+        <button class="pay-btn" @click="submitOrder">
+          <text class="btn-text">立即支付</text>
+          <uni-icons type="arrowright" size="18" color="#fff" style="margin-left: 8rpx;"></uni-icons>
+        </button>
       </view>
     </view>
   </view>
 </template>
 
-<script lang="ts" setup>
-import {getDefaultAddressAPI} from '@/api/address'
-import {getCartAPI} from '@/api/cart'
-import {submitOrderAPI, getUnPayOrderAPI} from '@/api/order'
-import type {CartItem} from '@/types/cart'
-import {useAddressStore} from '@/stores/modules/address'
-import {onLoad, onShow} from '@dcloudio/uni-app'
-import {ref} from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 
-// store
-const store = useAddressStore()
-
-// 【新增】定义就餐方式：1=堂食，2=自取 (默认自取)
-const diningType = ref(2)
-
-// 购物车列表
-const cartList = ref<CartItem[]>([])
-const CartAllNumber = ref(0)
-const CartAllPrice = ref(0)
-
-// 收货地址信息，如果有选择好后跳回来，则在路径参数里拿到这个address地址信息
-const address = ref('')
-const label = ref('')
-const consignee = ref('')
-const gender = ref(0)
-const phoneNumber = ref('')
-
-// 预计送达时间
-const estimatedDeliveryTime = ref('')
-
-// 【新增】时间选择相关变量
-const timeRange = ref<string[]>([]) // 存放可选时间段，如 ['立即取餐', '11:30', '12:00']
-
-const platform = ref('ios')
-
-const openCooker = ref(false)
-const cookerNum = ref(-2)
-const cookers = ref([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-
-const radioStatus = ref(false)
-
+const diningType = ref(1) 
+const cartList = ref<any[]>([])
 const remark = ref('')
-const arrivalTime = ref('')
-const addressId = ref(0)
+const tablewareNumber = ref(1)
+const selectedTimeStr = ref('立即取餐')
+const timeSlots = ref<string[]>([])
+const baseUrl = 'http://localhost:8081'
+const safeAreaTop = ref(40)
 
-// 查询获取购物车列表
-// const getCartList = async () => {
-//   const res = await getCartAPI()
-//   console.log('初始化购物车列表', res)
-//   cartList.value = res.data
-//   // 计算总数量
-//   CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0)
-//   // 计算总价格 = 菜品总价 + 打包费 + 配送费
-//   CartAllPrice.value = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0) + CartAllNumber.value + 6
-//   console.log('CartAllNumber', CartAllNumber.value)
-//   console.log('CartAllPrice', CartAllPrice.value)
-// }
-// 【修改】计算价格：只计算菜品总价 + 动态打包费
-const getCartList = async () => {
-  const res = await getCartAPI()
-  console.log('初始化购物车列表', res)
-  cartList.value = res.data
-  
-  // 1. 计算总数量 (用于显示)
-  CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0)
-  
-  // 2. 重新计算总价
-  calculateTotalPrice()
-}
-
-// 【新增】总价计算函数
-const calculateTotalPrice = () => {
-  // 纯菜品价格
-  const dishTotal = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0)
-  // 打包费：自取是0.5，堂食是0
-  const packFee = diningType.value === 2 ? 0.5 : 0
-  
-  // 最终总价 = 菜品 + 打包费 (去掉了原来的 +6 和 +CartAllNumber)
-  CartAllPrice.value = dishTotal + packFee
-}
-
-// 【新增】切换就餐方式
-const changeDiningType = (type: number) => {
-  diningType.value = type
-  // 切换后重新算钱
-  calculateTotalPrice()
-}
-
-onLoad(async (options: any) => {
-  // 先加载默认地址(如果有的话)
-  await getAddressBookDefault()
-  // 再看看路径参数有没有传过来的地址，有的话以这个地址为准
-  console.log('options', options)
-  if (options.address) {
-    const addressObj = JSON.parse(options.address)
-    console.log('获取新的地址啊！addressObj', addressObj)
-    addressId.value = addressObj.id
-    label.value = addressObj.label
-    address.value = addressObj.provinceName + addressObj.cityName + addressObj.districtName + addressObj.detail
-    phoneNumber.value = addressObj.phone
-    consignee.value = addressObj.consignee
-  } else if (options.remark) {
-    remark.value = options.remark
-  }
-  console.log('我地址id赋值了啊1-------------', addressId.value)
-  // 获取购物车列表
-  await getCartList()
-  // 获取一小时以后的时间，作为预计送达的时间
- generateTimeSlots()
-
- 
-  // 默认选择的餐具状态
-  if (store.defaultCook === '无需餐具') {
-    cookerNum.value = -1
-  } else if (store.defaultCook === '商家依据餐量提供') {
-    cookerNum.value = 0
-  }
+const pickupLocation = computed(() => {
+  return diningType.value === 1 ? '智能食堂一楼取餐口' : '智能食堂二楼取餐口(打包)'
 })
 
-onShow(async (options: any) => {
-  console.log('options', options)
-  await getCartList()
+const totalPrice = computed(() => {
+  let sum = 0
+  cartList.value.forEach(item => sum += (item.amount * item.number))
+  return sum.toFixed(2)
 })
 
-// 初始化平台：ios/android
-const initPlatform = () => {
-  const res = uni.getSystemInfoSync()
-  platform.value = res.platform
+const estimatedTimeStr = computed(() => {
+   const now = new Date();
+   now.setMinutes(now.getMinutes() + 15);
+   const h = now.getHours().toString().padStart(2, '0');
+   const m = now.getMinutes().toString().padStart(2, '0');
+   return `${h}:${m}`;
+})
+
+onLoad(() => {
+   const sysInfo = uni.getSystemInfoSync();
+   if (sysInfo.safeArea) {
+      safeAreaTop.value = sysInfo.safeArea.top + 10;
+   }
+})
+
+onShow(() => {
+  loadCartData();
+  generateTimeSlots();
+})
+
+const goBack = () => uni.navigateBack()
+
+const loadCartData = () => {
+   uni.request({
+      url: baseUrl + '/user/shoppingCart/list',
+      method: 'GET',
+      header: { 'authentication': uni.getStorageSync('token') },
+      success: (res: any) => {
+         if (res.data.code === 0 || res.data.code === 1) {
+            cartList.value = res.data.data || []
+         }
+      }
+   })
 }
 
-// 日期转字符串格式
-const DateToStr = (date: Date) => {
-  var year = date.getFullYear() //年
-  var month = date.getMonth() //月
-  var day = date.getDate() //日
-  var hours = date.getHours() //时
-  var min = date.getMinutes() //分
-  var second = date.getSeconds() //秒
-  return (
-    year +
-    '-' +
-    (month + 1 > 9 ? month + 1 : '0' + (month + 1)) +
-    '-' +
-    (day > 9 ? day : '0' + day) +
-    ' ' +
-    (hours > 9 ? hours : '0' + hours) +
-    ':' +
-    (min > 9 ? min : '0' + min) +
-    ':' +
-    (second > 9 ? second : '0' + second)
-  )
-}
-// 获取一小时以后的时间
-// const getHarfAnOur = () => {
-//   const date = new Date()
-//   date.setTime(date.getTime() + 3600000)
-//   const formattedDate = DateToStr(date)
-//   estimatedDeliveryTime.value = formattedDate
-//   let hours = date.getHours()
-//   let minutes = date.getMinutes()
-//   if (hours < 10) hours = parseInt('0' + hours)
-//   if (minutes < 10) minutes = parseInt('0' + minutes)
-//   arrivalTime.value = hours + ':' + minutes
-// }
-// 【修改】生成取餐时间段 (模拟美团逻辑)
 const generateTimeSlots = () => {
-  const times = ['立即取餐']
-  const now = new Date()
-  let currentHour = now.getHours()
-  let currentMinute = now.getMinutes()
-  
-  // 从当前时间往后推 3 小时，每 30 分钟一个节点
-  for (let i = 0; i < 6; i++) {
-    // 逻辑：如果当前是 10:12，下一个节点就是 10:30，再下一个 11:00
-    if (currentMinute < 30) {
-      currentMinute = 30
-    } else {
-      currentMinute = 0
-      currentHour += 1
-    }
-    
-    // 超过晚上 22:00 食堂关门，就不生成了
-    if (currentHour >= 22) break; 
-    
-    // 格式化时间 HH:mm
-    const h = currentHour < 10 ? '0' + currentHour : currentHour
-    const m = currentMinute < 10 ? '0' + currentMinute : currentMinute
-    times.push(`${h}:${m}`)
-  }
-  timeRange.value = times
-  // 默认选中第一个
-  estimatedDeliveryTime.value = '立即取餐'
+   const slots = ['立即取餐'];
+   const now = new Date();
+   let m = Math.ceil(now.getMinutes() / 10) * 10;
+   now.setMinutes(m);
+   for (let i = 0; i < 12; i++) {
+       now.setMinutes(now.getMinutes() + 10);
+       const h = now.getHours().toString().padStart(2, '0');
+       const min = now.getMinutes().toString().padStart(2, '0');
+       slots.push(`${h}:${min}`);
+   }
+   timeSlots.value = slots;
 }
 
-// 【新增】用户改变时间选择
-const bindTimeChange = (e: any) => {
-  const index = e.detail.value
-  const selected = timeRange.value[index]
-  estimatedDeliveryTime.value = selected
+const onTimeChange = (e: any) => {
+   const index = e.detail.value;
+   selectedTimeStr.value = timeSlots.value[index];
 }
 
-// 默认地址查询
-const getAddressBookDefault = async () => {
-  const res = await getDefaultAddressAPI()
-  if (res.code === 0) {
-    console.log('默认地址', res.data)
-    addressId.value = 0
-    if (res.data.provinceName) {
-      address.value = res.data.provinceName + res.data.cityName + res.data.districtName + res.data.detail
-    }
-    phoneNumber.value = res.data.phone as string
-    consignee.value = res.data.consignee as string
-    gender.value = res.data.gender as number
-    addressId.value = res.data.id as number
-  }
+const updateTableware = (delta: number) => {
+   const newVal = tablewareNumber.value + delta
+   if (newVal >= 1 && newVal <= 10) tablewareNumber.value = newVal
 }
 
-// 标签文字转数字
-const trans = (item: string) => {
-  switch (item) {
-    case '公司':
-      return '1'
-    case '家':
-      return '2'
-    case '学校':
-      return '3'
-    default:
-      return '4'
-  }
-}
+const submitOrder = () => {
+   if (cartList.value.length === 0) return;
+   uni.showLoading({ title: '提交中...' });
+   
+   const now = new Date();
+   const y = now.getFullYear();
+   const mo = (now.getMonth()+1).toString().padStart(2,'0');
+   const d = now.getDate().toString().padStart(2,'0');
+   let timePart = estimatedTimeStr.value + ":00"; 
+   if (selectedTimeStr.value !== '立即取餐') timePart = selectedTimeStr.value + ":00";
+   
+   const deliveryTimeStr = `${y}-${mo}-${d}T${timePart}`;
 
-// 去地址页面
-const goAddress = () => {
-  // 记录等下跳转到地址管理后，选好地址要返回当前这个订单页面
-  store.addressBackUrl = '/pages/submit/submit'
-  uni.redirectTo({
-    url: '/pages/address/address',
-  })
-}
+   const payload = {
+      addressBookId: null,
+      payMethod: 1,
+      remark: remark.value,
+      amount: parseFloat(totalPrice.value),
+      address: pickupLocation.value,
+      estimatedDeliveryTime: deliveryTimeStr,
+      packAmount: diningType.value === 2 ? 1 : 0,
+      tablewareNumber: tablewareNumber.value,
+      tablewareStatus: 1
+   }
 
-// 去备注页面
-const goRemark = () => {
-  uni.redirectTo({
-    url: '/pages/remark/remark',
-  })
-}
-// 选择餐具
-const chooseCooker = () => {
-  openCooker.value = true
-}
-// 餐具对应信息
-const getCookerInfo = () => {
-  if (cookerNum.value === -2) return '请依据实际情况填写，避免浪费'
-  else if (cookerNum.value === -1) return '无需餐具'
-  else if (cookerNum.value === 0) return '商家依据餐量提供'
-  else if (cookerNum.value === 11) return '10份以上'
-  else return cookerNum.value + '份'
-}
-const pickerChange = (ev: any) => {
-  console.log(ev.detail.value)
-  cookerNum.value = ev.detail.value[0] - 1
-}
-// 改变radio状态，顺便改变store里默认餐具选择的状态
-const radioChange = () => {
-  radioStatus.value = !radioStatus.value
-  if (radioStatus.value) {
-    store.defaultCook = cookerNum.value === -1 ? '无需餐具' : '商家依据餐量提供'
-  } else {
-    store.defaultCook = '请依据实际情况填写，避免浪费'
-  }
-}
-const closeMask = () => {
-  openCooker.value = false
-  // openPayType.value = false
-}
-
-// 支付下单
-// const payOrderHandle = async () => {
-//   // 先去后端查询一下是否有未支付但没取消的订单，如果有的话无法下单
-//   const unPayRes = await getUnPayOrderAPI()
-//   console.log('未支付订单', unPayRes)
-//   if (unPayRes.data !== 0) {
-//     console.log('有未支付订单', unPayRes.data)
-//     uni.showToast({
-//       title: '有未支付订单，请先支付或取消！',
-//       icon: 'none',
-//     })
-//     return false
-//   }
-//   if (!address.value) {
-//     uni.showToast({
-//       title: '请选择收货地址',
-//       icon: 'none',
-//     })
-//     return false
-//   }
-//   // 餐具： -2未选择，-1无需餐具，0商家依据餐量提供，其他数字具体数量
-//   if (cookerNum.value === -2) {
-//     uni.showToast({
-//       title: '请选择餐具份数',
-//       icon: 'none',
-//     })
-//     return false
-//   }
-//   console.log('我传地址id了啊2--------------', addressId.value)
-//   const params = {
-//     payMethod: 1,
-//     addressId: addressId.value,
-//     remark: remark.value,
-//     estimatedDeliveryTime: estimatedDeliveryTime.value, // 预计到达时间
-//     deliveryStatus: 1, // 立即送出
-//     tablewareNumber: cookerNum.value, // 餐具份数
-//     tablewareStatus: cookerNum.value === 0 ? 1 : 0, // 餐具状态: 1按餐量提供，0选择具体数量
-//     // packAmount: CartAllNumber.value,
-//     // 【修改】打包费：根据当前选择传 0.5 或 0
-//     packAmount: diningType.value === 2 ? 0.5 : 0,
-//     // amount: CartAllPrice.value,
-//     // 【修改】总金额：直接用算好的价格
-//     amount: CartAllPrice.value,
-//   }
-//   console.log('生成订单params', params)
-//   const res = await submitOrderAPI(params)
-//   if (res.code === 0) {
-//     console.log('订单生成成功', res.data)
-//     // 此时订单已生成，跳转到支付页面
-//     // uni.navigateTo({url: '/pages/order/success'})
-//     // uni.redirectTo({
-//     //   url:
-//     //     '/pages/pay/pay?' +
-//     //     'orderId=' +
-//     //     res.data!.id +
-//     //     '&orderAmount=' +
-//     //     res.data!.orderAmount +
-//     //     '&orderNumber=' +
-//     //     res.data!.orderNumber +
-//     //     '&orderTime=' +
-//     //     res.data!.orderTime,
-//     // })
-//     uni.redirectTo({
-//       url:
-//         '/pages/pay/pay?' +
-//         'orderId=' + res.data!.id +
-//         '&orderAmount=' + res.data!.orderAmount +
-//         '&orderNumber=' + res.data!.orderNumber +
-//         // 【注意】这里 orderTime 是下单时间，我们额外传一个 pickupTime (预约时间)
-//         '&pickupTime=' + (estimatedDeliveryTime.value === '立即取餐' ? '尽快' : estimatedDeliveryTime.value)
-//     })
-
-
-//   } else {
-//     uni.showToast({
-//       title: res.msg || '操作失败',
-//       icon: 'none',
-//     })
-//   }
-// }
-// 支付下单
-const payOrderHandle = async () => {
-  // 1. 检查是否有未支付订单
-  const unPayRes = await getUnPayOrderAPI()
-  if (unPayRes.data !== 0) {
-    uni.showToast({ title: '有未支付订单，请先支付或取消！', icon: 'none' })
-    return false
-  }
-  // 2. 校验地址和餐具
-  if (!address.value) {
-    uni.showToast({ title: '请选择收货地址', icon: 'none' })
-    return false
-  }
-  if (cookerNum.value === -2) {
-    uni.showToast({ title: '请选择餐具份数', icon: 'none' })
-    return false
-  }
-
-  // ============== 【核心修复开始】 ==============
-  // 3. 处理时间格式 (后端不认识"立即取餐"，我们要翻译给它听)
-  let finalTime = estimatedDeliveryTime.value
-  const now = new Date()
-
-  if (finalTime === '立即取餐' || !finalTime) {
-    // 如果是立即取餐，我们就传：当前时间 + 15分钟 (作为预计送达时间)
-    now.setMinutes(now.getMinutes() + 15)
-    finalTime = DateToStr(now)
-  } else if (finalTime.includes(':') && finalTime.length < 10) {
-    // 如果选的是 "18:30" 这种短时间，后端需要完整的 "2025-12-29 18:30:00"
-    const year = now.getFullYear()
-    const month = (now.getMonth() + 1).toString().padStart(2, '0')
-    const day = now.getDate().toString().padStart(2, '0')
-    // 拼接成完整格式
-    finalTime = `${year}-${month}-${day} ${finalTime}:00`
-  }
-  // ============== 【核心修复结束】 ==============
-
-  console.log('转换后的提交时间:', finalTime) // 可以在控制台看看变没变
-
-  // 4. 组装参数
-  const params = {
-    payMethod: 1,
-    addressId: addressId.value,
-    remark: remark.value,
-    estimatedDeliveryTime: finalTime, // <--- 这里传转换后的时间
-    deliveryStatus: 1, 
-    tablewareNumber: cookerNum.value, 
-    tablewareStatus: cookerNum.value === 0 ? 1 : 0, 
-    packAmount: diningType.value === 2 ? 0.5 : 0,
-    amount: CartAllPrice.value,
-  }
-
-  console.log('生成订单params', params)
-  const res = await submitOrderAPI(params)
-  
-  if (res.code === 0) {
-    // 跳转支付页
-    uni.redirectTo({
-      url: '/pages/pay/pay?' +
-        'orderId=' + res.data!.id +
-        '&orderAmount=' + res.data!.orderAmount +
-        '&orderNumber=' + res.data!.orderNumber +
-        '&orderTime=' + res.data!.orderTime +
-        // 注意：这里我们还是传原来的 estimatedDeliveryTime.value 给下一个页面显示
-        // 因为给用户看还是要看 "立即取餐" 或 "18:30"，不用给用户看 "2025-..."
-        '&pickupTime=' + (estimatedDeliveryTime.value === '立即取餐' ? '尽快' : estimatedDeliveryTime.value)
-    })
-  } else {
-    uni.showToast({ title: res.msg || '操作失败', icon: 'none' })
-  }
+   uni.request({
+      url: baseUrl + '/user/order/submit',
+      method: 'POST',
+      data: payload,
+      header: { 
+         'authentication': uni.getStorageSync('token'),
+         'Content-Type': 'application/json' 
+      },
+      success: (res: any) => {
+         uni.hideLoading()
+         if (res.data.code === 0 || res.data.code === 1) {
+            const orderData = res.data.data
+            const orderId = orderData?.id || ''
+            const orderNumber = orderData?.orderNumber || ''
+            // 【修改】跳转到收银台页面，而不是直接成功页
+            uni.redirectTo({ 
+               url: `/pages/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${totalPrice.value}&diningType=${diningType.value}` 
+            })
+         } else {
+            uni.showToast({ title: res.data.msg || '失败', icon: 'none' })
+         }
+      }
+   })
 }
 </script>
 
-<style lang="less" scoped>
-.order_content {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20rpx 0 0 0;
-  position: relative;
-  background-color: #cceeff;
-  .order_content_box {
-    width: 100%;
-    height: 100%;
-    // 不知道为啥要加这个，才有底部的padding出现
-    .blank {
-      height: 1rpx;
-    }
-  }
-  box-sizing: border-box;
-  .restaurant_info_box {
-    position: relative;
-    width: 100%;
-    height: 160rpx;
-    // 注释掉背景色
-    .restaurant_info {
-      position: absolute;
-      z-index: 9;
-      left: 30rpx;
-      // transform: translateX(-50%);
-      display: flex;
-      width: calc(100% - 60rpx);
-      // margin:0 auto;
-      background: rgba(255, 255, 255, 0.97);
-      box-shadow: 0px 4rpx 10rpx 0px rgba(69, 69, 69, 0.1);
-      border-radius: 16rpx;
-      padding: 40rpx;
-      box-sizing: border-box;
-      .left_info {
-        flex: 1;
-        .title {
-          font-size: 36rpx;
-        }
-        .position {
-          font-size: 36rpx;
-        }
-      }
-      .restaurant_logo {
-        .restaurant_logo_img {
-          display: block;
-          width: 320rpx;
-          height: 120rpx;
-          border-radius: 16rpx;
-        }
-      }
-    }
-  }
-
-  // 地址栏
-  .new_address {
-    width: 730rpx;
-    height: 240rpx;
-    background-color: #fff;
-    margin: 0 auto;
-    border-radius: 12rpx;
-    z-index: 10;
-    margin-bottom: 20rpx;
-    display: flex;
-    flex-direction: column;
-
-    // 上部
-    .top {
-      margin: 0 22rpx 0 30rpx;
-      flex: 1;
-      display: flex;
-      // align-items: center;
-      .address_name {
-        flex: 1;
-        // display: flex;
-        // flex-direction: column;
-        overflow: hidden;
-        .address {
-          // flex: 1;
-          height: 50rpx;
-          line-height: 50rpx;
-          margin-top: 22rpx;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          // 标签
-          .tag {
-            display: inline-block;
-            width: 70rpx;
-            height: 45rpx;
-            border-radius: 4rpx;
-            margin-right: 20rpx;
-            font-size: 25rpx;
-            line-height: 45rpx;
-            color: #333333;
-            text-align: center;
-            background: #e1f1fe;
-          }
-
-          .tag2 {
-            background: #fef8e7;
-          }
-
-          .tag3 {
-            background: #e7fef8;
-          }
-
-          .tag4 {
-            background: #fee7e7;
-          }
-          .word {
-            vertical-align: middle;
-            opacity: 1;
-            font-size: 32rpx;
-            font-family: PingFangSC, PingFangSC-Medium;
-            font-weight: 550;
-            color: #20232a;
-          }
-        }
-        .name {
-          // flex: 1;
-          height: 34rpx;
-          line-height: 34rpx;
-          margin-top: 8rpx;
-          .name_1,
-          .name_2 {
-            opacity: 1;
-            font-size: 26rpx;
-            font-family: PingFangSC, PingFangSC-Regular;
-            font-weight: 400;
-            text-align: center;
-            color: #333333;
-          }
-          .name_2 {
-            margin-left: 10rpx;
-          }
-        }
-      }
-      .address_name_disabled {
-        flex: 1;
-        font-size: 32rpx;
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        color: #bdbdbd;
-        align-self: center;
-      }
-      .address_image {
-        width: 80rpx;
-        height: 100%;
-        position: relative;
-        .to_right {
-          width: 30rpx;
-          height: 30rpx;
-          vertical-align: middle;
-          margin-bottom: 10rpx;
-          position: absolute;
-          top: 50%;
-          right: 6rpx;
-          transform: translateY(-50%);
-        }
-      }
-    }
-    // 下部
-    .bottom {
-      margin: 0 28rpx;
-      height: 94rpx;
-      // line-height: 94rpx;
-      border-top: 1px dashed #ebebeb;
-      box-sizing: border-box;
-      .word_bottom {
-        opacity: 1;
-        font-size: 26rpx;
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: left;
-        color: #333333;
-        height: 34rpx;
-        line-height: 34rpx;
-        margin-top: 24rpx;
-        display: inline-block;
-      }
-    }
-  }
-
-  // 订单container，包括订单明细+备注
-  .order_list_cont {
-    width: 730rpx;
-    margin: 0 auto;
-    // 订单明细/备注 的白色圆角矩形容器
-    .order_list {
-      border-radius: 15rpx;
-      background-color: #fff;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      position: relative;
-      margin-bottom: 20rpx;
-      &:last-child {
-        margin-bottom: 176rpx;
-      }
-      // 菜品列表
-      .order-type {
-        padding: 40rpx 0 10rpx 0;
-        // 菜品列表的每个元素
-        .type_item {
-          display: flex;
-          margin-bottom: 30rpx;
-          .dish_img {
-            width: 100rpx;
-            margin: 0 20rpx 0 32rpx;
-            .dish_img_url {
-              display: block;
-              width: 100rpx;
-              height: 100rpx;
-              border-radius: 8rpx;
-            }
-          }
-          .dish_info {
-            position: relative;
-            flex: 1;
-            margin-right: 20rpx;
-            // margin: 0 20rpx 20rpx 0;
-            // margin-bottom: 200rpx;
-            .dish_name {
-              font-size: 30rpx;
-              font-weight: bold;
-              color: #20232a;
-            }
-            .dish_flavor {
-              font-size: 24rpx;
-              color: #818693;
-              height: 30rpx;
-              line-height: 30rpx;
-              margin-top: 10rpx;
-            }
-            .dish_amount {
-              font-size: 24rpx;
-              color: #818693;
-              height: 30rpx;
-              line-height: 30rpx;
-              margin-top: 10rpx;
-              .ico {
-                font-size: 24rpx;
-              }
-              .dish_number {
-                padding: 10rpx 0;
-                font-size: 24rpx;
-              }
-            }
-            .dish_price {
-              position: absolute;
-              right: 20rpx;
-              bottom: 40rpx;
-              display: flex;
-              font-size: 32rpx;
-              color: #e94e3c;
-              font-family: DIN, DIN-Medium;
-              font-weight: 500;
-              .ico {
-                line-height: 42rpx;
-                font-size: 24rpx;
-              }
-            }
-          }
-        }
-      }
-      .seize_seat {
-        width: 100%;
-        height: 98rpx;
-      }
-      .word_text {
-        display: flex;
-        align-items: center;
-        margin: 0 20rpx 0 30rpx;
-        border-bottom: 1px solid #efefef;
-        height: 120rpx;
-        line-height: 120rpx;
-        .word_left {
-          width: 50%;
-          height: 44rpx;
-          opacity: 1;
-          font-size: 32rpx;
-          text-align: left;
-          color: #333333;
-          line-height: 44rpx;
-          letter-spacing: 0px;
-        }
-        .word_right {
-          width: 50%;
-          height: 44rpx;
-          opacity: 1;
-          font-size: 32rpx;
-          text-align: right;
-          color: #333333;
-          line-height: 44rpx;
-          letter-spacing: 0px;
-          padding-right: 20rpx;
-        }
-      }
-      .all_price {
-        margin: 0 16rpx 0 22rpx;
-        height: 120rpx;
-        line-height: 120rpx;
-        .word_right {
-          height: 44rpx;
-          opacity: 1;
-          font-size: 32rpx;
-          text-align: left;
-          color: #333333;
-          line-height: 44rpx;
-          letter-spacing: 0px;
-          padding-left: 500rpx;
-        }
-      }
-      .bottom_text {
-        display: flex;
-        align-items: center;
-        margin: 0 20rpx 0 30rpx;
-        height: 100rpx;
-        line-height: 100rpx;
-        .text_left {
-          width: 30%;
-          height: 44rpx;
-          opacity: 1;
-          font-size: 32rpx;
-          text-align: left;
-          color: #333333;
-          line-height: 44rpx;
-          letter-spacing: 0px;
-        }
-        .text_right {
-          width: 70%;
-          height: 44rpx;
-          font-size: 24rpx;
-          text-align: right;
-          color: #666666;
-          line-height: 44rpx;
-          letter-spacing: 0px;
-          padding-right: 20rpx;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .right_image {
-          width: 30rpx;
-          height: 100%;
-          position: relative;
-          .to_right {
-            width: 30rpx;
-            height: 30rpx;
-            vertical-align: middle;
-            margin-bottom: 10rpx;
-            position: absolute;
-            top: 50%;
-            right: 6rpx;
-            transform: translateY(-50%);
-          }
-        }
-      }
-    }
-  }
-  .footer_order_buttom {
-    position: fixed;
-    display: flex;
-    bottom: 48rpx;
-    width: calc(100% - 60rpx);
-    height: 88rpx;
-    margin: 0 auto;
-    background: rgba(0, 0, 0, 0.9);
-    border-radius: 50rpx;
-    box-shadow: 0px 6rpx 10rpx 0px rgba(0, 0, 0, 0.25);
-    z-index: 999;
-    padding: 0rpx 10rpx;
-    box-sizing: border-box;
-    .order_number {
-      position: relative;
-      width: 120rpx;
-      .order_number_icon {
-        position: absolute;
-        display: block;
-        width: 120rpx;
-        height: 118rpx;
-        left: 12rpx;
-        bottom: 0px;
-      }
-      .order_dish_num {
-        position: absolute;
-        display: inline-block;
-        z-index: 9;
-        // width: 36rpx;
-        min-width: 12rpx;
-        height: 36rpx;
-        line-height: 36rpx;
-        padding: 0 12rpx;
-        left: 92rpx;
-        font-size: 24rpx;
-        top: -8rpx;
-        // text-align: center;
-        border-radius: 20rpx;
-        background-color: #e94e3c;
-        color: #fff;
-        font-weight: 500;
-      }
-    }
-    .order_price {
-      flex: 1;
-      text-align: left;
-      color: #fff;
-      line-height: 88rpx;
-      padding-left: 34rpx;
-      box-sizing: border-box;
-      font-size: 36rpx;
-      font-weight: bold;
-      .ico {
-        font-size: 24rpx;
-      }
-    }
-    .order_but {
-      // background-color: #d8d8d8;
-      // width: 364rpx;
-      height: 72rpx;
-      line-height: 72rpx;
-      border-radius: 72rpx;
-      text-align: center;
-      margin-top: 8rpx;
-      display: flex;
-      .order_but_left {
-        flex: 1;
-        background-color: #473d26;
-        color: #ffb302;
-        border-radius: 72rpx 0 0 72rpx;
-      }
-      .order_but_rit {
-        // flex: 1;
-        width: 200rpx;
-        border-radius: 72rpx;
-        background: #22bbff;
-        font-size: 30rpx;
-        font-family: PingFangSC, PingFangSC-Medium;
-        font-weight: 500;
-        color: #fff;
-      }
-    }
-  }
-  .pop_mask {
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    z-index: 999;
-    background-color: rgba(0, 0, 0, 0.4);
-    .cook_pop {
-      width: 100%;
-      height: 60vh;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      background-color: #fff;
-      border-radius: 20rpx 20rpx 0 0;
-      padding: 20rpx 30rpx 30rpx 30rpx;
-      box-sizing: border-box;
-
-      .top_title {
-        // display: flex;
-        // flex-direction: row;
-        position: relative;
-        // justify-content: space-between;
-        border-bottom: solid 1px #ebeef5;
-        padding-bottom: 20rpx;
-
-        .title {
-          width: 100%;
-          text-align: center;
-          font-size: 30rpx;
-          line-height: 50rpx;
-          font-weight: bold;
-          color: #20232a;
-        }
-        .tips {
-          width: 100%;
-          text-align: center;
-          font-size: 20rpx;
-          line-height: 40rpx;
-          color: #999999;
-        }
-        .close {
-          position: absolute;
-          top: 20rpx;
-          right: 0;
-
-          .close_img {
-            width: 40rpx;
-            height: 40rpx;
-          }
-        }
-      }
-      .picker {
-        width: 100%;
-        height: 400rpx;
-      }
-      .comfirm {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        // margin-top: 20rpx;
-        width: 600rpx;
-        margin: 20rpx auto;
-        background-color: #fea;
-        border-radius: 10rpx 10rpx 30rpx 30rpx;
-        .after_action {
-          // height: 200rpx;
-          font-size: 24rpx;
-          line-height: 60rpx;
-          color: #999999;
-          .checkbox {
-            padding: 10rpx;
-            radio .wx-radio-input {
-              width: 30rpx;
-              height: 30rpx;
-              border-radius: 50%;
-            }
-          }
-          .comfirm_btn {
-            width: 600rpx;
-            height: 80rpx;
-            line-height: 80rpx;
-            border-radius: 40rpx;
-            background: #00aaff;
-            color: #fff;
-            font-size: 30rpx;
-            text-align: center;
-            letter-spacing: 0px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-        }
-      }
-    }
-  }
-  .mask-box {
-    position: absolute;
-    height: 176rpx;
-    width: 100%;
-    bottom: 0;
-    background-color: #f6f6f6;
-    opacity: 0.5;
-  }
+<style lang="scss">
+.page-container {
+  min-height: 100vh;
+  background: #f0fdfa; /* Fallback */
+  background: radial-gradient(circle at 10% 20%, #d4fcfa 0%, transparent 40%),
+              radial-gradient(circle at 90% 10%, #fff4e6 0%, transparent 40%),
+              #f0fdfa;
+  padding-bottom: 200rpx;
 }
-
-.dish_detail_pop {
-  width: calc(100vw - 160rpx);
-  box-sizing: border-box;
-  position: relative;
-  top: 50%;
-  left: 50%;
-  padding: 40rpx;
-  transform: translateX(-50%) translateY(-50%);
-  background: #fff;
-  border-radius: 20rpx;
-
-  .div_big_image {
-    width: 100%;
-    height: 320rpx;
-    border-radius: 10rpx;
-  }
-
-  .title {
-    font-size: 40rpx;
-    line-height: 80rpx;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .dish_items {
-    height: 60vh;
-  }
-
-  .but_item {
-    display: flex;
-    position: relative;
-    flex: 1;
-
-    .price {
-      text-align: left;
-      color: #e94e3c;
-      line-height: 88rpx;
-      box-sizing: border-box;
-      font-size: 48rpx;
-      font-weight: bold;
-
-      .ico {
-        font-size: 28rpx;
-      }
-    }
-
-    .active {
-      position: absolute;
-      right: 0rpx;
-      bottom: 20rpx;
-      display: flex;
-
-      .dish_add,
-      .dish_red {
-        display: block;
-        width: 72rpx;
-        height: 72rpx;
-      }
-
-      .dish_number {
-        padding: 0 10rpx;
-        line-height: 72rpx;
-        font-size: 30rpx;
-        font-family: PingFangSC, PingFangSC-Medium;
-        font-weight: 500;
-      }
-
-      .dish_card_add {
-        width: 200rpx;
-        line-height: 60rpx;
-        text-align: center;
-        font-weight: 500;
-        font-size: 28rpx;
-        opacity: 1;
-        background: #ffc200;
-        border-radius: 30rpx;
-      }
-    }
-  }
+.blob { position: fixed; border-radius: 50%; filter: blur(80rpx); z-index: 1; opacity: 0.6; }
+.blob-1 { top: -100rpx; left: -100rpx; width: 400rpx; height: 400rpx; background: rgba(0, 184, 156, 0.2); }
+.blob-2 { top: 200rpx; right: -100rpx; width: 500rpx; height: 500rpx; background: rgba(255, 107, 107, 0.1); }
+.content-wrapper { position: relative; z-index: 10; }
+.section-padding { padding: 0 32rpx; margin-bottom: 24rpx; }
+.glass-panel, .glass-card, .glass-bar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
-
-.more_norm_pop {
-  width: calc(100vw - 160rpx);
-  box-sizing: border-box;
-  position: relative;
-  top: 50%;
-  left: 50%;
-  padding: 40rpx;
-  transform: translateX(-50%) translateY(-50%);
-  background: #fff;
-  border-radius: 20rpx;
-
-  .div_big_image {
-    width: 100%;
-    border-radius: 10rpx;
-  }
-
-  .title {
-    font-size: 40rpx;
-    line-height: 80rpx;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .items_cont {
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: -14rpx;
-    max-height: 50vh;
-
-    .item_row {
-      .flavor_name {
-        height: 40rpx;
-        opacity: 1;
-        font-size: 28rpx;
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: left;
-        color: #666666;
-        line-height: 40rpx;
-        padding-left: 10rpx;
-        padding-top: 20rpx;
-      }
-
-      .flavor_item {
-        display: flex;
-        flex-wrap: wrap;
-
-        .item {
-          border: 1px solid #ffb302;
-          border-radius: 12rpx;
-          margin: 20rpx 10rpx;
-          padding: 0 26rpx;
-          height: 60rpx;
-          line-height: 60rpx;
-          font-family: PingFangSC, PingFangSC-Regular;
-          font-weight: 400;
-          color: #333333;
-        }
-
-        .act {
-          // background: linear-gradient(144deg, #ffda05 18%, #ffb302 80%);
-          background: #ffc200;
-          border: 1px solid #ffc200;
-          font-family: PingFangSC, PingFangSC-Medium;
-          font-weight: 500;
-        }
-      }
-    }
-  }
-
-  .but_item {
-    display: flex;
-    position: relative;
-    flex: 1;
-    padding-left: 10rpx;
-    margin: 34rpx 0 -20rpx 0;
-
-    .price {
-      text-align: left;
-      color: #e94e3c;
-      line-height: 88rpx;
-      box-sizing: border-box;
-      font-size: 48rpx;
-      font-family: DIN, DIN-Medium;
-      font-weight: 500;
-
-      .ico {
-        font-size: 28rpx;
-      }
-    }
-
-    .active {
-      position: absolute;
-      right: 0rpx;
-      bottom: 20rpx;
-      display: flex;
-
-      .dish_add,
-      .dish_red {
-        display: block;
-        width: 72rpx;
-        height: 72rpx;
-      }
-
-      .dish_number {
-        line-height: 72rpx;
-        font-size: 24rpx;
-        font-family: PingFangSC, PingFangSC-Medium;
-        font-weight: 500;
-      }
-
-      .dish_card_add {
-        width: 200rpx;
-        height: 60rpx;
-        line-height: 60rpx;
-        text-align: center;
-        font-weight: 500;
-        font-size: 28rpx;
-        opacity: 1;
-        // background: linear-gradient(144deg, #ffda05 18%, #ffb302 80%);
-        background: #ffc200;
-        border-radius: 30rpx;
-      }
-    }
-  }
-}
-
-.lodding {
-  position: relative;
-  top: 40%;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .lodding_ico {
-    width: 160rpx;
-    height: 160rpx;
-    border-radius: 100%;
-  }
-}
+.glass-bar { background: rgba(20, 20, 20, 0.95); border: none; }
+.custom-nav { display: flex; align-items: center; justify-content: space-between; padding: 20rpx 32rpx; }
+.back-btn { width: 70rpx; height: 70rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.page-title { font-size: 34rpx; font-weight: bold; color: #0c1d1a; }
+.placeholder { width: 70rpx; }
+.dining-toggle { display: flex; height: 90rpx; border-radius: 45rpx; padding: 8rpx; position: relative; }
+.toggle-item { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 40rpx; position: relative; z-index: 2; }
+.active-bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #00b89c; border-radius: 40rpx; z-index: -1; }
+.toggle-text { font-size: 28rpx; font-weight: bold; color: #64748b; }
+.toggle-item.active .toggle-text { color: #fff; }
+.smart-card { border-radius: 32rpx; padding: 40rpx; display: flex; flex-direction: column; }
+.card-header { display: flex; justify-content: space-between; align-items: center; }
+.sub-label { font-size: 24rpx; color: #64748b; font-weight: bold; display: block; margin-bottom: 8rpx;}
+.main-value { font-size: 34rpx; font-weight: bold; color: #0c1d1a; }
+.edit-btn { padding: 10rpx; background: rgba(0,184,156,0.1); border-radius: 50%; }
+.divider { height: 1rpx; background: #e2e8f0; margin: 30rpx 0; }
+.time-trigger { display: flex; align-items: center; gap: 20rpx; }
+.icon-circle { width: 70rpx; height: 70rpx; border-radius: 50%; background: rgba(0,184,156,0.1); display: flex; align-items: center; justify-content: center; }
+.time-info { flex: 1; }
+.highlight { color: #00b89c; }
+.hint { font-size: 24rpx; color: #94a3b8; font-weight: normal; }
+.list-card { border-radius: 32rpx; padding: 16rpx; }
+.cart-item { display: flex; gap: 24rpx; padding: 24rpx; border-bottom: 1px solid #f1f5f9; }
+.item-img { width: 120rpx; height: 120rpx; border-radius: 16rpx; background: #eee; }
+.item-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.info-top { display: flex; justify-content: space-between; }
+.item-name { font-size: 30rpx; font-weight: bold; }
+.item-price { color: #FF6B6B; font-weight: bold; }
+.item-desc { font-size: 24rpx; color: #999; }
+.count-tag { font-size: 22rpx; color: #999; background: #f8fafc; padding: 4rpx 12rpx; border-radius: 8rpx; align-self: flex-start; }
+.options-card { border-radius: 32rpx; padding: 32rpx; }
+.option-row { display: flex; align-items: center; gap: 20rpx; height: 80rpx; }
+.input-field { flex: 1; text-align: right; font-size: 28rpx; }
+.field-label, .row-label { font-size: 28rpx; font-weight: bold; color: #333; }
+.left-group { display: flex; align-items: center; flex: 1; }
+.stepper { display: flex; background: #f1f5f9; border-radius: 30rpx; padding: 4rpx; }
+.step-btn { width: 50rpx; height: 50rpx; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #fff; font-weight: bold; }
+.step-btn.active { background: #00b89c; color: white; }
+.step-val { width: 60rpx; text-align: center; line-height: 50rpx; font-weight: bold; }
+.footer-wrapper { position: fixed; bottom: 40rpx; left: 32rpx; right: 32rpx; z-index: 100; }
+.glass-bar { border-radius: 100rpx; padding: 16rpx 16rpx 16rpx 48rpx; display: flex; justify-content: space-between; align-items: center; }
+.total-label { font-size: 20rpx; color: #ccc; display: block; }
+.symbol { color: #FF6B6B; font-size: 28rpx; font-weight: bold; }
+.amount { color: #FF6B6B; font-size: 40rpx; font-weight: bold; }
+.pay-btn { background: #00b89c; border-radius: 100rpx; height: 90rpx; padding: 0 40rpx; display: flex; align-items: center; color: white; border: none; }
+.btn-text { font-size: 30rpx; font-weight: bold; }
 </style>

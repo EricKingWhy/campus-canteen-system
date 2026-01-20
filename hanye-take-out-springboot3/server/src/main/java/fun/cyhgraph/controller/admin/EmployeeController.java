@@ -1,9 +1,9 @@
 package fun.cyhgraph.controller.admin;
 
+import fun.cyhgraph.constant.JwtClaimsConstant;
 import fun.cyhgraph.dto.EmployeeDTO;
-import fun.cyhgraph.dto.EmployeeFixPwdDTO;
 import fun.cyhgraph.dto.EmployeeLoginDTO;
-import fun.cyhgraph.dto.PageDTO;
+import fun.cyhgraph.dto.EmployeePageQueryDTO;
 import fun.cyhgraph.entity.Employee;
 import fun.cyhgraph.properties.JwtProperties;
 import fun.cyhgraph.result.PageResult;
@@ -14,7 +14,6 @@ import fun.cyhgraph.vo.EmployeeLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,122 +27,67 @@ public class EmployeeController {
     @Autowired
     private JwtProperties jwtProperties;
 
-    /**
-     * 员工登录
-     * @param employeeLoginDTO
-     * @return
-     */
     @PostMapping("/login")
-    public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO){
-        log.info("用户传过来的登录信息DTO:{}", employeeLoginDTO);
+    public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
+        log.info("员工登录：{}", employeeLoginDTO);
         Employee employee = employeeService.login(employeeLoginDTO);
-        // 上面的没抛异常，正常来到这里，说明登录成功
-        // claims就是用户数据payload部分
-        Map<String, Object> claims = new HashMap<>(); // jsonwebtoken包底层就是Map<String, Object>格式，不能修改！
-        claims.put("employeeId", employee.getId());
-        // 需要加个token给他，再返回响应
+
+        // 生成jwt令牌
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
+
         String token = JwtUtil.createJWT(
-                jwtProperties.getEmployeeSecretKey(),
-                jwtProperties.getEmployeeTtl(),
+                jwtProperties.getAdminSecretKey(),
+                jwtProperties.getAdminTtl(),
                 claims);
+
+        // 构建返回对象
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
-                .account(employee.getAccount())
+                .userName(employee.getUsername()) // 【匹配】这里对应 VO 中的 userName 字段
+                .name(employee.getName())
                 .token(token)
                 .build();
+
         return Result.success(employeeLoginVO);
     }
 
-    /**
-     * 员工注册（其实就是新增操作而已，和token什么的无关！）
-     * @return
-     */
-    @PostMapping("/register")
-    public Result register(@RequestBody EmployeeLoginDTO employeeLoginDTO){
-        log.info("用户传过来的注册信息(和登录格式一样的DTO):{}", employeeLoginDTO);
-        employeeService.register(employeeLoginDTO);
+    @PostMapping("/logout")
+    public Result<String> logout() {
         return Result.success();
     }
 
-    /**
-     * 修改当前登录账号的密码
-     * @param employeeFixPwdDTO
-     * @return
-     */
-    @PutMapping("/fixpwd")
-    public Result fixPwd(@RequestBody EmployeeFixPwdDTO employeeFixPwdDTO){
-        log.info("新旧密码信息：{}", employeeFixPwdDTO);
-        employeeService.fixPwd(employeeFixPwdDTO);
+    @PostMapping
+    public Result save(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("新增员工：{}", employeeDTO);
+        employeeService.save(employeeDTO);
         return Result.success();
     }
 
-    /**
-     * 新增员工
-     * @param employeeDTO
-     * @return
-     */
-    @PostMapping("/add")
-    public Result addEmployee(@RequestBody EmployeeDTO employeeDTO){
-        log.info("新增用户的信息：{}", employeeDTO);
-        employeeService.addEmployee(employeeDTO);
-        return Result.success();
-    }
-
-    /**
-     * 根据id获取员工信息
-     * @return
-     */
-    @GetMapping("/{id}")
-    public Result<Employee> getEmployeeById(@PathVariable Integer id){
-        Employee employee = employeeService.getEmployeeById(id);
-        return Result.success(employee);
-    }
-
-    /**
-     * 员工条件分页查询
-     * @param pageDTO
-     * @return
-     */
     @GetMapping("/page")
-    public Result<PageResult> employeePageList(PageDTO pageDTO){
-        log.info("前端传过来的page参数：{}", pageDTO);
-        PageResult pageResult = employeeService.employeePageList(pageDTO);
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
+        log.info("员工分页查询，参数：{}", employeePageQueryDTO);
+        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
 
-    /**
-     * 修改员工信息（管理员能修改所有，员工只能修改自己）
-     * @param employeeDTO
-     * @return
-     */
-    @PutMapping("/update")
-    public Result update(@RequestBody EmployeeDTO employeeDTO){
-        log.info("修改员工的formDTO:{}", employeeDTO);
+    @PostMapping("/status/{status}")
+    public Result startOrStop(@PathVariable Integer status, Integer id) {
+        log.info("启用禁用员工账号：{}, {}", status, id);
+        employeeService.startOrStop(status, id);
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Integer id) {
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("编辑员工信息：{}", employeeDTO);
         employeeService.update(employeeDTO);
-        return Result.success();
-    }
-
-    /**
-     * 根据id启用禁用员工
-     * @param id
-     * @return
-     */
-    @PutMapping("/status/{id}")
-    public Result onOff(@PathVariable Integer id){
-        log.info("启用禁用员工账号：{}", id);
-        employeeService.onOff(id);
-        return Result.success();
-    }
-
-    /**
-     * 管理员根据id删除员工
-     * @param id
-     * @return
-     */
-    @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable Integer id){
-        log.info("根据id删除员工,{}", id);
-        employeeService.delete(id);
         return Result.success();
     }
 }

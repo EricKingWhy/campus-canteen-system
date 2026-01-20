@@ -1,8 +1,8 @@
 package fun.cyhgraph.controller.user;
 
 import fun.cyhgraph.constant.JwtClaimsConstant;
-import fun.cyhgraph.dto.UserDTO;
 import fun.cyhgraph.dto.UserLoginDTO;
+import fun.cyhgraph.dto.UserRegisterDTO;
 import fun.cyhgraph.entity.User;
 import fun.cyhgraph.properties.JwtProperties;
 import fun.cyhgraph.result.Result;
@@ -16,59 +16,80 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@RestController("userClientController")
 @RequestMapping("/user/user")
 @Slf4j
 public class UserController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private JwtProperties jwtProperties;
 
+    /**
+     * 用户登录 (账号密码模式)
+     */
     @PostMapping("/login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
-        log.info("用户传过来的登录信息：{}", userLoginDTO);
-        User user = userService.wxLogin(userLoginDTO);
+    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
+        log.info("用户登录请求：{}", userLoginDTO.getUsername());
 
-        // 上面的没抛异常，正常来到这里，说明登录成功
-        // claims就是用户数据payload部分
-        Map<String, Object> claims = new HashMap<>(); // jsonwebtoken包底层就是Map<String, Object>格式，不能修改！
+        // 1. 调用 Service 验证用户
+        User user = userService.login(userLoginDTO);
+
+        // 2. 生成 JWT Token
+        Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
-        // 需要加个token给他，再返回响应
         String token = JwtUtil.createJWT(
                 jwtProperties.getUserSecretKey(),
                 jwtProperties.getUserTtl(),
                 claims);
+
+        // 3. 构建返回对象
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
                 .openid(user.getOpenid())
                 .token(token)
                 .build();
+
         return Result.success(userLoginVO);
     }
 
     /**
-     * 根据id查询用户
-     * @return
+     * 用户注册
      */
-    @GetMapping("/{id}")
-    public Result<User> getUser(@PathVariable Integer id){
-        log.info("用户id:{}", id);
-        User user = userService.getUser(id);
-        return Result.success(user);
+    @PostMapping("/register")
+    public Result<UserLoginVO> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+        log.info("用户注册请求：{}", userRegisterDTO.getUsername());
+
+        // 1. 调用 Service 注册用户
+        User user = userService.register(userRegisterDTO);
+
+        // 2. 注册成功后自动登录，生成 JWT Token
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
+        String token = JwtUtil.createJWT(
+                jwtProperties.getUserSecretKey(),
+                jwtProperties.getUserTtl(),
+                claims);
+
+        // 3. 构建返回对象
+        UserLoginVO userLoginVO = UserLoginVO.builder()
+                .id(user.getId())
+                .openid(user.getOpenid())
+                .token(token)
+                .build();
+
+        return Result.success(userLoginVO);
     }
 
     /**
-     * 修改用户信息
-     * @param userDTO
-     * @return
+     * 获取用户信息
      */
-    @PutMapping
-    public Result update(@RequestBody UserDTO userDTO){
-        log.info("新的用户信息：{}", userDTO);
-        userService.update(userDTO);
-        return Result.success();
+    @GetMapping("/{id}")
+    public Result<User> getById(@PathVariable Long id) {
+        log.info("获取用户信息: {}", id);
+        User user = userService.getById(id);
+        return Result.success(user);
     }
-
 }

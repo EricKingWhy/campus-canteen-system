@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fun.cyhgraph.mapper.ShoppingCartMapper">
+    <!-- 根据用户ID删除购物车 -->
+    <delete id="deleteByUserId">
+        DELETE FROM cart WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 批量插入购物车 -->
+    <insert id="insertBatch" parameterType="list">
+        INSERT INTO cart (id, name, pic, user_id, dish_id, setmeal_id, dish_flavor, number, amount, create_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.name}, #{item.image}, #{item.userId}, #{item.dishId}, #{item.setmealId}, #{item.dishFlavor}, #{item.number}, #{item.amount}, #{item.createTime})
+        </foreach>
+    </insert>
+</mapper>

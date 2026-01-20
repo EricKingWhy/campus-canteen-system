@@ -1,90 +1,54 @@
 package fun.cyhgraph.controller.admin;
 
 import fun.cyhgraph.dto.CategoryDTO;
-import fun.cyhgraph.dto.CategoryTypePageDTO;
-import fun.cyhgraph.dto.PageDTO;
+import fun.cyhgraph.dto.CategoryPageDTO;
 import fun.cyhgraph.entity.Category;
 import fun.cyhgraph.result.PageResult;
 import fun.cyhgraph.result.Result;
 import fun.cyhgraph.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-@RestController
+@RestController("adminCategoryController")
 @RequestMapping("/admin/category")
 @Slf4j
 public class CategoryController {
-
     @Autowired
     private CategoryService categoryService;
 
-    /**
-     * 新增分类
-     * @return
-     */
     @PostMapping
-    public Result addCategory(@RequestBody CategoryDTO categoryDTO){
-        categoryService.addCategory(categoryDTO);
+    public Result<String> save(@RequestBody CategoryDTO categoryDTO) {
+        log.info("新增分类：{}", categoryDTO);
+        categoryService.save(categoryDTO);
         return Result.success();
     }
 
-    /**
-     * 分类条件分页查询
-     * @param categoryTypePageDTO
-     * @return
-     */
     @GetMapping("/page")
-    public Result<PageResult> getPageList(CategoryTypePageDTO categoryTypePageDTO){
-        log.info("用户传过来的带条件的page分页参数：{}", categoryTypePageDTO);
-        PageResult pageResult = categoryService.getPageList(categoryTypePageDTO);
-        return Result.success(pageResult);
+    public Result<PageResult> page(CategoryPageDTO categoryPageDTO) {
+        log.info("分页查询：{}", categoryPageDTO);
+        return Result.success(categoryService.page(categoryPageDTO));
     }
 
-    /**
-     * 根据id查询指定分类
-     * @param id
-     * @return
-     */
-    @GetMapping("/{id}")
-    public Result<Category> getById(@PathVariable Integer id){
-        log.info("根据id查询分类：{}", id);
-        Category category = categoryService.getById(id);
-        return Result.success(category);
-    }
-
-    /**
-     * 起售/停售
-     * @return
-     */
-    @PutMapping("/status/{id}")
-    public Result onOff(@PathVariable Integer id){
-        categoryService.onOff(id);
+    @DeleteMapping
+    public Result<String> deleteById(Long id) {
+        log.info("删除分类：{}", id);
+        categoryService.deleteById(id);
         return Result.success();
     }
 
-    /**
-     * 更新分类信息
-     * @param categoryDTO
-     * @return
-     */
-    @PutMapping
-    public Result udpate(@RequestBody CategoryDTO categoryDTO){
-        log.info("拿到更新后的信息，{}", categoryDTO);
-        categoryService.udpate(categoryDTO);
+    @PostMapping("/status/{status}")
+    public Result<String> startOrStop(@PathVariable("status") Integer status, Long id) {
+        log.info("修改分类状态：{},{}", status, id);
+        categoryService.startOrStop(status, id);
         return Result.success();
     }
 
-    /**
-     * 根据id修改分类
-     * @param id
-     * @return
-     */
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Integer id){
-        log.info("根据id删除分类：{}", id);
-        categoryService.delete(id);
-        return Result.success();
+    @GetMapping("/list")
+    public Result<List<Category>> list(Integer type) {
+        log.info("根据类型查询分类：{}", type);
+        List<Category> list = categoryService.list(type);
+        return Result.success(list);
     }
 }

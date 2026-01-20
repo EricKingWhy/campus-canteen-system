@@ -21,11 +21,15 @@ const httpInterceptor = {
     }
     // 4. 添加 token 请求头标识
     const userStore = useUserStore()
-    const token = userStore.profile?.token
+    const token = userStore.profile?.token || uni.getStorageSync('token')
     console.log('token', token)
     if (token) {
-      options.header.Authorization = token
+      // 【核心修复】后端配置的 Token 名称是 authentication
+      options.header['authentication'] = token
+      // 兼容性：同时加上 Authorization (可选，以防万一)
+      // options.header.Authorization = token
     }
+    console.log('Request Header:', options.header)
   },
 }
 

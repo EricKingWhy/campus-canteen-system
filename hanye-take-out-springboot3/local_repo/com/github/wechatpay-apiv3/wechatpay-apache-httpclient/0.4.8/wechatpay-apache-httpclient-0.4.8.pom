@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.wechatpay-apiv3</groupId>
+  <artifactId>wechatpay-apache-httpclient</artifactId>
+  <version>0.4.8</version>
+  <name>wechatpay-apache-httpclient</name>
+  <description>An Apache HttpClient decorator for WeChat Pay's API</description>
+  <url>https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>WeChat Pay APIv3 Team</name>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient.git</connection>
+    <developerConnection>scm:git:ssh://github.com/wechatpay-apiv3/wechatpay-apache-httpclient.git</developerConnection>
+    <url>https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
+      <version>4.5.13</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.13.3</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.36</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
