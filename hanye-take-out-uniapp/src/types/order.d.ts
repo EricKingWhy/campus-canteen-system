@@ -10,7 +10,7 @@ export type OrderSubmitVO = Partial<{
 export type Order = Partial<{
   id: number // 订单id
   number: string // 订单号
-  status: number // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+  status: number // 订单状态 1待付款 2待接单 3制作中 4待取餐 5已完成 6已取消
   userId: number // 下单用户id
   addressBookId: number // 地址id
   orderTime: Date // 下单时间
@@ -53,7 +53,7 @@ export type OrderPageDTO = {
   pageSize: number // 每页显示数量
   // number: string // 订单号
   // phone: string // 手机号
-  status?: number // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+  status?: number // 订单状态 1待付款 2待接单 3制作中 4待取餐 5已完成 6已取消
   // beginTime: Date // 开始时间
   // endTime: Date // 结束时间
   // userId: number // 用户id

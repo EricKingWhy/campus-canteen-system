@@ -174,7 +174,7 @@ const goMyself = () => {
 }
 
 const goFavorites = () => {
-   uni.showToast({ title: '收藏功能开发中', icon: 'none' })
+   uni.navigateTo({ url: '/pages/favorite/favorite' })
 }
 
 // 退出登录

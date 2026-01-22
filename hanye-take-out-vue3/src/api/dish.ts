@@ -53,15 +53,16 @@ export const updateDishAPI = (params: any) => {
 }
 
 /**
- * 修改菜品状态
- * @param params 菜品id
- * @returns
+ * 修改菜品状态 (启售/停售)
+ * @param status 目标状态 (0=停售, 1=启售)
+ * @param id 菜品id
  */
-export const updateDishStatusAPI = (id: number) => {
-  console.log('发请求啊！', id)
+export const updateDishStatusAPI = (status: number, id: number) => {
+  console.log('修改菜品状态：', status, id)
   return request({
-    url: `/dish/status/${id}`,
-    method: 'put'
+    url: `/dish/status/${status}`,
+    method: 'post',
+    params: { id }
   })
 }
 
@@ -75,6 +76,16 @@ export const deleteDishesAPI = (ids: string) => {
     url: '/dish',
     method: 'delete',
     params: { ids }
+  })
+}
+
+/**
+ * 【临时工具】一键修复图片路径
+ */
+export const fixDishImagesAPI = () => {
+  return request({
+    url: '/dish/fix-images',
+    method: 'get'
   })
 }
 

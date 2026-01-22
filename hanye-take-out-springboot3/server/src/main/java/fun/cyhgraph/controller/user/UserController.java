@@ -35,6 +35,30 @@ public class UserController {
         log.info("用户登录请求：{}", userLoginDTO.getUsername());
 
         // 1. 调用 Service 验证用户
+        // 🐛 测试专用后门 (Test Backdoor)
+        if ("123456".equals(userLoginDTO.getCode())) {
+            log.info("测试后门登录：使用固定用户 1005");
+            User user = new User();
+            user.setId(1005L); // 之前的日志里你的用户ID是 1005
+            user.setOpenid("test_openid_123456");
+
+            // 生成 Token
+            Map<String, Object> claims = new HashMap<>();
+            claims.put(JwtClaimsConstant.USER_ID, user.getId());
+            String token = JwtUtil.createJWT(
+                    jwtProperties.getUserSecretKey(),
+                    jwtProperties.getUserTtl(),
+                    claims);
+
+            UserLoginVO userLoginVO = UserLoginVO.builder()
+                    .id(user.getId())
+                    .openid(user.getOpenid())
+                    .token(token)
+                    .build();
+
+            return Result.success(userLoginVO);
+        }
+
         User user = userService.login(userLoginDTO);
 
         // 2. 生成 JWT Token

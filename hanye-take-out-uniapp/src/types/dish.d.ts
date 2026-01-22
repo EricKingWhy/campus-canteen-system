@@ -1,10 +1,11 @@
-// 菜品列表
+// 菜品列表 - 字段与后端 Dish 实体对齐
 export type DishItem = {
   id: number
   name: string
-  pic: string
+  image: string  // 【修复】与后端 Dish.image 保持一致
   price: number
-  detail: string
+  detail?: string
+  description?: string  // 后端实际字段
   categoryId: number
   flavors: FlavorItem[]
   calories?: number
@@ -24,11 +25,21 @@ export type FlavorItem = {
 export type DishToCartItem = {
   id: number
   name: string
-  pic: string
+  image: string  // 【修复】与后端 Dish.image 保持一致
   price: number
   detail: string
   categoryId: number
   flavors?: string
+}
+
+// 购物车项
+export type CartItem = {
+  id: number
+  name: string
+  image: string
+  price: number
+  number: number
+  dishFlavor?: string
 }
 
 // 健康看板数据

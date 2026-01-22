@@ -6,6 +6,11 @@
         <text class="close-icon">×</text>
       </view>
 
+      <!-- 【核心功能】收藏按钮 -->
+      <view class="favorite-btn" @click.stop="toggleFavorite" :class="{ loading: favoriteLoading }">
+        <text class="heart-icon" :class="{ active: isFavorite }">{{ isFavorite ? '♥' : '♡' }}</text>
+      </view>
+
       <!-- Image Header -->
       <view class="image-header">
         <image class="dish-image" :src="dish.image || dish.pic" mode="aspectFill"></image>
@@ -101,8 +106,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-
-// defineProps and defineEmits are compiler macros in <script setup> and do not need to be imported
+import { favoriteCheckAPI, favoriteAddAPI, favoriteRemoveAPI } from '@/api/favorite';
 
 const props = defineProps<{
   visible: boolean;
@@ -113,35 +117,73 @@ const emit = defineEmits(['close', 'addToCart']);
 
 const selectedFlavor = ref('');
 
+// 【核心功能】收藏状态
+const isFavorite = ref(false);
+const favoriteLoading = ref(false);
+
+// 检查是否已收藏
+const checkFavorite = async () => {
+  if (!props.dish?.id) return;
+  try {
+    const res = await favoriteCheckAPI(props.dish.id);
+    isFavorite.value = res.data === true;
+  } catch (e) {
+    console.error('检查收藏状态失败', e);
+  }
+};
+
+// 切换收藏状态
+const toggleFavorite = async () => {
+  if (!props.dish?.id || favoriteLoading.value) return;
+  
+  favoriteLoading.value = true;
+  try {
+    if (isFavorite.value) {
+      await favoriteRemoveAPI(props.dish.id);
+      isFavorite.value = false;
+      uni.showToast({ title: '已取消收藏', icon: 'none' });
+    } else {
+      await favoriteAddAPI(props.dish.id);
+      isFavorite.value = true;
+      uni.showToast({ title: '已收藏', icon: 'success' });
+    }
+  } catch (e) {
+    uni.showToast({ title: '操作失败', icon: 'none' });
+  } finally {
+    favoriteLoading.value = false;
+  }
+};
+
+// 弹窗打开时检查收藏状态
+watch(() => props.visible, (newVal) => {
+  if (newVal && props.dish?.id) {
+    checkFavorite();
+  }
+});
+
 // Smart Flavor Logic
 const smartFlavors = computed(() => {
   if (!props.dish || !props.dish.name) return [];
   
   const name = props.dish.name;
   
-  // 1. 面食/粉类 -> 辣度
   if (name.includes('面') || name.includes('粉') || name.includes('辣') || name.includes('麻婆') || name.includes('鸡') || name.includes('肉')) {
-     // 排除甜品关键词
      if (!name.includes('蛋糕') && !name.includes('甜') && !name.includes('奶')) {
         return ['微辣', '中辣', '特辣', '免辣'];
      }
   }
   
-  // 2. 饮品 -> 温度
   if (name.includes('饮') || name.includes('茶') || name.includes('奶') || name.includes('拿铁') || name.includes('美式') || name.includes('可乐')) {
      return ['常规冰', '少冰', '去冰', '常温', '热饮'];
   }
   
-  // 3. 粥 -> 咸甜 (部分粥)
   if (name.includes('粥')) {
       return ['不加葱', '加葱'];
   }
 
-  // 4. 默认无口味 (如蛋糕、米饭套餐等)
   return [];
 });
 
-// Auto-select first flavor when flavors change
 watch(smartFlavors, (newVal) => {
   if (newVal && newVal.length > 0) {
     selectedFlavor.value = newVal[0];
@@ -155,7 +197,6 @@ const close = () => {
 };
 
 const handleAddToCart = () => {
-  // Pass back dish with selected flavor
   const dishToAdd = {
     ...props.dish,
     selectedFlavor: selectedFlavor.value
@@ -218,7 +259,7 @@ $text-gray: #94a3b8; // slate-400
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 20; // Above everything
+  z-index: 20;
   border: 1px solid rgba(255,255,255,0.2);
 }
 
@@ -226,6 +267,40 @@ $text-gray: #94a3b8; // slate-400
   color: #fff;
   font-size: 40rpx;
   line-height: 1;
+}
+
+/* 【核心功能】收藏按钮样式 */
+.favorite-btn {
+  position: absolute;
+  top: 32rpx;
+  left: 32rpx;
+  width: 64rpx;
+  height: 64rpx;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border: 1px solid rgba(255,255,255,0.2);
+  
+  &.loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.heart-icon {
+  color: #fff;
+  font-size: 36rpx;
+  line-height: 1;
+  transition: all 0.2s;
+  
+  &.active {
+    color: #FF4B4B;
+    transform: scale(1.1);
+  }
 }
 
 .image-header {

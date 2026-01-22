@@ -99,7 +99,8 @@
               <text v-else class="rank-num normal">{{ index + 1 }}</text>
            </view>
            
-           <image class="dish-img" :src="dish.pic" mode="aspectFill"/>
+           <!-- 【核心修复】图片路径处理: 以前端传入的 baseUrl 为前缀 (如果不是http开头) -->
+           <image class="dish-img" :src="dish.image && dish.image.startsWith('http') ? dish.image : (baseUrl + dish.image)" mode="aspectFill"/>
            <view class="dish-content">
               <text class="dish-name">{{ dish.name }}</text>
               <text class="dish-desc">{{ dish.detail || '暂无描述' }}</text>

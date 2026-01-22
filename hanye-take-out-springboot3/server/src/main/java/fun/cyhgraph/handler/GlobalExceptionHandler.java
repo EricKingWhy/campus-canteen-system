@@ -12,7 +12,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 /**
  * 全局异常处理器
  */
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "fun.cyhgraph.controller")
 @Slf4j
 public class GlobalExceptionHandler {
 

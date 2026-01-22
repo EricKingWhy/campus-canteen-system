@@ -157,8 +157,13 @@
           <button class="btn-cancel" @click="cancelOrder">取消订单</button>
         </view>
 
-        <view class="section-padding action-section" v-if="order.status === 5 || order.status === 6">
+        <view class="section-padding action-section" v-if="canReorder">
           <button class="btn-reorder" @click="reOrder">再来一单</button>
+        </view>
+
+        <!-- 【核心新增】用户完成取餐按钮 -->
+        <view class="section-padding action-section" v-if="order.status === 4">
+          <button class="btn-complete" @click="completeOrder">我已成功取餐</button>
         </view>
 
         <view style="height: 80rpx;"></view>
@@ -189,9 +194,9 @@ const orderDetailList = ref<any[]>([])
 // Status configurations
 const statusConfig: any = {
   1: { text: '待付款', subtitle: '请尽快完成支付', icon: 'wallet', class: 'status-pending' },
-  2: { text: '待接单', subtitle: '商家正在接单中...', icon: 'loop', class: 'status-active' },
-  3: { text: '制作中', subtitle: '后厨正在火速烹饪', icon: 'fire', class: 'status-active' },
-  4: { text: '待取餐', subtitle: '您的餐品已备好，请尽快取餐', icon: 'flag', class: 'status-ready' },
+  2: { text: '待接单', subtitle: '订单等待商家接单', icon: 'loop', class: 'status-active' },
+  3: { text: '后厨制作中', subtitle: '🔥 后厨制作中，请耐心等待', icon: 'fire', class: 'status-active' },
+  4: { text: '待取餐', subtitle: '🟢 餐品已备好，请前往窗口取餐', icon: 'flag', class: 'status-ready' },
   5: { text: '已完成', subtitle: '感谢您的光临，期待下次再见', icon: 'checkmarkempty', class: 'status-success' },
   6: { text: '已取消', subtitle: '订单已取消', icon: 'closeempty', class: 'status-cancelled' }
 }
@@ -214,6 +219,7 @@ const orderTimeStr = computed(() => {
   return String(order.value.orderTime).replace('T', ' ').substring(0, 16)
 })
 const canCancel = computed(() => order.value.status === 1 || order.value.status === 2)
+const canReorder = computed(() => order.value.status >= 4)
 
 onLoad((options: any) => {
   const sysInfo = uni.getSystemInfoSync()
@@ -324,6 +330,37 @@ const reOrder = () => {
   })
 }
 
+const completeOrder = () => {
+  uni.showModal({
+    title: '确认取餐',
+    content: '您确认已经收到餐品了吗？',
+    success: (res) => {
+      if (res.confirm) {
+        uni.showLoading({ title: '处理中...' })
+        uni.request({
+          url: `${baseUrl}/user/order/complete/${orderId.value}`,
+          method: 'PUT',
+          header: { 'authentication': uni.getStorageSync('token') },
+          success: (res: any) => {
+            uni.hideLoading()
+            if (res.data.code === 1 || res.data.code === 0) {
+              uni.showToast({ title: '取餐成功', icon: 'success' })
+              // 【关键链动】立即刷新订单状态
+              fetchOrderDetail()
+            } else {
+              uni.showToast({ title: res.data.msg || '操作失败', icon: 'none' })
+            }
+          },
+          fail: () => {
+            uni.hideLoading()
+            uni.showToast({ title: '网络错误', icon: 'none' })
+          }
+        })
+      }
+    }
+  })
+}
+
 const goBack = () => uni.navigateBack()
 </script>
 
@@ -362,7 +399,7 @@ $orange: #ea580c;
 .status-success { background: linear-gradient(135deg, #10b981, #34d399); }
 .status-cancelled { background: linear-gradient(135deg, #6b7280, #9ca3af); }
 
-.status-icon-wrap { }
+.status-icon-wrap { margin-right: 8rpx; }
 .status-icon { width: 100rpx; height: 100rpx; border-radius: 50%; background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; }
 .status-info { flex: 1; }
 .status-title { font-size: 40rpx; font-weight: bold; color: #fff; display: block; }
@@ -471,5 +508,11 @@ $orange: #ea580c;
   width: 100%; height: 96rpx; border-radius: 48rpx;
   background: linear-gradient(90deg, $primary, #26c6da);
   color: #fff; font-size: 30rpx; font-weight: bold; border: none;
+}
+.btn-complete {
+  width: 100%; height: 96rpx; border-radius: 48rpx;
+  background: linear-gradient(90deg, #10b981, #34d399); 
+  color: #fff; font-size: 30rpx; font-weight: bold; border: none;
+  box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.4);
 }
 </style>

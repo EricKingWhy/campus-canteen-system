@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +42,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     private UserMapper userMapper;
     @Autowired
     private fun.cyhgraph.mapper.DishMapper dishMapper; // 【新增】用于销量更新
+    @Autowired
+    private fun.cyhgraph.websocket.WebSocketServer webSocketServer; // 【审计修复】WebSocket推送
 
     /**
      * 用户下单
@@ -120,7 +121,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         // 6. 清空购物车
         shoppingCartMapper.delete(wrapper);
 
-        // 7. 返回VO
+        // 7. 【审计修复】WebSocket推送通知管理端
+        try {
+            java.util.Map<String, Object> wsMap = new java.util.HashMap<>();
+            wsMap.put("type", 1); // 1表示来单提醒
+            wsMap.put("orderId", orders.getId());
+            wsMap.put("content", "订单号：" + orders.getNumber());
+            String json = com.alibaba.fastjson.JSON.toJSONString(wsMap);
+            webSocketServer.sendToAllClient(json);
+            log.info("WebSocket推送成功: {}", json);
+        } catch (Exception e) {
+            log.warn("WebSocket推送失败: {}", e.getMessage());
+        }
+
+        // 8. 返回VO
         return OrderSubmitVO.builder()
                 .id(orders.getId())
                 .orderTime(orders.getOrderTime())
@@ -214,14 +228,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         return orderVO;
     }
 
-    // 兼容 Integer 参数
-    public OrderVO details(Integer id) {
-        return details(Long.valueOf(id));
-    }
-
     /**
      * 用户取消订单
      */
+    @Override
     public void userCancelById(Long id) {
         Orders orders = orderMapper.selectById(id);
         if (orders == null) {
@@ -236,15 +246,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         orderMapper.updateById(orders);
     }
 
-    // 兼容 Integer 参数
-    public void userCancelById(Integer id) {
-        userCancelById(Long.valueOf(id));
-    }
-
     /**
      * 再来一单
      */
-    public void repetition(Long id) {
+    @Override
+    public void reOrder(Long id) {
         Long userId = BaseContext.getCurrentId();
         List<OrderDetail> orderDetailList = getOrderDetail(id);
         List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(x -> {
@@ -260,11 +266,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         }
     }
 
-    // 接口实现：再来一单
-    public void reOrder(Integer id) {
-        repetition(Long.valueOf(id));
-    }
-
     /**
      * 条件搜索
      */
@@ -276,6 +277,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         }
         if (orderPageDTO.getStatus() != null) {
             queryWrapper.eq(Orders::getStatus, orderPageDTO.getStatus());
+        }
+        // 【核心修复】增加时间范围查询
+        if (orderPageDTO.getBeginTime() != null) {
+            queryWrapper.ge(Orders::getOrderTime, orderPageDTO.getBeginTime());
+        }
+        if (orderPageDTO.getEndTime() != null) {
+            queryWrapper.le(Orders::getOrderTime, orderPageDTO.getEndTime());
         }
         queryWrapper.orderByDesc(Orders::getOrderTime);
         orderMapper.selectPage(page, queryWrapper);
@@ -344,17 +352,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     @Override
-    public void delivery(Integer id) {
-        updateStatus(Long.valueOf(id), Orders.DELIVERY_IN_PROGRESS);
+    public void delivery(Long id) {
+        // 【核心修复】使用 Long ID 更新状态为 4 (派送中/待取餐)
+        Orders orders = new Orders();
+        orders.setId(id);
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        orders.setDeliveryTime(LocalDateTime.now()); // 【新增】记录出餐时间
+        orderMapper.updateById(orders);
     }
 
     @Override
-    public void complete(Integer id) {
-        updateStatus(Long.valueOf(id), Orders.COMPLETED);
+    public void complete(Long id) {
+        updateStatus(id, Orders.COMPLETED);
     }
 
     @Override
-    public void reminder(Integer id) {
+    public void reminder(Long id) {
         // 催单逻辑
     }
 
@@ -378,6 +391,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     // 处理 repayment
     public void repayment(String orderNumber) {
         // ...
+    }
+
+    /**
+     * 用户完成取餐
+     */
+    public void userComplete(Long id) {
+        // 1. 根据id查询订单
+        Orders orders = orderMapper.selectById(id);
+
+        // 2. 校验存在的订单
+        if (orders == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        // 3. 校验状态 (必须是待取餐/派送中状态 4 才能点击完成)
+        if (!orders.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        // 4. 更新状态为完成
+        orders.setStatus(Orders.COMPLETED);
+        // deliveryTime 为管理员出餐时间，用户完成时间可复用 checkoutTime 或不记，这里保持原用例逻辑即可，或者仅作为状态变更
+        // 之前 userComplete 设置 deliveryTime 是错的，应该是管理员 delivery 时设。但若要兼容，可保留或忽略。
+        // 根据要求：delivery 时这 deliveryTime。这里仅更新 status。
+
+        orderMapper.updateById(orders);
     }
 
 }

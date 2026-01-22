@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class EmployeeDTO implements Serializable {
 
-    private Integer id;
+    private Long id;
     private String name;
     private String account;
     private String password;

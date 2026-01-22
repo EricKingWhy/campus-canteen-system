@@ -2,7 +2,9 @@ package fun.cyhgraph.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import fun.cyhgraph.dto.DishDTO;
+import fun.cyhgraph.dto.DishPageDTO;
 import fun.cyhgraph.entity.Dish;
+import fun.cyhgraph.result.PageResult;
 import java.util.List;
 
 public interface DishService extends IService<Dish> {
@@ -12,6 +14,20 @@ public interface DishService extends IService<Dish> {
 
     List<Dish> getRecommendation(Integer id);
 
-    // 【核心修复】补全 Controller 调用的修改方法
     void updateDishWithFlavor(DishDTO dishDTO);
+
+    // 【核心修复】分页查询
+    PageResult pageQuery(DishPageDTO dishPageDTO);
+
+    // 【核心修复】启停菜品
+    void startOrStop(Integer status, Long id);
+
+    // 【核心修复】批量删除
+    void deleteBatch(List<Long> ids);
+
+    // 【核心修复】根据分类ID查询
+    List<Dish> listByCategoryId(Long categoryId);
+
+    // 【临时工具】修复图片
+    void fixImages();
 }

@@ -7,4 +7,5 @@ import java.io.Serializable;
 public class UserLoginDTO implements Serializable {
     private String username; // 用户名/学号
     private String password; // 密码
+    private String code; // 微信登录 code
 }

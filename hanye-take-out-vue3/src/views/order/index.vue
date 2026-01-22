@@ -64,8 +64,8 @@ const orderList = reactive([
   { label: '全部订单', value: 0, },
   { label: '待付款', value: 1, },
   { label: '待接单', value: 2, },
-  { label: '待派送', value: 3, },
-  { label: '派送中', value: 4, },
+  { label: '制作中', value: 3, },
+  { label: '待取餐', value: 4, },
   { label: '已完成', value: 5, },
   { label: '已取消', value: 6, },
 ])
@@ -73,8 +73,8 @@ const orderList = reactive([
 const changedOrderList = reactive([
   { label: '全部订单', value: 0 },
   { label: '待接单', value: 2, num: orderStatics.value?.toBeConfirmed },
-  { label: '待派送', value: 3, num: orderStatics.value?.confirmed },
-  { label: '派送中', value: 4, num: orderStatics.value?.deliveryInProgress },
+  { label: '制作中', value: 3, num: orderStatics.value?.confirmed },
+  { label: '待取餐', value: 4, num: orderStatics.value?.deliveryInProgress },
   { label: '已完成', value: 5 },
   { label: '已取消', value: 6 },
 ])
@@ -251,7 +251,7 @@ const deliveryOrComplete = async (status: number, id: number) => {
     const res = await (status === 3 ? deliveryOrderAPI : completeOrderAPI)(params)
     if (res.data.code === 0) {
       console.log('操作成功')
-      ElMessage.success(`${status === 3 ? '派送成功' : '订单完成'}`)
+      ElMessage.success(`${status === 3 ? '已通知取餐' : '订单完成'}`)
       orderId.value = 0
       dialogVisible.value = false
       // 刷新页面
@@ -289,9 +289,9 @@ const getOrderType = (row: any) => {
   } else if (row.status === 2) {
     return '待接单'
   } else if (row.status === 3) {
-    return '待派送'
+    return '制作中'
   } else if (row.status === 4) {
-    return '派送中'
+    return '待取餐'
   } else if (row.status === 5) {
     return '已完成'
   } else if (row.status === 6) {
@@ -392,7 +392,7 @@ onMounted(async () => {
                 </el-button>
                 <el-button v-if="scope.row.status === 3" type="primary" link
                   @click="deliveryOrComplete(3, scope.row.id)">
-                  派送
+                  制作完成
                 </el-button>
                 <el-button v-if="scope.row.status === 4" type="primary" link
                   @click="deliveryOrComplete(4, scope.row.id)">
@@ -554,8 +554,7 @@ onMounted(async () => {
               @click="orderAccept(my_row), (isTableOperateBtn = false)">接 单</el-button>
 
             <el-button v-if="[1, 3, 4, 5].includes(dialogOrderStatus)" @click="dialogVisible = false">返 回</el-button>
-            <el-button v-if="dialogOrderStatus === 3" type="primary" @click="deliveryOrComplete(3, my_row!.id)">派
-              送</el-button>
+            <el-button v-if="dialogOrderStatus === 3" type="primary" @click="deliveryOrComplete(3, my_row!.id)">制作完成</el-button>
             <el-button v-if="dialogOrderStatus === 4" type="primary" @click="deliveryOrComplete(4, my_row!.id)">完
               成</el-button>
             <el-button v-if="[1].includes(dialogOrderStatus)" type="primary"

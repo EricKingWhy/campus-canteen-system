@@ -67,6 +67,13 @@
 			}
 		},
 		{
+			"path": "pages/favorite/favorite",
+			"style": {
+				"navigationBarTitleText": "我的收藏",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/addOrEditAddress/addOrEditAddress",
 			"style": {
 				"navigationBarTitleText": "新增/修改地址"

@@ -13,5 +13,5 @@ public class OrdersPageQueryDTO implements Serializable {
     private Integer status;
     private LocalDateTime beginTime;
     private LocalDateTime endTime;
-    private Integer userId; // 用户端查询用
+    private Long userId; // 用户端查询用
 }

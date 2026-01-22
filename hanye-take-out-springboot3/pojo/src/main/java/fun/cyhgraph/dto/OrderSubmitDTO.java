@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class OrderSubmitDTO implements Serializable {
-    private Integer addressBookId;
+    private Long addressBookId;
     private int payMethod;
     private String remark;
     private LocalDateTime estimatedDeliveryTime;

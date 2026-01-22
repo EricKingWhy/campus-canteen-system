@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { reactive, ref } from 'vue'
-import { getDishPageListAPI, updateDishStatusAPI, deleteDishesAPI } from '@/api/dish'
+import { getDishPageListAPI, updateDishStatusAPI, deleteDishesAPI, fixDishImagesAPI } from '@/api/dish'
 import { getCategoryPageListAPI } from '@/api/category'
 import { ElMessage, ElMessageBox, ElTable } from 'element-plus'
 import { useRouter } from 'vue-router'
@@ -109,16 +109,34 @@ const to_add_update = (row?: any) => {
   }
 }
 
-// 修改菜品状态
+// 修改菜品状态 (启售/停售)
 const change_btn = async (row: any) => {
-  console.log('要修改的行数据')
-  console.log(row)
-  await updateDishStatusAPI(row.id)
-  // 修改后刷新页面，更新数据
-  showPageList()
-  ElMessage({
-    type: 'success',
-    message: '修改成功',
+  console.log('要修改的行数据', row)
+  // 计算目标状态：当前启售(1)->停售(0)，当前停售(0)->启售(1)
+  const targetStatus = row.status === 1 ? 0 : 1
+  const actionText = targetStatus === 0 ? '停售' : '启售'
+  
+  ElMessageBox.confirm(
+    `确定要${actionText}【${row.name}】吗？`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(async () => {
+    await updateDishStatusAPI(targetStatus, row.id)
+    // 修改后刷新页面，更新数据
+    showPageList()
+    ElMessage({
+      type: 'success',
+      message: `${actionText}成功`,
+    })
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '已取消',
+    })
   })
 }
 
@@ -177,6 +195,19 @@ const deleteBatch = (row?: any) => {
       })
     })
 }
+
+// 修复图片
+const fixImages = async () => {
+  ElMessageBox.confirm(
+    '确定要将所有菜品图片修复为本地默认图吗？(仅演示用)',
+    '提示',
+    { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+  ).then(async () => {
+    await fixDishImagesAPI()
+    ElMessage.success('图片修复成功')
+    showPageList() // 刷新列表
+  })
+}
 </script>
 
 <template>
@@ -196,15 +227,20 @@ const deleteBatch = (row?: any) => {
           <Plus />
         </el-icon>添加菜品
       </el-button>
+      <!-- 【临时工具】一键修复图片 -->
+      <el-button size="large" class="btn" type="warning" @click="fixImages()">
+        <el-icon style="font-size: 15px; margin-right: 10px;"><Refresh /></el-icon>修复图片
+      </el-button>
     </div>
     <el-table class="table_box" ref="multiTableRef" :data="dishList" stripe @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <!-- <el-table-column prop="id" label="id" /> -->
       <el-table-column prop="name" label="菜名" align="center" />
-      <el-table-column prop="pic" label="图片" align="center">
+      <el-table-column prop="image" label="图片" align="center">
         <template #default="scope">
-          <img v-if="scope.row.pic" :src="scope.row.pic" alt="" />
-          <img v-else src="/src/assets/image/user_default.png" alt="" />
+          <!-- 【核心修复】支持相对路径图片显示 -->
+          <img v-if="scope.row.image" :src="scope.row.image.startsWith('http') ? scope.row.image : 'http://localhost:8081' + scope.row.image" alt="" style="width:50px;height:50px;border-radius:5px;object-fit:cover;" />
+          <img v-else src="/src/assets/image/user_default.png" alt="" style="width:50px;height:50px;border-radius:5px;" />
         </template>
       </el-table-column>
       <el-table-column prop="detail" label="详情" width="200px" align="center" />

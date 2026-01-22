@@ -65,7 +65,7 @@ public class OrderController {
      */
     @PostMapping("/repetition/{id}")
     public Result repetition(@PathVariable Long id) {
-        orderService.reOrder(id.intValue());
+        orderService.reOrder(id);
         return Result.success();
     }
 
@@ -74,7 +74,17 @@ public class OrderController {
      */
     @GetMapping("/reminder/{id}")
     public Result reminder(@PathVariable("id") Long id) {
-        orderService.reminder(id.intValue());
+        orderService.reminder(id);
+        return Result.success();
+    }
+
+    /**
+     * 用户端点击完成取餐
+     */
+    @PutMapping("/complete/{id}")
+    public Result complete(@PathVariable Long id) {
+        log.info("用户点击完成取餐，订单id：{}", id);
+        orderService.userComplete(id);
         return Result.success();
     }
 }

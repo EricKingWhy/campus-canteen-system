@@ -75,24 +75,24 @@ public class OrderController {
     }
 
     /**
-     * 派送订单
-     * 【修复】Integer -> Long
+     * 制作完成 (通知取餐)
+     * 状态: 3(制作中) -> 4(待取餐)
      */
     @PutMapping("/delivery/{id}")
     public Result delivery(@PathVariable("id") Long id) {
-        log.info("管理端派送订单，订单ID: {}", id);
-        orderService.delivery(id.intValue());
+        log.info("管理端制作完成，订单ID: {}", id);
+        orderService.delivery(id);
         return Result.success();
     }
 
     /**
-     * 完成订单
-     * 【修复】Integer -> Long
+     * 完成订单 (用户已取餐)
+     * 状态: 4(待取餐) -> 5(已完成)
      */
     @PutMapping("/complete/{id}")
     public Result complete(@PathVariable("id") Long id) {
         log.info("管理端完成订单，订单ID: {}", id);
-        orderService.complete(id.intValue());
+        orderService.complete(id);
         return Result.success();
     }
 }

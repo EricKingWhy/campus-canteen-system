@@ -91,11 +91,11 @@ const statusList = [
   },
   {
     status: 3,
-    name: '已接单',
+    name: '制作中',
   },
   {
     status: 4,
-    name: '派送中',
+    name: '待取餐',
   },
   {
     status: 5,
