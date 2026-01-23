@@ -22,6 +22,7 @@
             <router-link to="/order?status=2">{{ orderviewData.waitingOrders }}</router-link>
           </span>
         </li>
+        <!-- 【UI隐藏】待派送卡片已隐藏 - 校园食堂无配送员概念
         <li>
           <span class="status">
             <el-icon>
@@ -33,6 +34,7 @@
             <router-link to="/order?status=3">{{ orderviewData.deliveredOrders }}</router-link>
           </span>
         </li>
+        -->
         <li>
           <span class="status">
             <el-icon>

@@ -39,8 +39,13 @@
           <text class="dish-desc">{{ dish.description || '暂无描述' }}</text>
           <view class="dish-bottom">
             <text class="dish-price">¥{{ dish.price }}</text>
-            <view class="remove-btn" @click.stop="removeFavorite(dish.id)">
-              <text>取消收藏</text>
+            <view class="dish-actions">
+              <view class="action-btn cart-btn" @click.stop="handleAddToCart(dish)">
+                <text>再来一单</text>
+              </view>
+              <view class="action-btn remove-btn" @click.stop="removeFavorite(dish.id)">
+                <text>取消收藏</text>
+              </view>
             </view>
           </view>
         </view>
@@ -97,6 +102,25 @@ const removeFavorite = async (dishId: number) => {
       }
     }
   })
+}
+
+// 再来一单 (加入购物车)
+import { addToCartAPI } from '@/api/cart'
+const handleAddToCart = async (dish: any) => {
+  try {
+    await addToCartAPI({
+      dishId: dish.id
+    })
+    uni.showToast({ title: '已加入购物车', icon: 'success' })
+  } catch (e) {
+    console.error(e)
+    // 如果需要选规格，可能报错，或者后端有默认处理。
+    // 稳妥起见，如果失败引导去详情页
+    uni.showToast({ title: '请进入详情选规格', icon: 'none' })
+    setTimeout(() => {
+        goDetail(dish)
+    }, 1000)
+  }
 }
 
 // 跳转详情
@@ -215,11 +239,26 @@ $bg: #F7F8FA;
         color: $primary;
       }
       
-      .remove-btn {
-        padding: 12rpx 24rpx;
-        background: #FFF0E5;
+      .dish-actions {
+        display: flex;
+        gap: 16rpx;
+      }
+      
+      .action-btn {
+        padding: 10rpx 20rpx;
         border-radius: 30rpx;
-        text { font-size: 24rpx; color: $primary; }
+        font-size: 24rpx;
+        
+        &.remove-btn {
+          background: #FFF0E5;
+          color: $primary;
+        }
+        
+        &.cart-btn {
+          background: $primary;
+          color: white;
+          box-shadow: 0 4rpx 10rpx rgba(255, 107, 0, 0.2);
+        }
       }
     }
   }

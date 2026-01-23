@@ -6,9 +6,8 @@ import { http } from '@/utils/http'
  */
 export const favoriteAddAPI = (dishId: number) => {
     return http({
-        url: `/user/favorite/add`,
-        method: 'POST',
-        data: { dishId }
+        url: `/user/favorite/add?dishId=${dishId}`,
+        method: 'POST'
     })
 }
 
@@ -18,9 +17,8 @@ export const favoriteAddAPI = (dishId: number) => {
  */
 export const favoriteRemoveAPI = (dishId: number) => {
     return http({
-        url: `/user/favorite/remove`,
-        method: 'POST',
-        data: { dishId }
+        url: `/user/favorite/remove?dishId=${dishId}`,
+        method: 'POST'
     })
 }
 

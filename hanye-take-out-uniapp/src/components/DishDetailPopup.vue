@@ -154,12 +154,12 @@ const toggleFavorite = async () => {
   }
 };
 
-// 弹窗打开时检查收藏状态
-watch(() => props.visible, (newVal) => {
-  if (newVal && props.dish?.id) {
+// 弹窗打开或菜品变化时检查收藏状态
+watch(() => [props.visible, props.dish], ([newVisible, newDish]) => {
+  if (newVisible && newDish?.id) {
     checkFavorite();
   }
-});
+}, { deep: true });
 
 // Smart Flavor Logic
 const smartFlavors = computed(() => {

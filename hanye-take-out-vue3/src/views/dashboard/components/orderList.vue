@@ -296,7 +296,7 @@ const orderList = [
 
 const tabList = computed(() => [
   { label: '待接单', value: 2, num: orderStatics.value.toBeConfirmed },
-  { label: '待派送', value: 3, num: orderStatics.value.confirmed },
+  // { label: '待派送', value: 3, num: orderStatics.value.confirmed }, // 【UI隐藏】待派送已隐藏
 ]);
 
 // 获取订单数据

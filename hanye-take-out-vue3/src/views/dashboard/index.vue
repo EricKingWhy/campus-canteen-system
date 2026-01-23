@@ -10,8 +10,9 @@
       <!-- 菜品总览 -->
       <CuisineStatistics :dishesData="dishesData" />
       <!-- end -->
-      <!-- 套餐总览 -->
+      <!-- 【UI隐藏】套餐总览 - 校园食堂无套餐功能
       <SetMealStatistics :setMealData="setMealData" />
+      -->
       <!-- end -->
     </div>
     <!-- 订单信息 -->

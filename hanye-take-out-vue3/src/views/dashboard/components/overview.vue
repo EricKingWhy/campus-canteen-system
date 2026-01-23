@@ -29,10 +29,12 @@
           <p class="tit">平均客单价</p>
           <p class="num">¥ {{ overviewData.unitPrice }}</p>
         </li>
+        <!-- 【UI隐藏】新增用户卡片已隐藏 - 校园食堂无此统计需求
         <li>
           <p class="tit">新增用户</p>
           <p class="num">{{ overviewData.newUsers }}</p>
         </li>
+        -->
       </ul>
     </div>
   </div>

@@ -16,6 +16,6 @@ public class Favorite implements Serializable {
     // 【核心修复】统一为 Long
     private Long userId;
     private Long dishId;
-    private Long setmealId;
+    // private Long setmealId; // Database does not have this column
     private LocalDateTime createTime;
 }
