@@ -63,42 +63,50 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         }
 
         /**
-         * 【核心修复】扩展消息转换器 - 温和修复模式
+         * 【核心修复】扩展消息转换器 - 强化版
          * 1. JavaTimeModule: 支持 LocalDateTime 序列化 (修复菜品列表报错)
-         * 2. Long -> String: 防止前端 JS 处理大数字精度丢失 (修复订单ID问题)
+         * 2. Long -> String: 防止前端 JS 处理大数字精度丢失 (修复员工ID/订单ID问题)
          * 
-         * 关键改进：遍历现有转换器修改其ObjectMapper，而不是新增转换器到第0位
-         * 这避免了破坏SpringDoc/Knife4j的ByteArray转换器顺序，解决了API文档返回Base64编码的问题
+         * 策略：优先修改现有转换器，若不存在则添加新转换器
          */
         @Override
         public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-                log.info("扩展消息转换器（温和模式）...");
+                log.info("扩展消息转换器（强化版 - Long转String）...");
 
-                // 1. 定义我们需要的高级 ObjectMapper (支持 Long转String, 支持 LocalDateTime)
+                // 1. 构建增强型 ObjectMapper (支持 Long转String, 支持 LocalDateTime)
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 // 注册时间模块
                 objectMapper.registerModule(new JavaTimeModule());
                 objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-                // 注册 Long -> String 序列化模块 (解决前端精度丢失)
+                // 【关键】注册 Long -> String 序列化模块 (彻底解决JS精度丢失)
                 SimpleModule simpleModule = new SimpleModule();
                 simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
                 simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
                 objectMapper.registerModule(simpleModule);
+                log.info("已注册 Long->String 序列化器，防止JS精度丢失");
 
-                // 2. 关键修改：遍历现有转换器，只修改 Jackson 转换器，不破坏其他转换器(如 ByteArray)的顺序
+                // 2. 遍历并更新所有现有 Jackson 转换器
+                boolean found = false;
                 for (HttpMessageConverter<?> converter : converters) {
                         if (converter instanceof MappingJackson2HttpMessageConverter) {
                                 MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
                                 jacksonConverter.setObjectMapper(objectMapper);
                                 log.info("已更新现有 MappingJackson2HttpMessageConverter 的 ObjectMapper");
-                                // 找到一个就够了，通常只有一个主要的 Jackson 转换器
-                                break;
+                                found = true;
+                                // 继续遍历，可能有多个Jackson转换器需要更新
                         }
                 }
 
-                // 注意：我们不再执行 converters.add(0, converter); 这样就安全了！
+                // 3. 【保底机制】如果没找到任何Jackson转换器，添加一个新的到末尾
+                if (!found) {
+                        log.warn("未找到现有Jackson转换器，创建新转换器...");
+                        MappingJackson2HttpMessageConverter newConverter = new MappingJackson2HttpMessageConverter();
+                        newConverter.setObjectMapper(objectMapper);
+                        converters.add(newConverter);
+                        log.info("已添加新的 MappingJackson2HttpMessageConverter (带Long->String序列化)");
+                }
         }
 
         /**

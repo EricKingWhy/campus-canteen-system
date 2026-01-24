@@ -9,12 +9,12 @@
              <view class="user-box">
                 <image 
                    class="avatar" 
-                   :src="userStore.profile?.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop'" 
+                   :src="profileStore.displayAvatar" 
                    mode="aspectFill"
                 />
                 <view class="text-box">
                    <text class="sub">早安</text>
-                   <text class="name">{{ userName || '王浩宇同学' }}</text>
+                   <text class="name">{{ profileStore.displayName }}</text>
                 </view>
              </view>
              <view class="weather-box">
@@ -42,14 +42,14 @@
              <view class="glass-card">
                 <view class="label">BMI指数</view>
                 <view class="value-row">
-                   <text class="num">21.5</text>
-                   <text class="badge">标准</text>
+                   <text class="num">{{ profileStore.calculatedBMI?.toFixed(1) || '--' }}</text>
+                   <text class="badge">{{ profileStore.bmiCategory || '未知' }}</text>
                 </view>
              </view>
              <view class="glass-card">
                 <view class="label">今日推荐</view>
                 <view class="value-row">
-                   <text class="num">1800</text>
+                   <text class="num">{{ profileStore.suggestIntake?.toFixed(0) || '--' }}</text>
                    <text class="unit">kcal</text>
                 </view>
              </view>
@@ -167,13 +167,14 @@
 import { ref, computed } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/modules/user'
+import { useUserProfileStore } from '@/stores/modules/userProfile'
 import DishDetailPopup from '@/components/DishDetailPopup.vue' // Import Popup
 // Keep API imports for future real data integration, but use mocks primarily now
 import { getDishListAPI } from '@/api/dish'
 import type { DishItem, CartItem } from '@/types/dish'
 
 const userStore = useUserStore()
-const userName = ref('')
+const profileStore = useUserProfileStore()
 const openCartList = ref(false)
 
 // Dish Detail Popup State
@@ -353,15 +354,15 @@ const cartTotalPrice = computed(() => {
 })
 
 onLoad(() => {
-   userName.value = userStore.profile?.name || '王浩宇'
    getRecommendData() // 获取推荐菜品
    getDishData() // 获取热销榜
    getCartList() // 页面加载时获取购物车
 })
 
 onShow(() => {
-   console.log('=== Index_v2 PAGE onShow ===');
-   getCartList(); // 【核心修复】每次显示页面时刷新购物车
+   console.log('=== Index_v2 PAGE onShow ===')
+   profileStore.fetchProfile() // 同步用户画像数据
+   getCartList() // 【核心修复】每次显示页面时刷新购物车
 })
 
 </script>

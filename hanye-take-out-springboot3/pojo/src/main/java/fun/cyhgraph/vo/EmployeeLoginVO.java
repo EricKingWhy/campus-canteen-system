@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class EmployeeLoginVO implements Serializable {
 
-    private Integer id; // 使用 Integer
+    private Long id; // 升级为 Long
 
     private String userName; // 【关键】明确定义为 userName
 

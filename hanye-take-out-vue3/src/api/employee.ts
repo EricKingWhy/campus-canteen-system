@@ -50,7 +50,7 @@ export const fixPwdAPI = (params: any) => {
  */
 export const addEmployeeAPI = (params: any) => {
   return request({
-    url: '/employee/add',
+    url: '/employee',
     method: 'post',
     data: { ...params }
   })
@@ -89,7 +89,7 @@ export const getEmployeeByIdAPI = (id: number) => {
  */
 export const updateEmployeeAPI = (params: any) => {
   return request({
-    url: '/employee/update',
+    url: '/employee',
     method: 'put',
     data: { ...params }
   })
@@ -97,14 +97,14 @@ export const updateEmployeeAPI = (params: any) => {
 
 /**
  * 修改员工状态
- * @param params 员工id
+ * @param params {id: number, status: number}
  * @returns 
  */
-export const updateEmployeeStatusAPI = (id: number) => {
-  console.log('员工id', id)
+export const updateEmployeeStatusAPI = (status: number, id: number) => {
   return request({
-    url: `/employee/status/${id}`,
-    method: 'put'
+    url: `/employee/status/${status}`,
+    method: 'post',
+    params: { id }
   })
 }
 
@@ -115,7 +115,10 @@ export const updateEmployeeStatusAPI = (id: number) => {
  */
 export const deleteEmployeeAPI = (id: number) => {
   return request({
-    url: `/employee/delete/${id}`,
-    method: 'delete'
+    url: `/employee`,  // Query param id or Path variable? Backend usually needs ID. I'll make backend accept param or path. Let's start with query for safety or path. Standard is path. I will use Query param `?id=` to match common pattern or just path.
+    // Wait, backend delete is usually DELETE /{id}. 
+    // Let's create DELETE mapping in backend.
+    method: 'delete',
+    params: { id } // passing as query param for now as it's safer if I define backend as `delete(Long id)`
   })
 }

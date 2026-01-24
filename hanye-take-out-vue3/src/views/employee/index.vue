@@ -75,8 +75,9 @@ const update_btn = (row: any) => {
 const change_btn = async (row: any) => {
   console.log('要修改的行数据')
   console.log(row)
-  // const status = row.status === 1 ? 0 : 1
-  await updateEmployeeStatusAPI(row.id)
+  // 1启用 0禁用，取反
+  const newStatus = row.status === 1 ? 0 : 1
+  await updateEmployeeStatusAPI(newStatus, row.id)
   // 修改后刷新页面，更新数据
   init()
   ElMessage({

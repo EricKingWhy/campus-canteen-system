@@ -1,7 +1,9 @@
 package fun.cyhgraph.controller.user;
 
 import fun.cyhgraph.constant.JwtClaimsConstant;
+import fun.cyhgraph.context.BaseContext;
 import fun.cyhgraph.dto.UserLoginDTO;
+import fun.cyhgraph.dto.UserProfileDTO;
 import fun.cyhgraph.dto.UserRegisterDTO;
 import fun.cyhgraph.entity.User;
 import fun.cyhgraph.properties.JwtProperties;
@@ -9,6 +11,7 @@ import fun.cyhgraph.result.Result;
 import fun.cyhgraph.service.UserService;
 import fun.cyhgraph.utils.JwtUtil;
 import fun.cyhgraph.vo.UserLoginVO;
+import fun.cyhgraph.vo.UserProfileVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,99 +24,134 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+        @Autowired
+        private UserService userService;
 
-    @Autowired
-    private JwtProperties jwtProperties;
+        @Autowired
+        private JwtProperties jwtProperties;
 
-    /**
-     * 用户登录 (账号密码模式)
-     */
-    @PostMapping("/login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        log.info("用户登录请求：{}", userLoginDTO.getUsername());
+        /**
+         * 用户登录 (账号密码模式)
+         */
+        @PostMapping("/login")
+        public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
+                log.info("用户登录请求：{}", userLoginDTO.getUsername());
 
-        // 1. 调用 Service 验证用户
-        // 🐛 测试专用后门 (Test Backdoor)
-        if ("123456".equals(userLoginDTO.getCode())) {
-            log.info("测试后门登录：使用固定用户 1005");
-            User user = new User();
-            user.setId(1005L); // 之前的日志里你的用户ID是 1005
-            user.setOpenid("test_openid_123456");
+                // 🐛 测试专用后门 (Test Backdoor)
+                if ("123456".equals(userLoginDTO.getCode())) {
+                        log.info("测试后门登录：使用固定用户 1005");
+                        User user = new User();
+                        user.setId(1005L);
+                        user.setOpenid("test_openid_123456");
 
-            // 生成 Token
-            Map<String, Object> claims = new HashMap<>();
-            claims.put(JwtClaimsConstant.USER_ID, user.getId());
-            String token = JwtUtil.createJWT(
-                    jwtProperties.getUserSecretKey(),
-                    jwtProperties.getUserTtl(),
-                    claims);
+                        Map<String, Object> claims = new HashMap<>();
+                        claims.put(JwtClaimsConstant.USER_ID, user.getId());
+                        String token = JwtUtil.createJWT(
+                                        jwtProperties.getUserSecretKey(),
+                                        jwtProperties.getUserTtl(),
+                                        claims);
 
-            UserLoginVO userLoginVO = UserLoginVO.builder()
-                    .id(user.getId())
-                    .openid(user.getOpenid())
-                    .token(token)
-                    .build();
+                        UserLoginVO userLoginVO = UserLoginVO.builder()
+                                        .id(user.getId())
+                                        .openid(user.getOpenid())
+                                        .token(token)
+                                        .build();
 
-            return Result.success(userLoginVO);
+                        return Result.success(userLoginVO);
+                }
+
+                User user = userService.login(userLoginDTO);
+
+                Map<String, Object> claims = new HashMap<>();
+                claims.put(JwtClaimsConstant.USER_ID, user.getId());
+                String token = JwtUtil.createJWT(
+                                jwtProperties.getUserSecretKey(),
+                                jwtProperties.getUserTtl(),
+                                claims);
+
+                UserLoginVO userLoginVO = UserLoginVO.builder()
+                                .id(user.getId())
+                                .openid(user.getOpenid())
+                                .token(token)
+                                .build();
+
+                return Result.success(userLoginVO);
         }
 
-        User user = userService.login(userLoginDTO);
+        /**
+         * 用户注册
+         */
+        @PostMapping("/register")
+        public Result<UserLoginVO> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+                log.info("用户注册请求：{}", userRegisterDTO.getUsername());
 
-        // 2. 生成 JWT Token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.USER_ID, user.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getUserSecretKey(),
-                jwtProperties.getUserTtl(),
-                claims);
+                User user = userService.register(userRegisterDTO);
 
-        // 3. 构建返回对象
-        UserLoginVO userLoginVO = UserLoginVO.builder()
-                .id(user.getId())
-                .openid(user.getOpenid())
-                .token(token)
-                .build();
+                Map<String, Object> claims = new HashMap<>();
+                claims.put(JwtClaimsConstant.USER_ID, user.getId());
+                String token = JwtUtil.createJWT(
+                                jwtProperties.getUserSecretKey(),
+                                jwtProperties.getUserTtl(),
+                                claims);
 
-        return Result.success(userLoginVO);
-    }
+                UserLoginVO userLoginVO = UserLoginVO.builder()
+                                .id(user.getId())
+                                .openid(user.getOpenid())
+                                .token(token)
+                                .build();
 
-    /**
-     * 用户注册
-     */
-    @PostMapping("/register")
-    public Result<UserLoginVO> register(@RequestBody UserRegisterDTO userRegisterDTO) {
-        log.info("用户注册请求：{}", userRegisterDTO.getUsername());
+                return Result.success(userLoginVO);
+        }
 
-        // 1. 调用 Service 注册用户
-        User user = userService.register(userRegisterDTO);
+        /**
+         * 获取用户信息 (by ID)
+         */
+        @GetMapping("/{id}")
+        public Result<User> getById(@PathVariable Long id) {
+                log.info("获取用户信息: {}", id);
+                User user = userService.getById(id);
+                return Result.success(user);
+        }
 
-        // 2. 注册成功后自动登录，生成 JWT Token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.USER_ID, user.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getUserSecretKey(),
-                jwtProperties.getUserTtl(),
-                claims);
+        // ====================== 用户画像接口 ======================
 
-        // 3. 构建返回对象
-        UserLoginVO userLoginVO = UserLoginVO.builder()
-                .id(user.getId())
-                .openid(user.getOpenid())
-                .token(token)
-                .build();
+        /**
+         * 获取当前登录用户画像
+         * - 从 JWT/BaseContext 获取 userId，不接受前端传入（防越权）
+         */
+        @GetMapping("/profile")
+        public Result<UserProfileVO> getProfile() {
+                Long userId = BaseContext.getCurrentId();
+                log.info("获取用户画像: userId={}", userId);
 
-        return Result.success(userLoginVO);
-    }
+                if (userId == null) {
+                        return Result.error("用户未登录");
+                }
 
-    /**
-     * 获取用户信息
-     */
-    @GetMapping("/{id}")
-    public Result<User> getById(@PathVariable Long id) {
-        log.info("获取用户信息: {}", id);
-        User user = userService.getById(id);
-        return Result.success(user);
-    }
+                UserProfileVO profile = userService.getUserProfile(userId);
+                return Result.success(profile);
+        }
+
+        /**
+         * 更新当前登录用户画像
+         * - 支持部分更新：只更新 DTO 中非 null 的字段
+         * - 后端二次计算 BMI/BMR/TDEE 并落库
+         */
+        @PutMapping("/profile")
+        public Result<UserProfileVO> updateProfile(@RequestBody UserProfileDTO dto) {
+                Long userId = BaseContext.getCurrentId();
+                log.info("更新用户画像: userId={}, dto={}", userId, dto);
+
+                if (userId == null) {
+                        return Result.error("用户未登录");
+                }
+
+                try {
+                        UserProfileVO profile = userService.updateProfile(userId, dto);
+                        return Result.success(profile);
+                } catch (RuntimeException e) {
+                        log.error("更新用户画像失败: {}", e.getMessage());
+                        return Result.error(e.getMessage());
+                }
+        }
 }

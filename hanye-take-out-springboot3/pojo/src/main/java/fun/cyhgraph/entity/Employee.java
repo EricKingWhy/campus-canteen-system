@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 public class Employee implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // 【核心】ID 统一为 Integer
-    private Integer id;
+    // 【核心】ID 升级为 Long，防止 Snowflake ID 溢出
+    private Long id;
 
     private String username;
     private String name;

@@ -11,7 +11,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeDTO implements Serializable {
-
     private Long id;
     private String name;
     private String account;

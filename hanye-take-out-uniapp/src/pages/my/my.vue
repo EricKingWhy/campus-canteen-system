@@ -6,21 +6,21 @@
         <!-- Avatar -->
         <image 
           class="avatar" 
-          :src="user.pic || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop'" 
+          :src="profileStore.displayAvatar" 
           mode="aspectFill"
         />
         <!-- Text Info -->
         <view class="text-info">
            <view class="name-row">
-             <text class="name">{{ user.name || '王浩宇' }}</text>
-             <image v-if="user.gender === 0" class="gender-icon" src="../../static/icon/girl.png" />
+             <text class="name">{{ profileStore.displayName }}</text>
+             <image v-if="profileStore.profile.gender === 2" class="gender-icon" src="../../static/icon/girl.png" />
              <image v-else class="gender-icon" src="../../static/icon/boy.png" />
            </view>
-           <text class="body-stats">175cm / 68kg</text>
+           <text class="body-stats">{{ profileStore.bodyStats }}</text>
         </view>
         <!-- BMI Tag -->
         <view class="bmi-tag">
-           <text>BMI 21.5 正常</text>
+           <text>BMI {{ profileStore.calculatedBMI || '--' }} {{ profileStore.bmiCategory }}</text>
         </view>
       </view>
     </view>
@@ -120,14 +120,16 @@
 <script lang="ts" setup>
 import pushMsg from '../../components/message/pushMsg.vue'
 import {ref, reactive} from 'vue'
-import {onLoad, onReachBottom} from '@dcloudio/uni-app'
+import {onLoad, onReachBottom, onShow} from '@dcloudio/uni-app'
 import {useUserStore} from '@/stores/modules/user'
+import {useUserProfileStore} from '@/stores/modules/userProfile'
 import {getUserInfoAPI} from '@/api/user'
 import {getOrderPageAPI, reOrderAPI, urgeOrderAPI} from '@/api/order'
 import {cleanCartAPI} from '@/api/cart'
 import type {OrderPageDTO, OrderVO} from '@/types/order'
 
 const userStore = useUserStore()
+const profileStore = useUserProfileStore()
 const childComp: any = ref(null)
 
 const user = reactive({
@@ -136,6 +138,11 @@ const user = reactive({
   gender: 1,
   phone: '未设置',
   pic: '',
+})
+
+// 页面显示时刷新用户画像 (实时同步)
+onShow(async () => {
+  await profileStore.fetchProfile()
 })
 
 // Original Logic Preserved
@@ -170,7 +177,7 @@ const goHistory = () => {
 }
 
 const goMyself = () => {
-  uni.navigateTo({ url: '/pages/updateMy/updateMy' })
+  uni.navigateTo({ url: '/pages/info-setting/info-setting' })
 }
 
 const goFavorites = () => {

@@ -40,6 +40,10 @@
           <text class="input-icon">🔒</text>
           <input class="uni-input" type="password" v-model="registerForm.password" placeholder="设置密码" placeholder-class="placeholder-style"/>
         </view>
+        <view class="input-item">
+          <text class="input-icon">😊</text>
+          <input class="uni-input" type="text" v-model="registerForm.nickname" placeholder="昵称 (如: 大大怪)" placeholder-class="placeholder-style"/>
+        </view>
          <view class="input-item">
           <text class="input-icon">📧</text>
           <input class="uni-input" type="text" v-model="registerForm.email" placeholder="电子邮箱 (选填)" placeholder-class="placeholder-style"/>
@@ -63,7 +67,7 @@ export default {
       isLoginMode: true,
       isLoading: false,
       loginForm: { username: '', password: '' },
-      registerForm: { username: '', password: '', email: '' },
+      registerForm: { username: '', password: '', nickname: '', email: '' },
       baseUrl: 'http://localhost:8081'
     };
   },

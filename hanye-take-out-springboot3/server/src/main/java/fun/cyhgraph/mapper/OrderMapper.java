@@ -3,7 +3,9 @@ package fun.cyhgraph.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import fun.cyhgraph.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,4 +20,15 @@ public interface OrderMapper extends BaseMapper<Orders> {
 
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
+
+    /**
+     * 按用户ID、时间范围和支付状态汇总订单金额
+     * 用于餐费分析
+     */
+    @Select("SELECT COALESCE(SUM(amount), 0) FROM orders WHERE user_id = #{userId} AND order_time >= #{startTime} AND order_time <= #{endTime} AND pay_status = #{payStatus}")
+    BigDecimal sumAmountByUserIdAndTimeRange(
+            @Param("userId") Long userId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime,
+            @Param("payStatus") Integer payStatus);
 }

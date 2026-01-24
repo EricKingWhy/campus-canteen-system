@@ -67,10 +67,12 @@ export const http = <T>(options: UniApp.RequestOptions) => {
           reject(res)
         } else {
           // 通用错误, 调用reject, 轻量提示框
+          const errorMsg = (res.data as Data<T>).msg || '请求失败'
           uni.showToast({
-            title: (res.data as Data<T>).msg || '请求失败',
+            title: errorMsg,
             icon: 'none',
           })
+          reject(new Error(errorMsg)) // 必须 reject 否则 Promise 悬挂
         }
       },
       // 响应失败

@@ -15,11 +15,13 @@ public interface EmployeeService extends IService<Employee> {
 
     PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
-    // 【核心】改为 Integer
-    void startOrStop(Integer status, Integer id);
+    // 【核心】升级为 Long
+    void startOrStop(Integer status, Long id);
 
-    // 【核心】改为 Integer
-    Employee getById(Integer id);
+    // 【核心】升级为 Long
+    Employee getById(Long id);
 
     void update(EmployeeDTO employeeDTO);
+
+    void deleteById(Long id);
 }

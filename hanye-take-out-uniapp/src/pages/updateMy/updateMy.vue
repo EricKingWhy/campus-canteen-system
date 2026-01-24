@@ -35,8 +35,11 @@ import {getUserInfoAPI, updateUserAPI} from '@/api/user'
 
 const userStore = useUserStore()
 
+// 防御性编程：profile 可能为 null
+const userId = userStore.profile?.id || 0
+
 const user = reactive({
-  id: userStore.profile!.id,
+  id: userId,
   name: '',
   gender: 1,
   phone: '未设置',
@@ -55,17 +58,32 @@ const items = [
 
 onLoad(async () => {
   console.log('userStore', userStore.profile)
+  // 防御性检查：如果没有用户ID，提示并返回
+  if (!user.id) {
+    uni.showToast({
+      title: '请先登录',
+      icon: 'none'
+    })
+    setTimeout(() => {
+      uni.navigateBack()
+    }, 1500)
+    return
+  }
   await getUserInfo(user.id)
 })
 
 const getUserInfo = async (id: number) => {
-  const res = await getUserInfoAPI(id)
-  console.log('用户信息', res)
-  user.name = res.data.name as string
-  user.gender = res.data.gender ?? 1 // 之前没设置就默认男士
-  user.phone = res.data.phone as string
-  user.pic = res.data.pic as string
-  console.log('user', user)
+  try {
+    const res = await getUserInfoAPI(id)
+    console.log('用户信息', res)
+    user.name = res.data?.name as string || ''
+    user.gender = res.data?.gender ?? 1
+    user.phone = res.data?.phone as string || '未设置'
+    user.pic = res.data?.pic as string || ''
+    console.log('user', user)
+  } catch (e) {
+    console.error('获取用户信息失败:', e)
+  }
 }
 
 const picChange = () => {
