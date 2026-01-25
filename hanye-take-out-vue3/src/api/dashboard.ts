@@ -1,16 +1,16 @@
 import request from '@/utils/request' // 引入自定义的axios函数
 
 // 订单管理
-export const getOrderDataAPI = () =>{
+export const getOrderDataAPI = () => {
   return request({
-    url: `/workspace/overviewOrders`,
+    url: `/admin/workspace/overviewOrders`,
     method: 'get'
   })
 }
 // 菜品总览
 export const getOverviewDishesAPI = () => {
   return request({
-    url: `/workspace/overviewDishes`,
+    url: `/admin/workspace/overviewDishes`,
     method: 'get'
   })
 }
@@ -18,7 +18,7 @@ export const getOverviewDishesAPI = () => {
 // 套餐总览
 export const getSetMealStatisticsAPI = () => {
   return request({
-    url: `/workspace/overviewSetmeals`,
+    url: `/admin/workspace/overviewSetmeals`,
     method: 'get'
   })
 }
@@ -26,7 +26,7 @@ export const getSetMealStatisticsAPI = () => {
 // 营业数据
 export const getBusinessDataAPI = () => {
   return request({
-    url: `/workspace/businessData`,
+    url: `/admin/workspace/businessData`,
     method: 'get'
   })
 }

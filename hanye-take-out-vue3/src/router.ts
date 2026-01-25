@@ -73,6 +73,11 @@ const router = createRouter({
           path: 'employee/update',
           name: 'employee_update',
           component: () => import('./views/employee/update.vue')
+        },
+        {
+          path: 'user-management',
+          name: 'user_management',
+          component: () => import('./views/user-management/index.vue')
         }
       ]
     },

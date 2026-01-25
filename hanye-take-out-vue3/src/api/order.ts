@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询列表页接口
 export const getOrderDetailPageAPI = (params: any) => {
   return request({
-    url: '/order/conditionSearch',
+    url: '/admin/order/conditionSearch',
     method: 'get',
     params
   })
@@ -36,7 +36,7 @@ export const completeOrderAPI = (params: any) => {
 // 订单取消
 export const orderCancelAPI = (params: any) => {
   return request({
-    url: '/order/cancel',
+    url: '/admin/order/cancel',
     method: 'put',
     data: { ...params }
   })
@@ -46,7 +46,7 @@ export const orderCancelAPI = (params: any) => {
 export const orderAcceptAPI = (params: any) => {
   console.log('接单params', params)
   return request({
-    url: '/order/confirm',
+    url: '/admin/order/confirm',
     method: 'put',
     data: { ...params }
   })
@@ -55,7 +55,7 @@ export const orderAcceptAPI = (params: any) => {
 // 拒单
 export const orderRejectAPI = (params: any) => {
   return request({
-    url: '/order/rejection',  // 【修复】与后端端点一致
+    url: '/admin/order/rejection',  // 【修复】与后端端点一致
     method: 'put',
     data: { ...params }
   })
@@ -64,7 +64,7 @@ export const orderRejectAPI = (params: any) => {
 // 获取待处理，待派送，派送中数量
 export const getOrderListByAPI = () => {
   return request({
-    url: '/order/statistics',
+    url: '/admin/order/statistics',
     method: 'get'
   })
 }

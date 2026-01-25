@@ -7,7 +7,7 @@ import request from '@/utils/request' // 引入自定义的axios函数
  */
 export const addSetmealAPI = (params: any) => {
   return request({
-    url: '/setmeal',
+    url: '/admin/setmeal',
     method: 'post',
     data: { ...params }
   })
@@ -46,7 +46,7 @@ export const getSetmealByIdAPI = (id: number) => {
  */
 export const updateSetmealAPI = (params: any) => {
   return request({
-    url: '/setmeal',
+    url: '/admin/setmeal',
     method: 'put',
     data: { ...params }
   })
@@ -72,7 +72,7 @@ export const updateSetmealStatusAPI = (id: number) => {
  */
 export const deleteSetmealsAPI = (ids: string) => {
   return request({
-    url: '/setmeal',
+    url: '/admin/setmeal',
     method: 'delete',
     params: { ids }
   })

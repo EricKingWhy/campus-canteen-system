@@ -7,7 +7,7 @@ import request from '@/utils/request' // 引入自定义的axios函数
  */
 export const getStatusAPI = () => {
   return request({
-    url: '/shop/status',
+    url: '/admin/shop/status',
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export const getStatusAPI = () => {
 export const fixStatusAPI = (status: number) => {
   console.log(status)
   return request({
-    url: `/shop/${status}`,
+    url: `/admin/shop/${status}`,
     method: 'put'
   })
 }

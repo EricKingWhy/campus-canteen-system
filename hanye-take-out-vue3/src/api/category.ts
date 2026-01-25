@@ -7,7 +7,7 @@ import request from '@/utils/request' // 引入自定义的axios函数
  */
 export const addCategoryAPI = (params: any) => {
   return request({
-    url: '/category',
+    url: '/admin/category',
     method: 'post',
     data: { ...params }
   })
@@ -46,7 +46,7 @@ export const getCategoryByIdAPI = (id: number) => {
  */
 export const updateCategoryAPI = (params: any) => {
   return request({
-    url: '/category',
+    url: '/admin/category',
     method: 'put',
     data: { ...params }
   })

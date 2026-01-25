@@ -19,13 +19,13 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        // 前缀替换成代理地址： 5173 -> 8080 后端tomcat服务器端口号
+        // 前缀替换成代理地址： 5173 -> 8081 后端tomcat服务器端口号
         target: 'http://localhost:8081',
         ws: false,
         secure: false,
         changeOrigin: true,
-        // /api去掉，变成空串，因为它只是一个标识而已，并不是路径
-        rewrite: (path) => path.replace(/^\/api/, '/admin')
+        // 去掉 /api 前缀，保留后面的路径
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   }

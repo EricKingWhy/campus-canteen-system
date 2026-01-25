@@ -50,6 +50,11 @@ const menuList = [
     path: '/employee',
     icon: 'setting',
   },
+  {
+    title: '用户管理',
+    path: '/user-management',
+    icon: 'user',
+  },
 ]
 
 const form = reactive({

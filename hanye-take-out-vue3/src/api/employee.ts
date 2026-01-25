@@ -7,7 +7,7 @@ import request from '@/utils/request' // 引入自定义的axios函数
  */
 export const loginAPI = (params: any) => {
   return request({
-    url: '/employee/login',
+    url: '/admin/employee/login',
     method: 'post',
     data: { ...params }
   })

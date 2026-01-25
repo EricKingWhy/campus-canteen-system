@@ -32,6 +32,7 @@ public class User implements Serializable {
     private String idNumber;
     private String pic; // 头像(前端叫 avatar，复用此字段)
     private LocalDateTime createTime;
+    private Integer status; // 状态: 1启用 0禁用
 
     // ===== 健康画像 =====
     private String sex; // 原性别字段(字符串)

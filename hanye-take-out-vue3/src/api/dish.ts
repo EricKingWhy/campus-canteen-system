@@ -7,7 +7,7 @@ import request from '@/utils/request' // 引入自定义的axios函数
  */
 export const addDishAPI = (params: any) => {
   return request({
-    url: '/dish',
+    url: '/admin/dish',
     method: 'post',
     data: { ...params }
   })
@@ -46,7 +46,7 @@ export const getDishByIdAPI = (id: number) => {
  */
 export const updateDishAPI = (params: any) => {
   return request({
-    url: '/dish',
+    url: '/admin/dish',
     method: 'put',
     data: { ...params }
   })
@@ -73,7 +73,7 @@ export const updateDishStatusAPI = (status: number, id: number) => {
  */
 export const deleteDishesAPI = (ids: string) => {
   return request({
-    url: '/dish',
+    url: '/admin/dish',
     method: 'delete',
     params: { ids }
   })
