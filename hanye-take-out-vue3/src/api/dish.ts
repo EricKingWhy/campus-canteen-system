@@ -21,7 +21,7 @@ export const addDishAPI = (params: any) => {
 export const getDishPageListAPI = (params: any) => {
   console.log('dish-params', params)
   return request({
-    url: '/dish/page',
+    url: '/admin/dish/page',
     method: 'get',
     params
   })
@@ -34,7 +34,7 @@ export const getDishPageListAPI = (params: any) => {
  */
 export const getDishByIdAPI = (id: number) => {
   return request({
-    url: `/dish/${id}`,
+    url: `/admin/dish/${id}`,
     method: 'get'
   })
 }
@@ -60,7 +60,7 @@ export const updateDishAPI = (params: any) => {
 export const updateDishStatusAPI = (status: number, id: number) => {
   console.log('修改菜品状态：', status, id)
   return request({
-    url: `/dish/status/${status}`,
+    url: `/admin/dish/status/${status}`,
     method: 'post',
     params: { id }
   })

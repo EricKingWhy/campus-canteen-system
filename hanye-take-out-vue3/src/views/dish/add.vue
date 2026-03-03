@@ -263,15 +263,18 @@ const init = async () => {
     form.id = route.query.id ? parseInt(route.query.id as string) : 0
     let dish = await getDishByIdAPI(form.id)
     console.log(dish)
-    Object.assign(form, dish.data.data)
+    // 【修复】dish.data.data 可能为 null，需防御性编程
+    const dbDish = dish.data.data || {}
+    Object.assign(form, dbDish)
     console.log(form)
     // 3. 如果是修改页面，需要将口味数组中的list字符串反序列化
-    form.dishFlavors =
-      dish.data.data.flavors &&
-      dish.data.data.flavors.map((obj: any) => ({
+    // 【修复】flavors 可能为 null/undefined，做非空判断 + 默认空数组兜底
+    const flavorData = dbDish.flavors || []
+    form.dishFlavors = flavorData.map((obj: any) => ({
         ...obj,
-        list: JSON.parse(obj.list)
-      }))
+        list: obj.list ? JSON.parse(obj.list) : [] // 也要防止 obj.list 为空
+    }))
+
     // 4. 初始化左侧未选中的口味数组
     getLeftDishFlavors()
   } else {

@@ -8,7 +8,11 @@
           <!-- Assuming iconfont exists or using text -->
           <text style="font-size: 32rpx; color:#9fa6b2;">🔍</text>
         </view>
-        <input class="search-input" placeholder="搜索想吃的菜品 (如：低脂鸡胸肉)" placeholder-style="color:#9ca3af" />
+        <input class="search-input" 
+               v-model="searchKeyword" 
+               @confirm="handleSearch" 
+               placeholder="搜索想吃的菜品 (如：低脂鸡胸肉)" 
+               placeholder-style="color:#9ca3af" />
       </view>
     </view>
 
@@ -33,8 +37,11 @@
       <scroll-view class="content" scroll-y>
         <view class="content-wrapper">
           <!-- Category Title -->
-          <view class="category-title-sticky" v-if="currentCategory">
+          <view class="category-title-sticky" v-if="currentCategory && activeCategoryIndex !== -1">
             <text class="title-text">🔥 {{ currentCategory.name }}</text>
+          </view>
+          <view class="category-title-sticky" v-else-if="activeCategoryIndex === -1 && searchKeyword">
+            <text class="title-text">🔍 搜索结果: "{{ searchKeyword }}"</text>
           </view>
 
           <!-- Dish List -->
@@ -170,6 +177,7 @@ export default {
       dishList: [],
       cartList: [],
       activeCategoryIndex: 0,
+      searchKeyword: '', // 【核心新增】搜索关键词绑定
       cartPopupShow: false,
       showNutritionPopup: false,
       currentDish: {} // Will hold full dish data including nutrition and sold
@@ -247,7 +255,7 @@ export default {
                 // 如果是完整路径则不动
                 // 用户素材提示：item.image (图片)
                 // 如果后端返回的是完整url则直接用，否则拼接
-                // 通常苍穹外卖存的是文件名，但也可能是完整oss路径
+                // 通常系统存的是文件名，但也可能是完整oss路径
                 // 若不含http，则拼接
                 item.image = item.image.startsWith('/') ? (this.baseUrl + item.image) : item.image; 
                 // 防止单纯文件名
@@ -266,8 +274,51 @@ export default {
     // 3. 点击分类
     onCategoryClick(index) {
       this.activeCategoryIndex = index;
+      this.searchKeyword = ''; // 切换分类时清空搜索框
       const catId = this.categoryList[index].id;
       this.getDishList(catId);
+    },
+
+    // 【核心新增】全局搜索处理
+    handleSearch() {
+      const keyword = this.searchKeyword.trim();
+      if (!keyword) {
+        // 清空搜索框后回车，恢复到当前分类或者默认第一个分类
+        if (this.categoryList.length > 0) {
+           this.activeCategoryIndex = this.activeCategoryIndex === -1 ? 0 : this.activeCategoryIndex;
+           this.getDishList(this.categoryList[this.activeCategoryIndex].id);
+        }
+        return;
+      }
+      
+      console.log('Searching for:', keyword);
+      // 取消左侧所有分类高亮
+      this.activeCategoryIndex = -1;
+      
+      // 发送全局搜索请求 (不传 categoryId，传 name)
+      uni.request({
+        url: this.baseUrl + '/user/dish/list',
+        method: 'GET',
+        data: { name: keyword, status: 1 }, 
+        header: { 'authentication': uni.getStorageSync('token') },
+        success: (res) => {
+          if (res.data.code === 0 || res.data.code === 1) { 
+            const rawList = res.data.data || [];
+            // 修复图片路径 (与 getDishList 保持一致)
+            this.dishList = rawList.map(item => {
+               if (item.image && !item.image.startsWith('http')) {
+                  item.image = item.image.startsWith('/') ? (this.baseUrl + item.image) : item.image; 
+               }
+               return item;
+            });
+          } else {
+             console.error('Search API Failed:', res.data.msg);
+          }
+        },
+        fail: (err) => {
+           console.error('Search Request Network Error:', err);
+        }
+      });
     },
 
     // 4. 购物车列表

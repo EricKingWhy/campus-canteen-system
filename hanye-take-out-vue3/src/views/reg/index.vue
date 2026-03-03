@@ -76,195 +76,276 @@ const registerFn = async () => {
 </script>
 
 <template>
-  <!-- 注册页面的整体盒子 -->
-  <div class="background">
-    <!-- 下雨效果 -->
-    <div class="rain">
-      <span style="--i:64;"></span>
-      <span style="--i:33;"></span>
-      <span style="--i:21;"></span>
-      <span style="--i:95;"></span>
-      <span style="--i:42;"></span>
-      <span style="--i:17;"></span>
-      <span style="--i:88;"></span>
-      <span style="--i:50;"></span>
-      <span style="--i:10;"></span>
-      <span style="--i:77;"></span>
-      <span style="--i:3;"></span>
-      <span style="--i:29;"></span>
-      <span style="--i:72;"></span>
-      <span style="--i:5;"></span>
-      <span style="--i:90;"></span>
-      <span style="--i:49;"></span>
-      <span style="--i:14;"></span>
-      <span style="--i:61;"></span>
-      <span style="--i:38;"></span>
-      <span style="--i:81;"></span>
-      <span style="--i:64;"></span>
-      <span style="--i:33;"></span>
-      <span style="--i:21;"></span>
-      <span style="--i:95;"></span>
-      <span style="--i:42;"></span>
-      <span style="--i:17;"></span>
-      <span style="--i:88;"></span>
-      <span style="--i:50;"></span>
-      <span style="--i:10;"></span>
-      <span style="--i:77;"></span>
-      <span style="--i:3;"></span>
-      <span style="--i:29;"></span>
-      <span style="--i:72;"></span>
-      <span style="--i:5;"></span>
-      <span style="--i:90;"></span>
-      <span style="--i:49;"></span>
-      <span style="--i:14;"></span>
-      <span style="--i:61;"></span>
-      <span style="--i:38;"></span>
-      <span style="--i:81;"></span>
-      <span style="--i:21;"></span>
-      <span style="--i:95;"></span>
-      <span style="--i:42;"></span>
-      <span style="--i:17;"></span>
-      <span style="--i:88;"></span>
-      <span style="--i:50;"></span>
-      <span style="--i:10;"></span>
-      <span style="--i:77;"></span>
-      <span style="--i:3;"></span>
-      <span style="--i:29;"></span>
-      <span style="--i:14;"></span>
-      <span style="--i:61;"></span>
+  <div class="reg-container">
+    <!-- 左侧品牌视觉区 -->
+    <div class="left-panel">
+      <!-- 装饰光圈 -->
+      <div class="deco-circle deco-circle-1"></div>
+      <div class="deco-circle deco-circle-2"></div>
+
+      <!-- 左上角品牌标志 -->
+      <div class="brand-badge">
+        <span class="badge-icon">🍽️</span>
+        <span class="badge-text">智能食堂推荐系统</span>
+      </div>
+
+      <div class="brand-content">
+        <div class="illustration-ring">
+          <span class="illustration-emoji">🍔</span>
+        </div>
+        <h1 class="brand-title">高效管理，智能推荐</h1>
+        <p class="brand-subtitle">加入我们，为校园师生打造更智能、更健康的美食新生态。</p>
+      </div>
     </div>
-    <!-- 注册的盒子 -->
-    <div class="reg-box">
-      <!-- 标题“后台管理系统(图片)”的盒子 -->
-      <div class="title-box">注 册</div>
-      <!-- 注册的表单区域 -->
-      <!-- el-form 自带校验能力，所以直接自定义规则就行(不用什么自定义监听之类的) -->
-      <el-form :model="form" label-width="0px" :rules="rules" ref="registerRef">
-        <el-form-item prop="account">
-          <el-input placeholder="请输入用户名" v-model="form.account"></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input type="password" placeholder="请输入密码" v-model="form.password"></el-input>
-        </el-form-item>
-        <el-form-item prop="repassword">
-          <el-input type="password" placeholder="请再次确认密码" v-model="form.repassword"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" class="btn-reg" @click="registerFn">注册</el-button>
-          <el-link class="router" type="info" @click="router.push('/login')">去登录</el-link>
-        </el-form-item>
-      </el-form>
+
+    <!-- 右侧注册表单区 -->
+    <div class="right-panel">
+      <div class="form-wrapper">
+        <h2 class="form-title">注册管理员账号</h2>
+        <p class="form-desc">请填写以下信息以创建您的管理后台账户</p>
+
+        <el-form
+          :model="form"
+          :rules="rules"
+          ref="registerRef"
+          label-position="top"
+          class="reg-form"
+          @submit.prevent
+        >
+          <el-form-item label="账号" prop="account">
+            <el-input
+              v-model="form.account"
+              placeholder="请输入用户名"
+              :prefix-icon="'User'"
+              size="large"
+            />
+          </el-form-item>
+
+          <el-form-item label="密码" prop="password">
+            <el-input
+              v-model="form.password"
+              type="password"
+              placeholder="请输入您的密码"
+              show-password
+              :prefix-icon="'Lock'"
+              size="large"
+            />
+          </el-form-item>
+
+          <el-form-item label="确认密码" prop="repassword">
+            <el-input
+              v-model="form.repassword"
+              type="password"
+              placeholder="请再次输入您的密码"
+              show-password
+              :prefix-icon="'CircleCheck'"
+              size="large"
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <el-button
+              type="primary"
+              class="reg-btn"
+              size="large"
+              @click="registerFn"
+            >
+              注 册
+            </el-button>
+          </el-form-item>
+        </el-form>
+
+        <div class="form-footer">
+          已有账号？
+          <span class="link-text" @click="router.push('/login')">去登录</span>
+        </div>
+
+        <div class="copyright">
+          © 2026 智能食堂推荐系统 by 王浩宇 | 版权所有
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
+.reg-container {
   display: flex;
-  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+/* ========== 左侧品牌区 ========== */
+.left-panel {
+  width: 50%;
+  background: linear-gradient(135deg, rgba(255,140,0,0.12) 0%, rgba(255,140,0,0.05) 100%);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
   overflow: hidden;
 }
 
-.background {
-  width: 100%;
-  height: 100vh;
-  background-size: cover;
-  background-image: url('../../assets/image/reg.jpg');
-  overflow: hidden; // 防止页面滚动条闪动
-}
-
-.background::before {
-  content: "";
+.deco-circle {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  /* 黑色半透明 */
-  z-index: 1;
-  /* 确保伪元素在背景图之上 */
-}
-
-.rain {
-  position: relative;
-  display: flex;
-}
-
-.rain span {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  background-color: #eee;
-  margin: 0 4px;
   border-radius: 50%;
-  box-shadow: 0 0 10px 5px rgba(238, 238, 238, 0.5),
-    /* 微调颜色和透明度 */
-    0 0 30px 15px rgba(238, 238, 238, 0.3),
-    /* 模糊半径和扩散范围 */
-    0 0 50px 30px rgba(221, 221, 221, 0.2);
-  animation: animate 15s linear infinite;
-  animation-duration: calc(200s / var(--i));
+  background: rgba(255,140,0,0.08);
+  filter: blur(60px);
+}
+.deco-circle-1 {
+  width: 300px;
+  height: 300px;
+  top: -80px;
+  right: -80px;
+}
+.deco-circle-2 {
+  width: 260px;
+  height: 260px;
+  bottom: -60px;
+  left: -60px;
 }
 
-.rain span:nth-child(even) {
-  background: #ff8800;
-  /* 橙色调 */
-  box-shadow: 0 0 10px 5px rgba(255, 150, 50, 0.5),
-    /* 颜色和透明度 */
-    0 0 30px 15px rgba(200, 100, 50, 0.3),
-    0 0 50px 30px rgba(200, 50, 50, 0.1);
-}
-
-
-@keyframes animate {
-  0% {
-    transform: translateY(100vh) scale(0);
-  }
-
-  100% {
-    transform: translateY(-10vh) scale(1);
-  }
-}
-
-.reg-box {
-  z-index: 10;
-  width: 400px;
-  height: 340px;
+.brand-badge {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  padding: 0 30px;
-  box-sizing: border-box;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  box-shadow: #dddddd 0 0 100px;
-
-  .title-box {
-    height: 60px;
-    line-height: 60px;
+  top: 32px;
+  left: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 3;
+  .badge-icon {
     font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    color: #00aaff;
-    margin-bottom: 20px;
   }
-
-  .btn-reg {
-    width: 100%; // 可以让其占满一行，不用考虑怎么变成块级然后独占一行之类的...
+  .badge-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a2e;
   }
+}
 
-  .router {
-    text-align: left;
+.brand-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 400px;
+  padding: 0 24px;
+}
+.illustration-ring {
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 32px;
+  border-radius: 50%;
+  background: rgba(255,140,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.illustration-emoji {
+  font-size: 100px;
+}
+.brand-title {
+  font-size: 30px;
+  font-weight: 900;
+  color: #1a1a2e;
+  margin: 0 0 12px;
+}
+.brand-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ========== 右侧表单区 ========== */
+.right-panel {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 40px;
+  box-sizing: border-box;
+}
+.form-wrapper {
+  width: 100%;
+  max-width: 400px;
+}
+.form-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px;
+}
+.form-desc {
+  font-size: 14px;
+  color: #9ca3af;
+  margin: 0 0 32px;
+}
+
+.reg-form {
+  .reg-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    background-color: #ff8c00;
+    border-color: #ff8c00;
+    letter-spacing: 6px;
+    &:hover, &:focus {
+      background-color: #e67e00;
+      border-color: #e67e00;
+    }
   }
+}
 
-  .el-link {
-    margin-top: 20px;
+// 覆盖 Element Plus 输入框样式贴合暖色调
+:deep(.el-input__wrapper) {
+  border-radius: 10px;
+  padding: 4px 12px;
+  box-shadow: 0 0 0 1px #e5e7eb inset;
+  transition: box-shadow 0.25s;
+  &.is-focus {
+    box-shadow: 0 0 0 1px #ff8c00 inset !important;
+  }
+}
+:deep(.el-form-item__label) {
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 14px;
+  color: #9ca3af;
+}
+.link-text {
+  color: #ff8c00;
+  font-weight: 700;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.copyright {
+  text-align: center;
+  margin-top: 36px;
+  font-size: 12px;
+  color: #d1d5db;
+}
+
+/* ========== 响应式：小屏隐藏左侧 ========== */
+@media (max-width: 900px) {
+  .left-panel {
+    display: none;
+  }
+  .right-panel {
+    width: 100%;
   }
 }
 </style>

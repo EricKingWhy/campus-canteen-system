@@ -28,6 +28,9 @@ public class DishVO implements Serializable {
     private Double fat;
     private Double carbohydrates;
 
+    // 食材/过敏原标签
+    private String allergenTags;
+
     // 销量
     private Integer sold;
 }

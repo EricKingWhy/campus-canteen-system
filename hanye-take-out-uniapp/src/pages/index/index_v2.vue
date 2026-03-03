@@ -57,10 +57,10 @@
        </view>
     </view>
 
-    <!-- 2. Smart Recommendation (Horizontal Scroll) -->
+    <!-- 2. 智选6道菜 (Horizontal Scroll) -->
     <view class="section">
       <view class="section-header">
-        <text class="title">智能推荐</text>
+        <text class="title">智选6道菜 🎯</text>
         <text class="subtitle">根据您的健康画像定制</text>
       </view>
       <scroll-view class="recommend-scroll" scroll-x show-scrollbar="false">
@@ -190,8 +190,11 @@ const openDishDetail = (dish: any) => {
    showDishDetail.value = true
 }
 
-// 智能推荐数据 - 从后端获取
+// 智选6道菜 - 从后端 4层漏斗引擎获取
 const recommendList = ref<any[]>([])
+// 今日营养数据(用于组装 DTO)
+const todayCalories = ref(0)
+const todayProtein = ref(0)
 
 // Bestsellers (Standard Dish List)
 const dishList = ref<DishItem[]>([])
@@ -199,25 +202,107 @@ const dishList = ref<DishItem[]>([])
 const cartList = ref<any[]>([])
 const baseUrl = 'http://localhost:8081' // 后端地址
 
-// 【修复】获取推荐菜品 - 从后端 API 获取真实数据
+// 【核心】获取今日营养数据(为智选6道菜提供参数)
+const fetchTodayNutrition = () => {
+   return new Promise<void>((resolve) => {
+      uni.request({
+         url: baseUrl + '/analysis/health/summary',
+         method: 'GET',
+         header: { 'authentication': uni.getStorageSync('token') },
+         success: (res: any) => {
+            const data = res.data?.data
+            if (data) {
+               todayCalories.value = data.todayIntakeKcal || 0
+               if (data.macros) {
+                  todayProtein.value = data.macros.proteinG || 0
+               }
+            }
+            resolve()
+         },
+         fail: () => resolve()
+      })
+   })
+}
+
+// 【核心重写】智选6道菜 - POST /user/dish/smartPick6
 const getRecommendData = () => {
-   console.log('Fetching recommend dishes...');
+   console.log('===== 智选6道菜引擎调用 =====');
+
+   // 1. 组装 DTO
+   const p = profileStore.profile
+   const tdee = profileStore.calculatedTDEE
+   const hasProfile = !!(p.gender && p.age && p.height && p.weight && tdee)
+
+   const dto = {
+      hasProfile: hasProfile,
+      tdee: tdee || 2200,
+      todayCalories: todayCalories.value,
+      todayProtein: todayProtein.value,
+      healthGoal: p.healthGoal || 3,
+      avoidTags: Array.isArray(p.avoidTags) ? p.avoidTags.join(',') : (p.avoidTags || '')
+   }
+
+   console.log('智选6道菜 DTO:', dto);
+
+   // 2. 调用漏斗引擎
    uni.request({
-      url: baseUrl + '/user/dish/list',
-      method: 'GET',
-      data: { status: 1 }, // 只获取起售状态的菜品
-      header: { 'authentication': uni.getStorageSync('token') },
+      url: baseUrl + '/user/dish/smartPick6',
+      method: 'POST',
+      data: dto,
+      header: {
+         'authentication': uni.getStorageSync('token'),
+         'Content-Type': 'application/json'
+      },
       success: (res: any) => {
-         console.log('Recommend dishes response:', res.data);
+         console.log('智选6道菜响应:', res.data);
          if (res.data.code === 0 || res.data.code === 1) {
-            // 取前3个作为推荐
             const dishes = res.data.data || [];
-            recommendList.value = dishes.slice(0, 3).map((dish: any) => ({
+            recommendList.value = dishes.map((dish: any) => ({
                id: dish.id,
                name: dish.name,
                price: dish.price,
-               calories: dish.calories || 300, // 默认卡路里
-               tags: ['推荐', dish.calories ? '低卡' : '美味'],
+               calories: dish.calories || 0,
+               tags: buildSmartTags(dish, dto),
+               image: dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
+            }));
+            console.log('智选6道菜渲染:', recommendList.value.length, '道');
+         }
+      },
+      fail: (err) => {
+         console.error('智选6道菜请求失败，降级到普通列表:', err);
+         // 降级：调普通 dish/list
+         fallbackRecommend();
+      }
+   });
+}
+
+// 智能标签生成
+const buildSmartTags = (dish: any, dto: any): string[] => {
+   const tags: string[] = []
+   if (dish.calories && dish.calories < 400) tags.push('低卡')
+   if (dish.protein && dish.protein > 20) tags.push('高蛋白')
+   if (dto.healthGoal === 1 && dish.fat && dish.fat < 10) tags.push('减脂友好')
+   if (dto.healthGoal === 2 && dish.protein && dish.protein > 25) tags.push('增肌之选')
+   if (tags.length === 0) tags.push('推荐')
+   return tags
+}
+
+// 降级推荐(智选接口失败时)
+const fallbackRecommend = () => {
+   uni.request({
+      url: baseUrl + '/user/dish/list',
+      method: 'GET',
+      data: { status: 1 },
+      header: { 'authentication': uni.getStorageSync('token') },
+      success: (res: any) => {
+         if (res.data.code === 0 || res.data.code === 1) {
+            const dishes = res.data.data || [];
+            recommendList.value = dishes.slice(0, 6).map((dish: any) => ({
+               id: dish.id,
+               name: dish.name,
+               price: dish.price,
+               calories: dish.calories || 0,
+               tags: ['推荐'],
                image: dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
             }));
          }
@@ -353,16 +438,20 @@ const cartTotalPrice = computed(() => {
    return cartList.value.reduce((sum, item) => sum + ((item.amount || item.price) * (item.number || 0)), 0).toFixed(1)
 })
 
-onLoad(() => {
-   getRecommendData() // 获取推荐菜品
-   getDishData() // 获取热销榜
-   getCartList() // 页面加载时获取购物车
+onLoad(async () => {
+   await profileStore.fetchProfile()    // 先加载画像(TDEE依赖)
+   await fetchTodayNutrition()          // 再获取今日营养
+   getRecommendData()                   // 然后调智选6道菜
+   getDishData()                        // 获取热销榜
+   getCartList()                        // 页面加载时获取购物车
 })
 
-onShow(() => {
+onShow(async () => {
    console.log('=== Index_v2 PAGE onShow ===')
-   profileStore.fetchProfile() // 同步用户画像数据
-   getCartList() // 【核心修复】每次显示页面时刷新购物车
+   await profileStore.fetchProfile()    // 同步用户画像数据
+   await fetchTodayNutrition()          // 刷新营养数据
+   getRecommendData()                   // 刷新智选推荐
+   getCartList()                        // 刷新购物车
 })
 
 </script>

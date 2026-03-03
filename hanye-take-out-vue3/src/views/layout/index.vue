@@ -323,7 +323,8 @@ onBeforeUnmount(() => {
     </el-dialog>
     <el-container>
       <el-header>
-        <img src="../../assets/image/hanye_logo.png" class="logo" />
+        <!-- <img src="../../assets/image/hanye_logo.png" class="logo" /> -->
+        <span class="logo-text">智能食堂管理端</span>
         <el-icon class="icon1" v-if="isCollapse">
           <Expand @click.stop="isCollapse = !isCollapse" />
         </el-icon>
@@ -373,7 +374,7 @@ onBeforeUnmount(() => {
           <el-main>
             <router-view></router-view>
           </el-main>
-          <el-footer>© 2024.5.21 hanye-take-out Tech and Fun. All rights reserved.</el-footer>
+          <el-footer>© 2026 智能食堂推荐系统 by 王浩宇. All rights reserved.</el-footer>
         </el-container>
       </el-container>
     </el-container>
@@ -396,6 +397,16 @@ onBeforeUnmount(() => {
     margin: 10px 20px;
     width: 180px;
     height: 40px;
+  }
+
+  .logo-text {
+    display: inline-block;
+    margin: 0 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 2px;
+    vertical-align: middle;
   }
 
   .icon1 {

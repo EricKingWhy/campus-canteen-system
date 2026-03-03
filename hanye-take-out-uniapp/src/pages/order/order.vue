@@ -1,6 +1,19 @@
 <template>
   <Navbar />
   <view class="viewport">
+    
+    <!-- 【核心新增】搜索栏 -->
+    <view class="search">
+      <view class="input">
+        <text class="icon-search iconfont"></text>
+        <input style="flex: 1;" 
+               placeholder="想吃什么？搜索看看" 
+               v-model="searchKeyword" 
+               @confirm="handleSearch"
+               placeholder-class="input-placeholder-class" />
+      </view>
+    </view>
+
     <!-- 分类 -->
     <view class="categories">
       <!-- 左侧：分类列表 -->
@@ -176,6 +189,8 @@ const dishList = ref<(DishItem | SetmealItem)[]>([])
 const setmealList = ref<SetmealItem[]>([])
 // 是否打开底部购物车列表
 const openCartList = ref(false)
+// 搜索关键词
+const searchKeyword = ref('')
 // 购物车列表
 const cartList = ref<CartItem[]>([])
 const CartAllNumber = ref(0)
@@ -198,6 +213,7 @@ const getCategoryData = async () => {
 
 const getDishOrSetmealList = async (index: number) => {
   activeIndex.value = index
+  searchKeyword.value = '' // 切换分类时清空搜索框
   console.log('index', index)
   console.log('getList by this category', categoryList.value[index])
   let res
@@ -208,6 +224,48 @@ const getDishOrSetmealList = async (index: number) => {
   }
   console.log(res)
   dishList.value = res.data
+}
+
+// 【核心新增】全局搜索处理
+const handleSearch = async () => {
+  const keyword = searchKeyword.value.trim();
+  if (!keyword) {
+    if (categoryList.value.length > 0) {
+       activeIndex.value = activeIndex.value === -1 ? 0 : activeIndex.value;
+       getDishOrSetmealList(activeIndex.value);
+    }
+    return;
+  }
+  
+  console.log('Searching for:', keyword);
+  
+  // 发起请求前，强制剥离分类ID！
+  const queryParams = {
+      status: 1,
+      name: searchKeyword.value // 确保这里取到了输入的 "面"
+  };
+  
+  // 绝对不允许把当前选中的 categoryId 塞进去
+  uni.request({
+    url: 'http://localhost:8081/user/dish/list',
+    method: 'GET',
+    data: queryParams, 
+    header: { 'authentication': uni.getStorageSync('token') },
+    success: (res: any) => {
+      if (res.data.code === 0 || res.data.code === 1) { 
+        const rawList = res.data.data || [];
+        // 强制覆盖列表并置空分类高亮状态
+        dishList.value = rawList.map((dish: any) => ({
+           ...dish,
+           pic: dish.image, // 适配模板使用的是 dish.pic
+           detail: dish.description || '暂无描述'
+        }));
+        activeIndex.value = -1; // 取消左侧分类栏的高亮
+      } else {
+         uni.showToast({ title: '搜索失败', icon: 'none' });
+      }
+    }
+  });
 }
 
 // 查询获取购物车列表

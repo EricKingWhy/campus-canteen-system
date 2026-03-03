@@ -24,7 +24,7 @@ public class ServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
         // 【成功标记】看到这行字，请直接去买彩票！
-        log.info(">>>>>> 苍穹外卖 Server 最终启动成功！(v7.0 IDdl适配版) <<<<<<");
+        log.info(">>>>>> 智能食堂推荐系统 Server 启动成功! (制作者：王浩宇) <<<<<<");
     }
 
     /**

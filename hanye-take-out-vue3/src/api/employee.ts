@@ -22,7 +22,7 @@ export const registerAPI = (params: any) => {
   console.log(params)
   console.log({ ...params })
   return request({
-    url: '/employee/register',
+    url: '/admin/employee/register',
     method: 'post',
     data: { ...params }
   })
@@ -37,7 +37,7 @@ export const fixPwdAPI = (params: any) => {
   console.log(params)
   console.log({ ...params })
   return request({
-    url: '/employee/fixpwd',
+    url: '/admin/employee/fixpwd',
     method: 'put',
     data: { ...params }
   })
@@ -50,7 +50,7 @@ export const fixPwdAPI = (params: any) => {
  */
 export const addEmployeeAPI = (params: any) => {
   return request({
-    url: '/employee',
+    url: '/admin/employee',
     method: 'post',
     data: { ...params }
   })
@@ -64,7 +64,7 @@ export const addEmployeeAPI = (params: any) => {
 export const getEmployeePageListAPI = (params: any) => {
   console.log(params)
   return request({
-    url: '/employee/page',
+    url: '/admin/employee/page',
     method: 'get',
     params
   })

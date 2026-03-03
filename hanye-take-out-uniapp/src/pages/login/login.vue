@@ -1,8 +1,8 @@
 <template>
   <view class="login-container">
     <view class="login-header">
-      <image class="logo-img" src="/static/logo.png" mode="aspectFill"></image>
-      <text class="app-title">苍穹智慧食堂</text>
+      <!-- <image class="logo-img" src="/static/logo.png" mode="aspectFill"></image> -->
+      <text class="app-title">智能食堂</text>
     </view>
 
     <view class="login-card">
@@ -55,7 +55,7 @@
     </view>
     
     <view class="footer-tips">
-        By 苍穹外卖技术组
+        © 2026 智能食堂推荐系统 by 王浩宇
     </view>
   </view>
 </template>

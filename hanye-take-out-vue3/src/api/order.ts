@@ -12,7 +12,7 @@ export const getOrderDetailPageAPI = (params: any) => {
 // 查看接口
 export const queryOrderDetailByIdAPI = (params: any) => {
   return request({
-    url: `/order/details/${params.orderId}`,
+    url: `/admin/order/details/${params.orderId}`,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export const queryOrderDetailByIdAPI = (params: any) => {
 // 派送接口
 export const deliveryOrderAPI = (params: any) => {
   return request({
-    url: `/order/delivery/${params.id}`,
+    url: `/admin/order/delivery/${params.id}`,
     method: 'put'
   })
 }
@@ -28,7 +28,7 @@ export const deliveryOrderAPI = (params: any) => {
 // 完成接口
 export const completeOrderAPI = (params: any) => {
   return request({
-    url: `/order/complete/${params.id}`,
+    url: `/admin/order/complete/${params.id}`,
     method: 'put'
   })
 }

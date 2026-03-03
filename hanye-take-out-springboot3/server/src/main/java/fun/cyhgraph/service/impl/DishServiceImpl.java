@@ -5,25 +5,35 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.cyhgraph.dto.DishDTO;
 import fun.cyhgraph.dto.DishPageDTO;
+import fun.cyhgraph.dto.SmartRecommendDTO;
+import fun.cyhgraph.entity.Category;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.entity.DishFlavor;
+import fun.cyhgraph.mapper.CategoryMapper;
 import fun.cyhgraph.mapper.DishFlavorMapper;
 import fun.cyhgraph.mapper.DishMapper;
 import fun.cyhgraph.result.PageResult;
 import fun.cyhgraph.service.DishService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DishService {
 
     @Autowired
     private DishMapper dishMapper;
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Transactional
     public void addDishWithFlavor(DishDTO dishDTO) {
@@ -142,6 +152,178 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         // 3. 红烧肉
         updateImageByName("红烧肉", "/static/dish/braised_pork.jpg");
         updateImageByName("东坡肉", "/static/dish/braised_pork.jpg");
+    }
+
+    // ============================================================
+    // 【智选6道菜】4层漏斗推荐引擎
+    // ============================================================
+    @Override
+    public List<Dish> getSmartPick6(SmartRecommendDTO dto) {
+        log.info("===== 智选6道菜漏斗引擎启动 =====");
+        log.info("入参: hasProfile={}, tdee={}, todayCalories={}, todayProtein={}, healthGoal={}, avoidTags={}",
+                dto.getHasProfile(), dto.getTdee(), dto.getTodayCalories(),
+                dto.getTodayProtein(), dto.getHealthGoal(), dto.getAvoidTags());
+
+        // ────── 第1层：冷启动兜底 ──────
+        if (dto.getHasProfile() == null || !dto.getHasProfile()) {
+            log.info("[漏斗L1] 无画像 -> 冷启动: 按销量Top6");
+            LambdaQueryWrapper<Dish> cold = new LambdaQueryWrapper<>();
+            cold.eq(Dish::getStatus, 1);
+            cold.orderByDesc(Dish::getSold);
+            cold.last("LIMIT 6");
+            return dishMapper.selectList(cold);
+        }
+
+        // ────── 第2层：时间与场景过滤 ──────
+        LocalTime now = LocalTime.now();
+        List<Long> sceneCategoryIds = getSceneCategoryIds(now);
+        log.info("[漏斗L2] 当前时间={}, 场景分类IDs={}", now, sceneCategoryIds);
+
+        // ────── 第3层：健康与忌口红线 ──────
+        double gap = safeDouble(dto.getTdee()) - safeDouble(dto.getTodayCalories());
+        log.info("[漏斗L3] 热量缺口={}kcal", gap);
+
+        // ────── 第4层：动态排序策略 ──────
+        // 先尝试完整过滤
+        List<Dish> result = executeQuery(sceneCategoryIds, dto, gap, true, true);
+        log.info("[漏斗结果] 完整过滤命中{}条", result.size());
+
+        // ────── 安全容错：逐层放宽 ──────
+        if (result.size() < 6) {
+            log.info("[容错] 结果不足6条，放宽健康红线重试");
+            result = executeQuery(sceneCategoryIds, dto, gap, false, true);
+            log.info("[容错] 放宽红线后命中{}条", result.size());
+        }
+        if (result.size() < 6) {
+            log.info("[容错] 仍不足6条，取消时间场景过滤");
+            result = executeQuery(null, dto, gap, false, false);
+            log.info("[容错] 全量查询命中{}条", result.size());
+        }
+
+        return result;
+    }
+
+    /**
+     * 执行漏斗查询
+     * 
+     * @param categoryIds        场景分类ID列表(null=不限)
+     * @param dto                前端传参
+     * @param gap                热量缺口
+     * @param applyHealthRedline 是否应用健康红线(卡路里/脂肪限制)
+     * @param applyTimeFilter    是否应用时间场景过滤
+     */
+    private List<Dish> executeQuery(List<Long> categoryIds, SmartRecommendDTO dto,
+            double gap, boolean applyHealthRedline, boolean applyTimeFilter) {
+        LambdaQueryWrapper<Dish> w = new LambdaQueryWrapper<>();
+        w.eq(Dish::getStatus, 1); // 基础条件：必须起售
+
+        // L2: 时间场景
+        if (applyTimeFilter && categoryIds != null && !categoryIds.isEmpty()) {
+            w.in(Dish::getCategoryId, categoryIds);
+        }
+
+        // L3: 健康红线
+        if (applyHealthRedline) {
+            // 热量红线：菜品热量 ≤ 剩余缺口（仅当缺口>0且合理时）
+            if (gap > 0 && gap < 5000) {
+                w.isNotNull(Dish::getCalories);
+                w.le(Dish::getCalories, gap);
+            }
+            // 减脂红线：限制高脂菜品
+            if (dto.getHealthGoal() != null && dto.getHealthGoal() == 1) {
+                w.and(wrapper -> wrapper
+                        .isNull(Dish::getFat) // 没有脂肪数据的也保留
+                        .or()
+                        .lt(Dish::getFat, 15.0)); // 脂肪<15g
+            }
+        }
+
+        // L3: 忌口红线（始终应用，这是安全底线）
+        if (dto.getAvoidTags() != null && !dto.getAvoidTags().trim().isEmpty()) {
+            String[] tags = dto.getAvoidTags().split(",");
+            for (String tag : tags) {
+                String trimmed = tag.trim();
+                if (!trimmed.isEmpty()) {
+                    w.and(wrapper -> wrapper
+                            .isNull(Dish::getAllergenTags)
+                            .or()
+                            .notLike(Dish::getAllergenTags, trimmed));
+                }
+            }
+        }
+
+        // L4: 动态排序
+        double todayProtein = safeDouble(dto.getTodayProtein());
+        Integer healthGoal = dto.getHealthGoal();
+
+        if (todayProtein < 60.0) {
+            // 缺蛋白质 -> 高蛋白优先
+            log.info("[漏斗L4] 蛋白质不足({}g<60g) -> 按蛋白质降序", todayProtein);
+            w.orderByDesc(Dish::getProtein);
+        } else if (healthGoal != null && healthGoal == 1 && gap < 300) {
+            // 减脂且余量小 -> 低卡优先
+            log.info("[漏斗L4] 减脂+余量小(gap={}kcal) -> 按热量升序", gap);
+            w.orderByAsc(Dish::getCalories);
+        } else {
+            // 均衡状态 -> 按销量
+            log.info("[漏斗L4] 均衡状态 -> 按销量降序");
+            w.orderByDesc(Dish::getSold);
+        }
+
+        w.last("LIMIT 6");
+        return dishMapper.selectList(w);
+    }
+
+    /**
+     * 根据时间段动态查找场景分类ID
+     * 通过 category 表 name 模糊匹配，不硬编码ID
+     */
+    private List<Long> getSceneCategoryIds(LocalTime now) {
+        List<String> keywords = new ArrayList<>();
+
+        if (now.isAfter(LocalTime.of(6, 0)) && now.isBefore(LocalTime.of(10, 0))) {
+            // 早餐时段
+            keywords.add("早餐");
+        } else if (now.isAfter(LocalTime.of(10, 0)) && now.isBefore(LocalTime.of(16, 30))) {
+            // 午餐时段
+            keywords.add("午餐");
+            keywords.add("饮品");
+            keywords.add("小吃");
+        } else if (now.isAfter(LocalTime.of(16, 30)) && now.isBefore(LocalTime.of(21, 0))) {
+            // 晚餐时段
+            keywords.add("晚餐");
+            keywords.add("饮品");
+            keywords.add("小吃");
+            keywords.add("轻食");
+        } else {
+            // 其他时段(深夜/凌晨) -> 不限制分类
+            return Collections.emptyList();
+        }
+
+        // 动态查询分类ID
+        LambdaQueryWrapper<Category> cw = new LambdaQueryWrapper<>();
+        cw.eq(Category::getStatus, 1); // 只查启用的分类
+        cw.and(wrapper -> {
+            for (int i = 0; i < keywords.size(); i++) {
+                if (i == 0) {
+                    wrapper.like(Category::getName, keywords.get(i));
+                } else {
+                    wrapper.or().like(Category::getName, keywords.get(i));
+                }
+            }
+        });
+
+        List<Category> categories = categoryMapper.selectList(cw);
+        List<Long> ids = categories.stream().map(Category::getId).collect(Collectors.toList());
+        log.info("[分类匹配] 关键词={}, 匹配到分类={}", keywords,
+                categories.stream().map(c -> c.getName() + "(#" + c.getId() + ")").collect(Collectors.joining(", ")));
+
+        return ids;
+    }
+
+    /** null 安全的 double 提取 */
+    private double safeDouble(Double val) {
+        return val != null ? val : 0.0;
     }
 
     private void updateImageByName(String name, String image) {

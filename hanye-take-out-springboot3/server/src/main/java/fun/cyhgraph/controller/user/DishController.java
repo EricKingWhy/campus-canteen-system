@@ -2,6 +2,7 @@ package fun.cyhgraph.controller.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import fun.cyhgraph.constant.StatusConstant;
+import fun.cyhgraph.dto.SmartRecommendDTO;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.result.Result;
 import fun.cyhgraph.service.DishService;
@@ -24,10 +25,17 @@ public class DishController {
     // 【核心修复】改为接收 Query Param (Dish dish)，自动映射 categoryId 和 status
     @GetMapping("/list")
     public Result<List<DishVO>> list(Dish dish) {
-        log.info("C端-查询菜品 categoryId={}", dish.getCategoryId());
+        log.info("执行用户端菜品查询: name={}, categoryId={}", dish.getName(), dish.getCategoryId());
 
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
+
+        // 【核心修复】动态忽略分类 ID：如果传了 name，强制忽略 categoryId 以实现全库搜索！
+        boolean hasName = dish.getName() != null && !dish.getName().trim().isEmpty();
+        queryWrapper.eq(dish.getCategoryId() != null && !hasName, Dish::getCategoryId, dish.getCategoryId());
+
+        // 【核心新增】支持通过 name 进行模糊搜索
+        queryWrapper.like(hasName, Dish::getName, dish.getName());
+
         // 优先使用前端传的 status (通常是1)，如果没有传则默认 1
         Integer status = dish.getStatus() != null ? dish.getStatus() : StatusConstant.ENABLE;
         queryWrapper.eq(Dish::getStatus, status);
@@ -43,5 +51,23 @@ public class DishController {
         }).collect(Collectors.toList());
 
         return Result.success(dishVOList);
+    }
+
+    /**
+     * 【智选6道菜】4层漏斗推荐引擎接口
+     */
+    @PostMapping("/smartPick6")
+    public Result<List<DishVO>> smartPick6(@RequestBody SmartRecommendDTO dto) {
+        log.info("C端-智选6道菜, 入参: {}", dto);
+
+        List<Dish> dishes = dishService.getSmartPick6(dto);
+
+        List<DishVO> result = dishes.stream().map(d -> {
+            DishVO vo = new DishVO();
+            BeanUtils.copyProperties(d, vo);
+            return vo;
+        }).collect(Collectors.toList());
+
+        return Result.success(result);
     }
 }

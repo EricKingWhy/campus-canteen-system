@@ -3,6 +3,7 @@ package fun.cyhgraph.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import fun.cyhgraph.dto.DishDTO;
 import fun.cyhgraph.dto.DishPageDTO;
+import fun.cyhgraph.dto.SmartRecommendDTO;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.result.PageResult;
 import java.util.List;
@@ -30,4 +31,7 @@ public interface DishService extends IService<Dish> {
 
     // 【临时工具】修复图片
     void fixImages();
+
+    // 【智选6道菜】4层漏斗推荐引擎
+    List<Dish> getSmartPick6(SmartRecommendDTO dto);
 }

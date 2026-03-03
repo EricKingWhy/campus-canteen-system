@@ -21,7 +21,7 @@ export const addCategoryAPI = (params: any) => {
 export const getCategoryPageListAPI = (params: any) => {
   console.log('type呢！！！', params)
   return request({
-    url: '/category/page',
+    url: '/admin/category/page',
     method: 'get',
     params
   })
@@ -34,7 +34,7 @@ export const getCategoryPageListAPI = (params: any) => {
  */
 export const getCategoryByIdAPI = (id: number) => {
   return request({
-    url: `/category/${id}`,
+    url: `/admin/category/${id}`,
     method: 'get'
   })
 }
@@ -60,8 +60,8 @@ export const updateCategoryAPI = (params: any) => {
 export const updateCategoryStatusAPI = (id: number) => {
   console.log('发请求啊！', id)
   return request({
-    url: `/category/status/${id}`,
-    method: 'put'
+    url: `/admin/category/status/${id}`,
+    method: 'post',
   })
 }
 

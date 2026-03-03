@@ -54,6 +54,8 @@ instance.interceptors.response.use(
       userInfoStore.userInfo = null
       ElMessage.error('用户身份已过期~')
       router.push('/login') // js无法获取this.$router，所以要引入router来跳转
+    } else {
+      ElMessage.error(error.response?.data?.msg || error.message || '服务异常')
     }
     return Promise.reject(error)
   }

@@ -35,6 +35,9 @@ public class Dish implements Serializable {
     private Double fat;
     private Double carbohydrates;
 
+    // 食材/过敏原标签 (逗号分隔，如 "海鲜,花生,乳制品")
+    private String allergenTags;
+
     // 销量字段
     private Integer sold;
 }
