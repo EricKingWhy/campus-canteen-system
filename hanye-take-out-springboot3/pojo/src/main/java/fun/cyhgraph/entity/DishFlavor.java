@@ -11,9 +11,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DishFlavor implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Long id;
-    // 【核心修复】统一为 Long，匹配 Dish 的 ID 类型
-    private Long dishId;
-    private String name;
-    private String value;
+    private Long dishId; // 菜品id
+    private String name; // 口味名称
+    private String value; // 口味数据list
 }

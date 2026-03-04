@@ -31,7 +31,7 @@
         <view class="history_item_right">
           <view class="history_item_status">{{ statusList[item.status as number].name }}</view>
           <view class="history_item_price">￥{{ item.amount }}</view>
-          <view class="history_item_dish_amount">共{{ item.packAmount }}份</view>
+          <view class="history_item_dish_amount">共{{ item.totalNum }}份</view>
         </view>
       </view>
       <view class="btn_box">

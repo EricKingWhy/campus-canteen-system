@@ -193,6 +193,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
                 OrderVO orderVO = new OrderVO();
                 BeanUtils.copyProperties(orders, orderVO);
                 orderVO.setOrderDetailList(orderDetails);
+
+                // 【核心修复】计算订单总菜品份数
+                int totalNum = 0;
+                if (orderDetails != null) {
+                    for (OrderDetail detail : orderDetails) {
+                        totalNum += (detail.getNumber() != null ? detail.getNumber() : 1);
+                    }
+                }
+                orderVO.setTotalNum(totalNum);
+
                 list.add(orderVO);
             }
         }
@@ -225,6 +235,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         OrderVO orderVO = new OrderVO();
         BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetailList);
+
+        // 【核心修复】计算订单总菜品份数
+        int totalNum = 0;
+        if (orderDetailList != null) {
+            for (OrderDetail detail : orderDetailList) {
+                totalNum += (detail.getNumber() != null ? detail.getNumber() : 1);
+            }
+        }
+        orderVO.setTotalNum(totalNum);
+
         return orderVO;
     }
 

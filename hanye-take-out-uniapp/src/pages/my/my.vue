@@ -27,42 +27,33 @@
 
     <!-- 2. Data Dashboard (2 Cols) -->
     <view class="dashboard-grid">
-       <!-- Budget Card -->
-       <view class="card budget-card">
+       <!-- 本月消费卡片 -->
+       <view class="card spend-card">
           <view class="card-header">
-             <view class="icon-bg orange"><text class="emoji">💴</text></view>
+             <view class="icon-bg orange"><text class="emoji">💳</text></view>
              <text class="card-title">本月消费</text>
           </view>
-          <view class="budget-main">
-             <text class="currency">¥</text>
-             <text class="amount">320</text>
-             <text class="suffix">剩余</text>
+          <view class="spend-main">
+             <text class="spend-symbol">¥</text>
+             <text class="spend-amount">{{ monthlySpend }}</text>
           </view>
-          <view class="progress-box">
-             <view class="label-row">
-                <text>进度</text>
-                <text>70%</text>
-             </view>
-             <view class="progress-track">
-                <view class="progress-bar"></view>
-             </view>
-          </view>
+          <text class="spend-orders">共计 {{ monthlyOrders }} 单</text>
        </view>
 
-       <!-- Analysis Card -->
-       <view class="card analysis-card">
+       <!-- 今日饮食卡片 -->
+       <view class="card diet-card">
           <view class="card-header">
-             <view class="icon-bg blue"><text class="emoji">📊</text></view>
-             <text class="card-title">周饮食分析</text>
+             <view class="icon-bg orange"><text class="emoji">📊</text></view>
+             <text class="card-title">今日饮食</text>
           </view>
-          <view class="analysis-list">
-             <view class="analysis-item">
-                <text class="label">蛋白质</text>
-                <view class="tag warning">偏低 ⚠️</view>
+          <view class="diet-list">
+             <view class="diet-row">
+                <text class="diet-label">热量: {{ todayCalories }} kcal</text>
+                <view class="status-tag" :class="caloriesStatus.class">{{ caloriesStatus.text }}</view>
              </view>
-             <view class="analysis-item">
-                <text class="label">碳水</text>
-                <view class="tag success">达标 ✅</view>
+             <view class="diet-row">
+                <text class="diet-label">蛋白质: {{ todayProtein }}g</text>
+                <view class="status-tag" :class="proteinStatus.class">{{ proteinStatus.text }}</view>
              </view>
           </view>
        </view>
@@ -119,7 +110,7 @@
 
 <script lang="ts" setup>
 import pushMsg from '../../components/message/pushMsg.vue'
-import {ref, reactive} from 'vue'
+import {ref, reactive, computed} from 'vue'
 import {onLoad, onReachBottom, onShow} from '@dcloudio/uni-app'
 import {useUserStore} from '@/stores/modules/user'
 import {useUserProfileStore} from '@/stores/modules/userProfile'
@@ -131,6 +122,7 @@ import type {OrderPageDTO, OrderVO} from '@/types/order'
 const userStore = useUserStore()
 const profileStore = useUserProfileStore()
 const childComp: any = ref(null)
+const baseUrl = 'http://localhost:8081'
 
 const user = reactive({
   id: userStore.profile?.id || 0,
@@ -140,9 +132,77 @@ const user = reactive({
   pic: '',
 })
 
-// 页面显示时刷新用户画像 (实时同步)
+// ========== 数据看板响应式状态 ==========
+const monthlySpend = ref('0.00')
+const monthlyOrders = ref(0)
+const todayCalories = ref(0)
+const todayProtein = ref(0)
+
+// 目标热量 (来自 profileStore 的 TDEE/suggestIntake)
+const targetCalories = computed(() => profileStore.suggestIntake || 2000)
+
+// 热量状态诊断
+const caloriesStatus = computed(() => {
+    if (todayCalories.value > targetCalories.value * 1.1) return { text: '超标 🔺', class: 'tag-over' }
+    if (todayCalories.value < targetCalories.value * 0.8) return { text: '偏低 ⚠️', class: 'tag-low' }
+    return { text: '达标 ✅', class: 'tag-ok' }
+})
+
+// 蛋白质状态诊断
+const proteinStatus = computed(() => {
+    if (todayProtein.value < 40) return { text: '偏低 ⚠️', class: 'tag-low' }
+    return { text: '达标 ✅', class: 'tag-ok' }
+})
+
+// 获取消费摘要
+const fetchCostSummary = async () => {
+  const token = uni.getStorageSync('token')
+  uni.request({
+    url: baseUrl + '/analysis/cost/summary',
+    method: 'GET',
+    header: { authentication: token },
+    success: (res: any) => {
+      console.log("Cost API Response:", res.data);
+      if (res.data && res.data.code === 0) {
+        const data = res.data.data || {}
+        const spend = data.monthSpent || data.totalAmount || data.amount || data.totalCost || data.cost || 0
+        monthlySpend.value = spend.toFixed(2)
+        monthlyOrders.value = data.totalOrders || data.ordersCount || data.orderCount || data.count || 0
+      }
+    },
+    fail: (err: any) => {
+      console.error('获取消费摘要失败:', err)
+    }
+  })
+}
+
+// 获取健康摘要
+const fetchHealthSummary = async () => {
+  const token = uni.getStorageSync('token')
+  uni.request({
+    url: baseUrl + '/analysis/health/summary',
+    method: 'GET',
+    header: { authentication: token },
+    success: (res: any) => {
+      console.log("Health API Response:", res.data);
+      if (res.data && res.data.code === 0) {
+        const data = res.data.data || {}
+        todayCalories.value = data.todayIntakeKcal || data.todayCalories || data.calories || data.totalCalories || data.intake || 0
+        const macros = data.macros || {}
+        todayProtein.value = macros.proteinG || macros.todayProtein || macros.protein || macros.totalProtein || 0
+      }
+    },
+    fail: (err: any) => {
+      console.error('获取健康摘要失败:', err)
+    }
+  })
+}
+
+// 页面显示时刷新用户画像 + 看板数据
 onShow(async () => {
   await profileStore.fetchProfile()
+  fetchCostSummary()
+  fetchHealthSummary()
 })
 
 // Original Logic Preserved
@@ -273,69 +333,76 @@ $text-main: #1A1A1A;
   }
 }
 
-/* 2. Dashboard Grid */
+/* 2. Dashboard Grid — aligned with Stitch iOS-style design */
 .dashboard-grid {
    display: flex;
+   justify-content: space-between;
    gap: 24rpx;
    margin-bottom: 30rpx;
    
    .card {
       flex: 1;
       background: white;
-      border-radius: 32rpx;
-      padding: 30rpx;
-      box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.02);
+      border-radius: 40rpx;
+      padding: 32rpx;
+      min-height: 280rpx;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 8rpx 40rpx -4rpx rgba(0,0,0,0.05);
       
       .card-header {
          display: flex;
          align-items: center;
-         margin-bottom: 24rpx;
+         gap: 12rpx;
          
          .icon-bg {
-            width: 48rpx; height: 48rpx; border-radius: 12rpx; 
-            display: flex; align-items: center; justify-content: center; margin-right: 12rpx;
-            &.orange { background: rgba(255,107,0,0.1); }
-            &.blue { background: rgba(24,144,255,0.1); }
-            .emoji { font-size: 24rpx; }
+            display: flex; align-items: center; justify-content: center;
+            &.orange { color: #FF8A00; }
+            .emoji { font-size: 32rpx; }
          }
-         .card-title { font-size: 28rpx; font-weight: bold; color: $text-main; }
+         .card-title { font-size: 28rpx; font-weight: 500; color: #666; }
       }
    }
    
-   .budget-card {
-      .budget-main {
-         margin-bottom: 20rpx;
-         .currency { font-size: 24rpx; color: $text-main; vertical-align: bottom; }
-         .amount { font-size: 48rpx; font-weight: 800; color: $text-main; font-family: 'DIN', sans-serif; line-height: 1; margin: 0 8rpx; }
-         .suffix { font-size: 22rpx; color: #999; }
+   /* 本月消费卡片 */
+   .spend-card {
+      .spend-main {
+         display: flex;
+         align-items: baseline;
+         margin-top: 16rpx;
+         .spend-symbol { font-size: 28rpx; color: $text-main; font-weight: 700; letter-spacing: -0.025em; }
+         .spend-amount { font-size: 48rpx; font-weight: 700; color: $text-main; font-family: 'Inter', 'DIN', -apple-system, sans-serif; line-height: 1; margin-left: 8rpx; letter-spacing: -0.025em; }
       }
-      .progress-box {
-         .label-row {
-            display: flex; justify-content: space-between; font-size: 20rpx; color: #999; margin-bottom: 8rpx;
-         }
-         .progress-track {
-            height: 12rpx; background: #F5F5F5; border-radius: 6rpx; overflow: hidden;
-            .progress-bar { width: 70%; height: 100%; background: $primary; border-radius: 6rpx; }
-         }
+      .spend-orders {
+         font-size: 24rpx;
+         color: #999;
+         margin-top: auto;
       }
    }
    
-   .analysis-card {
-      .analysis-list {
+   /* 今日饮食卡片 */
+   .diet-card {
+      .diet-list {
          display: flex;
          flex-direction: column;
          gap: 20rpx;
+         margin-top: 16rpx;
          
-         .analysis-item {
+         .diet-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             
-            .label { font-size: 26rpx; color: #666; }
-            .tag {
-               font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 8rpx; font-weight: 500;
-               &.warning { background: #FFF0E5; color: $primary; }
-               &.success { background: #E6FFFB; color: #00B96B; }
+            .diet-label { font-size: 24rpx; color: #374151; }
+            .status-tag {
+               font-size: 20rpx; padding: 6rpx 16rpx; border-radius: 999rpx; font-weight: 700;
+               /* 达标 */
+               &.tag-ok { background: #E8F5E9; color: #2E7D32; }
+               /* 偏低 */
+               &.tag-low { background: #FEF3C7; color: #D97706; }
+               /* 超标 */
+               &.tag-over { background: #FEE2E2; color: #EF4444; }
             }
          }
       }

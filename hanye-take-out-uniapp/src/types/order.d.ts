@@ -62,6 +62,7 @@ export type OrderPageDTO = {
 // 订单所有信息
 export type OrderVO = Order & {
   orderDetailList: OrderDetail[]
+  totalNum?: number
 }
 
 // 分页接口

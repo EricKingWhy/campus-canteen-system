@@ -207,6 +207,11 @@ public class AnalysisController {
         result.put("monthSpent", monthSpent.doubleValue());
         result.put("hasOrder", monthSpent.compareTo(BigDecimal.ZERO) > 0);
 
+        // 本月订单数
+        List<Orders> monthOrders = getOrdersByUserAndTimeRange(userId, monthStart.atStartOfDay(),
+                today.atTime(LocalTime.MAX));
+        result.put("totalOrders", monthOrders.size());
+
         // 预测月末消费
         int dayOfMonth = today.getDayOfMonth();
         int totalDaysInMonth = monthEnd.getDayOfMonth();
@@ -412,13 +417,15 @@ public class AnalysisController {
     }
 
     /**
-     * 获取用户指定时间范围内的已支付订单
+     * 获取用户指定时间范围内的所有未取消订单
+     * 条件：user_id = 当前用户 AND status != 6(已取消)
+     * 包含：待接单(2)、制作中(3)、待取餐(4)、已完成(5) → 下单后立即可见
      */
     private List<Orders> getOrdersByUserAndTimeRange(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
         return orderMapper.selectList(
                 new LambdaQueryWrapper<Orders>()
                         .eq(Orders::getUserId, userId)
-                        .eq(Orders::getPayStatus, Orders.PAID)
+                        .ne(Orders::getStatus, Orders.CANCELLED)
                         .ge(Orders::getOrderTime, startTime)
                         .le(Orders::getOrderTime, endTime));
     }

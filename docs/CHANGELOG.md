@@ -23,3 +23,4 @@
 ## 🐛 关键缺陷修复 (Bug Fixes)
 * **全链路模糊搜索重构**: 拆除 `/user/dish/list` 接口存在的 Redis 缓存刺客与前端 `categoryId` 参数污染，真正实现无死角的全局模糊搜索。
 * **数据完整性兜底**: 修复员工管理模块实体属性不匹配及 `id_number` 字段约束冲突问题。
+* **(2026-03-04) 多端数据闭环与聚合修复**: 修复前端 `my.vue` 数据大屏与后端的联动中断问题（接驳 `authentication` 头与修正 `code` 校验逻辑，增加属性 Fallback 映射），并在 `WebMvcConfiguration` 补齐 `/analysis/**` 路径的 Token 拦截白名单。同时，扩展后端 `OrderVO` 和 `OrderServiceImpl`，实现了订单历史详情中真实菜品份数 (`totalNum`) 的聚合计算与准确下发。
