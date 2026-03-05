@@ -38,6 +38,8 @@ public class AdminUserController {
     private DishMapper dishMapper;
     @Autowired
     private CategoryMapper categoryMapper;
+    @Autowired
+    private fun.cyhgraph.service.AnalysisService analysisService;
 
     // ============ BMI 区间常量 ============
     private static final double BMI_UNDERWEIGHT = 18.5;
@@ -255,63 +257,11 @@ public class AdminUserController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "7") Integer range) {
         log.info("获取用户餐费分析: userId={}, range={}", id, range);
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime monthStart = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
-        LocalDateTime rangeStart = now.minusDays(range);
-
-        Map<String, Object> data = new HashMap<>();
-
-        // 本月已花
-        BigDecimal monthSpend = getMonthSpendByUserId(id, monthStart, now);
-        data.put("monthSpend", monthSpend != null ? monthSpend : BigDecimal.ZERO);
-
-        // 月末预测
-        int dayOfMonth = LocalDate.now().getDayOfMonth();
-        int daysInMonth = LocalDate.now().lengthOfMonth();
-        double dailyAvg = monthSpend != null && dayOfMonth > 0
-                ? monthSpend.doubleValue() / dayOfMonth
-                : 0;
-        double forecast = dailyAvg * daysInMonth;
-        data.put("forecastMonthEnd", Math.round(forecast * 100.0) / 100.0);
-
-        // 消费趋势
-        List<Map<String, Object>> trend = new ArrayList<>();
-        for (int i = range - 1; i >= 0; i--) {
-            LocalDate date = LocalDate.now().minusDays(i);
-            LocalDateTime dayStart = date.atStartOfDay();
-            LocalDateTime dayEnd = date.atTime(LocalTime.MAX);
-
-            BigDecimal daySpend = orderMapper.sumAmountByUserIdAndTimeRange(
-                    id, dayStart, dayEnd, Orders.PAID);
-
-            Map<String, Object> point = new HashMap<>();
-            point.put("date", date.toString());
-            point.put("day", getDayOfWeekCn(date.getDayOfWeek().getValue()));
-            point.put("value", daySpend != null ? daySpend : BigDecimal.ZERO);
-            point.put("isToday", i == 0);
-            trend.add(point);
-        }
-        data.put("dailySpendTrend", trend);
-
-        // 消费构成（按分类）
-        List<Map<String, Object>> composition = getSpendComposition(id, monthStart, now);
-        data.put("spendComposition", composition);
-
-        // 状态标签
-        String statusLabel = forecast > (monthSpend != null ? monthSpend.doubleValue() : 0) * 1.5
-                ? "消费偏高"
-                : "消费平稳";
-        data.put("statusLabel", statusLabel);
-
-        // 助手建议
-        data.put("assistantTip", generateSpendTip(trend, composition));
-
-        return Result.success(data);
+        return Result.success(analysisService.getCostSummary(id));
     }
 
     /**
-     * 健康营养分析
+     * 健康营养分析 - 适配层
      */
     @GetMapping("/{id}/analytics/nutrition")
     public Result<Map<String, Object>> getNutritionAnalytics(
@@ -335,91 +285,69 @@ public class AdminUserController {
             return Result.success(data);
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime rangeStart = now.minusDays(range);
+        // 使用底层的 AnalysisService 同源能力
+        Map<String, Object> summary = analysisService.getHealthSummary(id);
+        List<Map<String, Object>> trends = analysisService.getHealthTrend(id, range);
 
-        // 目标摄入（基于 TDEE + 健康目标）
-        int tdee = user.getTdee() != null ? user.getTdee() : 2000;
-        int healthGoal = user.getHealthGoal() != null ? user.getHealthGoal() : 3;
-        int targetCalories = switch (healthGoal) {
-            case 1 -> tdee - 500; // 减脂
-            case 2 -> tdee + 300; // 增肌
-            default -> tdee; // 维持
-        };
+        // 安全转换
+        int targetCalories = Integer.parseInt(summary.getOrDefault("goalKcal", 2000).toString());
         data.put("targetCalories", targetCalories);
 
-        // 每日摄入趋势
+        // 整理趋势数据给 Admin 页面 （原 Admin 格式要求带有 actual 和 target 分数）
         List<Map<String, Object>> caloriesTrend = new ArrayList<>();
-        double totalProtein = 0, totalCarbs = 0, totalFat = 0;
         int daysWithData = 0;
 
-        for (int i = range - 1; i >= 0; i--) {
-            LocalDate date = LocalDate.now().minusDays(i);
-            LocalDateTime dayStart = date.atStartOfDay();
-            LocalDateTime dayEnd = date.atTime(LocalTime.MAX);
-
-            // 获取当天订单
-            List<Orders> dayOrders = orderMapper.selectList(
-                    new LambdaQueryWrapper<Orders>()
-                            .eq(Orders::getUserId, id)
-                            .ge(Orders::getOrderTime, dayStart)
-                            .le(Orders::getOrderTime, dayEnd)
-                            .eq(Orders::getPayStatus, Orders.PAID));
-
-            double dayCalories = 0, dayProtein = 0, dayCarbs = 0, dayFat = 0;
-            for (Orders order : dayOrders) {
-                List<OrderDetail> details = orderDetailMapper.selectList(
-                        new LambdaQueryWrapper<OrderDetail>().eq(OrderDetail::getOrderId, order.getId()));
-                for (OrderDetail detail : details) {
-                    if (detail.getDishId() != null) {
-                        Dish dish = dishMapper.selectById(detail.getDishId());
-                        if (dish != null) {
-                            int qty = detail.getNumber() != null ? detail.getNumber() : 1;
-                            dayCalories += (dish.getCalories() != null ? dish.getCalories() : 0) * qty;
-                            dayProtein += (dish.getProtein() != null ? dish.getProtein() : 0) * qty;
-                            dayCarbs += (dish.getCarbohydrates() != null ? dish.getCarbohydrates() : 0) * qty;
-                            dayFat += (dish.getFat() != null ? dish.getFat() : 0) * qty;
-                        }
-                    }
-                }
-            }
-
-            if (dayCalories > 0)
-                daysWithData++;
-            totalProtein += dayProtein;
-            totalCarbs += dayCarbs;
-            totalFat += dayFat;
-
+        for (Map<String, Object> t : trends) {
+            // Trend 返回的数据是 intakeKcal, targetKcal
             Map<String, Object> point = new HashMap<>();
-            point.put("date", date.toString());
-            point.put("day", getDayOfWeekCn(date.getDayOfWeek().getValue()));
-            point.put("actual", Math.round(dayCalories));
-            point.put("target", targetCalories);
-            point.put("isToday", i == 0);
+            point.put("date", t.get("date"));
+            point.put("day", t.get("day"));
+            double actual = Double.parseDouble(t.getOrDefault("intakeKcal", "0").toString());
+            if (actual > 0)
+                daysWithData++;
+
+            point.put("actual", Math.round(actual));
+            point.put("target", t.getOrDefault("targetKcal", targetCalories));
+            point.put("isToday", t.get("date").equals(LocalDate.now().toString()));
+            // Admin 端要求顺序从远到近 (倒序改顺序或一致)
             caloriesTrend.add(point);
         }
+
+        // trend 从 AnalysisService出来可能是近几年到今天。原版要求逆向或正向均可，只需保持趋势。
+        // Vue前端实际按序遍历，直接给过去即可
         data.put("caloriesTrend", caloriesTrend);
 
-        // 今日数据
+        // 提取今日数据 (最后一个元素即今日)
         if (!caloriesTrend.isEmpty()) {
             Map<String, Object> today = caloriesTrend.get(caloriesTrend.size() - 1);
             data.put("todayActual", today.get("actual"));
             data.put("todayTarget", today.get("target"));
-            int actual = (int) today.get("actual");
-            int target = (int) today.get("target");
+
+            // 安全取值：不用强转 Integer
+            long actual = Long.parseLong(today.get("actual").toString());
+            long target = Long.parseLong(today.get("target").toString());
             data.put("todayRemaining", Math.max(0, target - actual));
             data.put("todayProgress", target > 0 ? Math.min(100, actual * 100 / target) : 0);
         }
 
-        // 营养结构
-        double totalMacro = totalProtein + totalCarbs + totalFat;
+        // 组装营养结构
+        Map<String, Object> macrosData = (Map<String, Object>) summary.get("macros");
         Map<String, Object> macros = new HashMap<>();
-        macros.put("protein", Math.round(totalProtein));
-        macros.put("carbs", Math.round(totalCarbs));
-        macros.put("fat", Math.round(totalFat));
-        macros.put("proteinPct", totalMacro > 0 ? Math.round(totalProtein / totalMacro * 100) : 0);
-        macros.put("carbsPct", totalMacro > 0 ? Math.round(totalCarbs / totalMacro * 100) : 0);
-        macros.put("fatPct", totalMacro > 0 ? Math.round(totalFat / totalMacro * 100) : 0);
+        if (macrosData != null) {
+            macros.put("protein", macrosData.getOrDefault("proteinG", 0));
+            macros.put("carbs", macrosData.getOrDefault("carbG", 0));
+            macros.put("fat", macrosData.getOrDefault("fatG", 0));
+            macros.put("proteinPct", macrosData.getOrDefault("proteinPct", 0));
+            macros.put("carbsPct", macrosData.getOrDefault("carbPct", 0));
+            macros.put("fatPct", macrosData.getOrDefault("fatPct", 0));
+        } else {
+            macros.put("protein", 0);
+            macros.put("carbs", 0);
+            macros.put("fat", 0);
+            macros.put("proteinPct", 0);
+            macros.put("carbsPct", 0);
+            macros.put("fatPct", 0);
+        }
         data.put("macroBreakdown", macros);
 
         // 是否有数据
