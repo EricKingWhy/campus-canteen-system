@@ -13,7 +13,7 @@
                    mode="aspectFill"
                 />
                 <view class="text-box">
-                   <text class="sub">早安</text>
+                   <text class="sub">{{ timeGreeting }}</text>
                    <text class="name">{{ profileStore.displayName }}</text>
                 </view>
              </view>
@@ -29,7 +29,7 @@
           <!-- Middle: Main Title -->
           <view class="hero-middle">
              <view class="tag">
-                <text>🍴 早餐时段</text>
+                <text>🍴 {{ mealTimeSlot }}</text>
              </view>
              <view class="main-text">
                 <text>想吃点</text>
@@ -196,6 +196,22 @@ const recommendList = ref<any[]>([])
 const todayCalories = ref(0)
 const todayProtein = ref(0)
 
+// 【核心新增】动态时段与问候
+const currentHour = new Date().getHours()
+const mealTimeSlot = computed(() => {
+   const h = new Date().getHours()
+   if (h >= 6 && h < 10) return '早餐时段'
+   if (h >= 10 && h < 16) return '午餐时段'
+   if (h >= 16 && h < 21) return '晚餐时段'
+   return '夜宵时段'
+})
+const timeGreeting = computed(() => {
+   const h = new Date().getHours()
+   if (h >= 6 && h < 12) return '早安'
+   if (h >= 12 && h < 18) return '午安'
+   return '晚安'
+})
+
 // Bestsellers (Standard Dish List)
 const dishList = ref<DishItem[]>([])
 // Simple Cart Logic - 改为从后端同步
@@ -239,7 +255,8 @@ const getRecommendData = () => {
       todayCalories: todayCalories.value,
       todayProtein: todayProtein.value,
       healthGoal: p.healthGoal || 3,
-      avoidTags: Array.isArray(p.avoidTags) ? p.avoidTags.join(',') : (p.avoidTags || '')
+      avoidTags: Array.isArray(p.avoidTags) ? p.avoidTags.join(',') : (p.avoidTags || ''),
+      tasteTags: Array.isArray(p.tasteTags) ? p.tasteTags.join(',') : (p.tasteTags || '')
    }
 
    console.log('智选6道菜 DTO:', dto);

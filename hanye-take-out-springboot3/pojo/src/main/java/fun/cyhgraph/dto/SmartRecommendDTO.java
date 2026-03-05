@@ -26,4 +26,7 @@ public class SmartRecommendDTO implements Serializable {
 
     /** 忌口标签(逗号分隔, 如"海鲜,花生") */
     private String avoidTags;
+
+    /** 口味偏好标签(逗号分隔, 如"辣,甜,酸") */
+    private String tasteTags;
 }

@@ -1,0 +1,45 @@
+# 🚀 每日研发工作日志 (Daily Work Log)
+
+**日期**: 2026-03-04
+**开发者**: AI Assistant (Antigravity)
+**核心议题**: 全链路数据打通与核心 Bug 根除 (Full-Loop Data Sync & Bug Eradication)
+
+## 🎯 今日工作目标
+解决校园食堂系统中前端（小程序 [my.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/my/my.vue)，[history.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/history/history.vue)）与后端（Spring Boot [AnalysisController](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/user/AnalysisController.java#26-502)，[OrderServiceImpl](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/OrderServiceImpl.java#31-443)）之间的数据断层问题。实现用户历史订单数据的准确双向映射，并在“我的”仪表盘中实时反馈“本月消费”、“本月单量”、“今日热量”与“今日蛋白质”的准确健康分析数据。
+
+## 🛠️ 具体解决的技术痛点与 Bug (Resolved Issues)
+
+1. **后端拦截器幽灵漏洞 (Ghost Endpoints in Interceptor)**
+   - **表现**：`/analysis/**` 下的聚合接口均能正常被前端调用并返回成功状态码，但永远查出“0”单。
+   - **根因**：后端 [WebMvcConfiguration](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/config/WebMvcConfiguration.java#21-136) 中的 `jwtTokenUserInterceptor` 拦截器白名单漏配了 `/analysis/**` 路径。这导致经过验证的 JWT Token 中的 `userId` 未被正确解析并绑定到当前线程的 `BaseContext`，数据库因此使用 `userId = null` 去查询历史数据。
+   - **修复**：将 `/analysis/**` 加入 `.addPathPatterns()` 的拦截及鉴权名单，确保聚合查询能正确关联用户 ID。
+
+2. **前端 Token 请求头“鸡同鸭讲” (Header Key Mismatch)**
+   - **表现**：即使启用了拦截器，请求依然被拒绝。
+   - **根因**：后端 [application.yml](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/resources/application.yml) 强制要求鉴权携带的 Header 名称为 `authentication`（`jwt.user-token-name: authentication`），而前端 [my.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/my/my.vue) 在发出 `uni.request` 时却写死了 `header: { token }`，导致 Token 未被后端正常接收。
+   - **修复**：将前端的传参修改为 `{ authentication: token }` 保证完美握手。
+
+3. **前端解包“掩耳盗铃”与数据盲区 (Data Fallback Binding)**
+   - **表现**：网络抓包显示后端成功返回了非零的 `monthSpent` 等数据，但页面依然显示 `0`。
+   - **根因**：
+     - [my.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/my/my.vue) 之前采用了狭隘的业务成功判定 `res.data.code === 1`，而该工程后端的 [Result.java](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/common/src/main/java/fun/cyhgraph/result/Result.java) 明确定义 `code = 0` 才是成功，导致前端在拦截层直接静默忽略了真实数据。
+     - 另外原模板中的 `{{ todayCalories }}` 变量未成功被绑定在 `<text>` 标签中。
+   - **修复**：
+     - 更正前端逻辑，采用 `code === 0` 判定成功。
+     - 实现了强大的 **「暴力链式回退 (Fallback Mapping)」** 机制。例如：`todayCalories.value = data.todayIntakeKcal || data.calories || data.todayCalories || 0`，无论后端字段名如何微调，皆可精准兼容。
+
+4. **历史订单“共0份”的张冠李戴 (Pack Amount vs Total Items)**
+   - **表现**：[history.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/history/history.vue) 无论用户下了几份菜，界面始终显示“共0份”。
+   - **根因**：列表页盲目绑定了 `item.packAmount`。在原始苍穹外卖业务定义中，它代表的是金额意义上的“打包费（整数）”。后端查询历史订单的 [OrderVO](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/pojo/src/main/java/fun/cyhgraph/vo/OrderVO.java#12-22) 中也压根没计算过“菜品总计份数”。
+   - **修复**：
+     - 于后端传输类 [OrderVO.java](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/pojo/src/main/java/fun/cyhgraph/vo/OrderVO.java) 和前端类型定义 [order.d.ts](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/types/order.d.ts) 同步新增专属字段 `totalNum`（总份数）。
+     - 改造 `OrderServiceImpl.pageQuery4User`：对于历史订单，在遍历拼装 VO 时主动叠加 [OrderDetail](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/types/order.d.ts#38-49) 的数量 (`sum += detail.getNumber()`) 并塞入 `totalNum`，彻底拨乱反正。
+
+## 📦 代码合并与版本控制 (Version Control)
+- **前端模块 (`hanye-take-out-uniapp`)**: 变动了 [my.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/my/my.vue)、[history.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/history/history.vue)、[order.d.ts](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/types/order.d.ts)，彻底消灭前端渲染阻碍和 TS 类型警告。
+- **后端模块 (`hanye-take-out-springboot3`)**: 修改了 [WebMvcConfiguration.java](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/config/WebMvcConfiguration.java)、[OrderVO.java](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/pojo/src/main/java/fun/cyhgraph/vo/OrderVO.java)、[OrderServiceImpl.java](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/OrderServiceImpl.java)。通过了 `mvn clean install` 且实现 0 报错重编。
+- **Git Push**: 代码已打包 Commit 并上传至 GitHub 仓库的主分支，确保今天的工作成果全网可查、不可丢失。
+
+## 💡 明日工作建议 (Next Steps)
+- 由于个人数据、看板全链路彻底打通，建议进行一次 UAT（用户验收测试），尝试创建包含多个菜肴的新订单并进入小程序“我的”界面，验证图表及数据的毫秒级热更新情况。
+- 当前接口性能较快，若后期加入更复杂的日限健康数据拉取，可考虑加入简单的 Redis 缓存逻辑减轻 DB 压力。

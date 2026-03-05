@@ -204,7 +204,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     /**
-     * 执行漏斗查询
+     * 执行漏斗查询 - 【升级为双路召回+打分模型】
+     * SQL粗筛获取Top20营养达标菜 + Java内存精筛打分（结合口味偏好）
      * 
      * @param categoryIds        场景分类ID列表(null=不限)
      * @param dto                前端传参
@@ -252,26 +253,103 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             }
         }
 
-        // L4: 动态排序
-        double todayProtein = safeDouble(dto.getTodayProtein());
-        Integer healthGoal = dto.getHealthGoal();
+        // 【升级】SQL粗筛：先按销量降序捞出Top20候选菜品
+        w.orderByDesc(Dish::getSold);
+        w.last("LIMIT 20");
+        List<Dish> candidateList = dishMapper.selectList(w);
 
-        if (todayProtein < 60.0) {
-            // 缺蛋白质 -> 高蛋白优先
-            log.info("[漏斗L4] 蛋白质不足({}g<60g) -> 按蛋白质降序", todayProtein);
-            w.orderByDesc(Dish::getProtein);
-        } else if (healthGoal != null && healthGoal == 1 && gap < 300) {
-            // 减脂且余量小 -> 低卡优先
-            log.info("[漏斗L4] 减脂+余量小(gap={}kcal) -> 按热量升序", gap);
-            w.orderByAsc(Dish::getCalories);
-        } else {
-            // 均衡状态 -> 按销量
-            log.info("[漏斗L4] 均衡状态 -> 按销量降序");
-            w.orderByDesc(Dish::getSold);
+        if (candidateList.isEmpty()) {
+            return candidateList;
         }
 
-        w.last("LIMIT 6");
-        return dishMapper.selectList(w);
+        // 【核心升级】Java内存精筛打分排序
+        List<String> userTastes = parseTastes(dto.getTasteTags());
+        log.info("[智能打分] 用户口味偏好: {}, 候选菜品: {}道", userTastes, candidateList.size());
+
+        List<Dish> finalPick = candidateList.stream()
+                .sorted((d1, d2) -> {
+                    int score1 = calculateScore(d1, userTastes, dto);
+                    int score2 = calculateScore(d2, userTastes, dto);
+                    return Integer.compare(score2, score1); // 降序：高分优先
+                })
+                .limit(6)
+                .collect(Collectors.toList());
+
+        // 打印打分透明日志
+        for (Dish d : finalPick) {
+            int score = calculateScore(d, userTastes, dto);
+            log.info("[智能打分] 菜品: {} | 得分: {} | 热量: {}kcal | 蛋白: {}g",
+                    d.getName(), score, d.getCalories(), d.getProtein());
+        }
+        log.info("[智能打分] 最终推荐 {} 道菜，已结合口味偏好 [{}] 进行提权打分",
+                finalPick.size(), dto.getTasteTags());
+
+        return finalPick;
+    }
+
+    /**
+     * 【核心】菜品打分算法 - 千人千面个性化推荐
+     * 基础分10 + 口味匹配(每命中+50) + 营养加分(蛋白质/低卡) + 销量加分
+     */
+    private int calculateScore(Dish dish, List<String> userTastes, SmartRecommendDTO dto) {
+        int score = 10; // 基础分
+
+        // 【权重最高】口味偏好匹配加分：每命中一个口味关键字 +50分
+        String dishName = dish.getName() != null ? dish.getName() : "";
+        String dishDesc = dish.getDescription() != null ? dish.getDescription() : "";
+        String matchText = dishName + dishDesc;
+        for (String taste : userTastes) {
+            if (!taste.isEmpty() && matchText.contains(taste)) {
+                score += 50;
+            }
+        }
+
+        // 营养加分：蛋白质不足时，按蛋白质含量加分
+        double todayProtein = safeDouble(dto.getTodayProtein());
+        if (todayProtein < 60.0 && dish.getProtein() != null) {
+            score += dish.getProtein().intValue();
+        }
+
+        // 营养加分：减脂目标时，低卡菜品加分
+        if (dto.getHealthGoal() != null && dto.getHealthGoal() == 1 && dish.getCalories() != null) {
+            if (dish.getCalories() < 300) {
+                score += 20; // 低卡奖励
+            }
+        }
+
+        // 增肌目标时，高蛋白菜品额外加分
+        if (dto.getHealthGoal() != null && dto.getHealthGoal() == 2 && dish.getProtein() != null) {
+            if (dish.getProtein() > 25) {
+                score += 30; // 增肌高蛋白奖励
+            }
+        }
+
+        // 销量加分（小幅度，防止冷门好菜被埋没）
+        if (dish.getSold() != null) {
+            score += Math.min(dish.getSold() / 10, 10); // 最多+10分
+        }
+
+        return score;
+    }
+
+    /**
+     * 解析用户口味偏好标签
+     * 支持逗号分隔字符串和JSON数组格式
+     */
+    private List<String> parseTastes(String tasteTags) {
+        List<String> tastes = new ArrayList<>();
+        if (tasteTags == null || tasteTags.trim().isEmpty()) {
+            return tastes;
+        }
+        // 兼容 JSON 数组格式 ["辣","甜"] 和逗号分隔 "辣,甜"
+        String cleaned = tasteTags.replaceAll("[\\[\\]\"']", "");
+        for (String tag : cleaned.split(",")) {
+            String trimmed = tag.trim();
+            if (!trimmed.isEmpty()) {
+                tastes.add(trimmed);
+            }
+        }
+        return tastes;
     }
 
     /**
