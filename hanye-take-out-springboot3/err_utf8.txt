@@ -1,0 +1,87 @@
+﻿[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] hanye-take-out                                                     [pom]
+[INFO] common                                                             [jar]
+[INFO] pojo                                                               [jar]
+[INFO] server                                                             [jar]
+[INFO] 
+[INFO] --------------------< fun.cyhgraph:hanye-take-out >---------------------
+[INFO] Building hanye-take-out 1.0-SNAPSHOT                               [1/4]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] ------------------------< fun.cyhgraph:common >-------------------------
+[INFO] Building common 1.0-SNAPSHOT                                       [2/4]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ common ---
+[INFO] skip non existing resourceDirectory C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\hanye-take-out-springboot3\common\src\main\resources
+[INFO] skip non existing resourceDirectory C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\hanye-take-out-springboot3\common\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ common ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] -------------------------< fun.cyhgraph:pojo >--------------------------
+[INFO] Building pojo 1.0-SNAPSHOT                                         [3/4]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ pojo ---
+[INFO] skip non existing resourceDirectory C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\hanye-take-out-springboot3\pojo\src\main\resources
+[INFO] skip non existing resourceDirectory C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\hanye-take-out-springboot3\pojo\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ pojo ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] ------------------------< fun.cyhgraph:server >-------------------------
+[INFO] Building server 1.0-SNAPSHOT                                       [4/4]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ server ---
+[INFO] Copying 19 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ server ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 71 source files to C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\hanye-take-out-springboot3\server\target\classes
+[INFO] /C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/admin/AdminUserController.java: C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\hanye-take-out-main\hanye-take-out-main\hanye-take-out-springboot3\server\src\main\java\fun\cyhgraph\controller\admin\AdminUserController.java使用或覆盖了已过时的 API。
+[INFO] /C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/admin/AdminUserController.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] /C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/admin/ShopController.java: 某些输入文件使用了未经检查或不安全的操作。
+[INFO] /C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/admin/ShopController.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/OrderServiceImpl.java:[112,27] 无法将接口 fun.cyhgraph.mapper.DishMapper中的方法 incrementSold应用到给定类型;
+  需要: java.lang.Long,java.lang.Integer
+  找到:    java.lang.Long
+  原因: 实际参数列表和形式参数列表长度不同
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for hanye-take-out 1.0-SNAPSHOT:
+[INFO] 
+[INFO] hanye-take-out ..................................... SUCCESS [  0.006 s]
+[INFO] common ............................................. SUCCESS [  1.449 s]
+[INFO] pojo ............................................... SUCCESS [  0.166 s]
+[INFO] server ............................................. FAILURE [  5.250 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.342 s
+[INFO] Finished at: 2026-03-05T17:08:12+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile (default-compile) on project server: Compilation failure
+[ERROR] /C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/OrderServiceImpl.java:[112,27] 无法将接口 fun.cyhgraph.mapper.DishMapper中的方法 incrementSold应用到给定类型;
+[ERROR]   需要: java.lang.Long,java.lang.Integer
+[ERROR]   找到:    java.lang.Long
+[ERROR]   原因: 实际参数列表和形式参数列表长度不同
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <goals> -rf :server

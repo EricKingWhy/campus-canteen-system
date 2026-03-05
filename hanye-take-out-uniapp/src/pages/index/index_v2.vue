@@ -104,6 +104,8 @@
            <view class="dish-content">
               <text class="dish-name">{{ dish.name }}</text>
               <text class="dish-desc">{{ dish.detail || '暂无描述' }}</text>
+              <!-- 【核心新增】真实销量展示 -->
+              <text class="dish-sold" style="font-size: 20rpx; color: #ff6b00; margin-top: 6rpx;">已售 {{ dish.sold || 0 }} 份</text>
               <view class="dish-bottom">
                  <text class="dish-price">¥{{ dish.price }}</text>
                  <view class="add-circle" @click.stop="openDishDetail(dish)">+</view>
@@ -327,24 +329,23 @@ const fallbackRecommend = () => {
    });
 }
 
-// 【修复】获取热销榜菜品 - 从后端 API 获取真实数据
+// 【重构】获取真实热销榜菜品 - 调用专用接口
 const getDishData = () => {
-   console.log('Fetching bestseller dishes...');
+   console.log('Fetching true bestseller dishes...');
    uni.request({
-      url: baseUrl + '/user/dish/list',
+      url: baseUrl + '/user/dish/hotSales',
       method: 'GET',
-      data: { status: 1 }, // 只获取起售状态的菜品
       header: { 'authentication': uni.getStorageSync('token') },
       success: (res: any) => {
-         console.log('Bestseller dishes response:', res.data);
+         console.log('True Bestseller dishes response:', res.data);
          if (res.data.code === 0 || res.data.code === 1) {
-            // 转换字段名以匹配模板 (pic -> image)
+            // 真实榜单直接拿过来（后端已经 limit 5 了）
             const dishes = res.data.data || [];
-            // 【核心修复】只显示前10个热销菜品
-            dishList.value = dishes.slice(0, 10).map((dish: any) => ({
+            dishList.value = dishes.map((dish: any) => ({
                ...dish,
                pic: dish.image, // 模板使用 dish.pic
                detail: dish.description || '暂无描述'
+               // sold 字段后端已包含
             }));
          }
       }
@@ -468,6 +469,7 @@ onShow(async () => {
    await profileStore.fetchProfile()    // 同步用户画像数据
    await fetchTodayNutrition()          // 刷新营养数据
    getRecommendData()                   // 刷新智选推荐
+   getDishData()                        // 刷新热销榜(确保销量实时性)
    getCartList()                        // 刷新购物车
 })
 

@@ -108,8 +108,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             orderDetailList.add(orderDetail);
 
             // 【核心新增】更新菜品销量 - 每下单一次销量+1
-            if (cart.getDishId() != null) {
-                dishMapper.incrementSold(cart.getDishId());
+            if (cart.getDishId() != null && cart.getNumber() != null) {
+                dishMapper.incrementSold(cart.getDishId(), cart.getNumber());
             }
         }
 
@@ -384,6 +384,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Override
     public void complete(Long id) {
         updateStatus(id, Orders.COMPLETED);
+        // 【核心新增】订单完成时累加销量
+        incrementSales(id);
+    }
+
+    /**
+     * 辅助方法：完成订单后，原子化自增菜品销量
+     */
+    private void incrementSales(Long orderId) {
+        List<OrderDetail> details = getOrderDetail(orderId);
+        if (details != null) {
+            for (OrderDetail detail : details) {
+                if (detail.getDishId() != null && detail.getNumber() != null) {
+                    dishMapper.incrementSold(detail.getDishId(), detail.getNumber());
+                }
+            }
+        }
     }
 
     @Override
@@ -432,11 +448,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
 
         // 4. 更新状态为完成
         orders.setStatus(Orders.COMPLETED);
-        // deliveryTime 为管理员出餐时间，用户完成时间可复用 checkoutTime 或不记，这里保持原用例逻辑即可，或者仅作为状态变更
-        // 之前 userComplete 设置 deliveryTime 是错的，应该是管理员 delivery 时设。但若要兼容，可保留或忽略。
-        // 根据要求：delivery 时这 deliveryTime。这里仅更新 status。
-
         orderMapper.updateById(orders);
+
+        // 【核心新增】订单完成时累加销量
+        incrementSales(id);
     }
 
 }

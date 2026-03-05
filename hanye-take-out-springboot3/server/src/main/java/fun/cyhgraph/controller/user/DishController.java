@@ -54,6 +54,27 @@ public class DishController {
     }
 
     /**
+     * 【核心新增】获取全校真实热销榜 (Top 5)
+     */
+    @GetMapping("/hotSales")
+    public Result<List<DishVO>> hotSales() {
+        log.info("C端-获取全校真实热销榜 Top 5");
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Dish::getStatus, StatusConstant.ENABLE);
+        queryWrapper.orderByDesc(Dish::getSold);
+        queryWrapper.last("LIMIT 5");
+
+        List<Dish> list = dishService.list(queryWrapper);
+        List<DishVO> dishVOList = list.stream().map(d -> {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d, dishVO);
+            return dishVO;
+        }).collect(Collectors.toList());
+
+        return Result.success(dishVOList);
+    }
+
+    /**
      * 【智选6道菜】4层漏斗推荐引擎接口
      */
     @PostMapping("/smartPick6")

@@ -3,6 +3,7 @@ package fun.cyhgraph.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import fun.cyhgraph.entity.Dish;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import java.io.Serializable;
 
@@ -22,5 +23,5 @@ public interface DishMapper extends BaseMapper<Dish> {
     Integer countByCategoryId(Integer categoryId);
 
     // 【新增】增加销量
-    void incrementSold(Long id);
+    void incrementSold(@Param("id") Long id, @Param("number") Integer number);
 }
