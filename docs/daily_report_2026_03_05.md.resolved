@@ -1,0 +1,43 @@
+# 校园食堂管理系统 - 每日开发报告 (2026-03-05)
+
+## 📋 工作目标汇总 (Objectives)
+今日工作的核心重点在于打通“销量数据闭环”与“健康分析同源重构”，具体包括：
+1. **销量实时同步**：修复用户下单后销量不更新的 Bug，实现数据库层面的原子自增。
+2. **首页榜单动态化**：将小程序端“全校热销榜”由静态假数据替换为基于数据库 `sold` 字段的动态真实数据。
+3. **架构级同源重构 (Health Analysis)**：解决管理端查看健康数据时的 `ClassCastException` 崩溃，并下沉核心算法至 Service 层。
+
+---
+
+## 🛠️ 已完成的具体工作 (Tasks Completed)
+
+### 1. 销量与榜单链路打通 (Sales & Ranking)
+- **[Backend]** 修改 [DishMapper](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/mapper/DishMapper.java#10-28)，新增 [incrementSold](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/mapper/DishMapper.java#25-27) 原子更新接口，支持根据下单数量累计销量。
+- **[Backend]** 重构 [OrderServiceImpl](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/OrderServiceImpl.java#31-458)，在订单状态变更为“已完成”时，触发销量累加逻辑。
+- **[Backend]** 在 [DishController](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/user/DishController.java#17-95) 新增 `/hotSales` 接口，动态提取全校销量排名前 5 的菜品。
+- **[Frontend]** 小程序首页 ([index_v2.vue](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-uniapp/src/pages/index/index_v2.vue)) 接入热销榜接口，实时展示“已售 X 份”标签，彻底告别假数据。
+
+### 2. 管理端健康分析架构重构 (Admin Health Refactor)
+- **[Service]** 新建 [AnalysisService](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/AnalysisService.java#6-33) 接口与 [AnalysisServiceImpl](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/AnalysisServiceImpl.java#20-391) 实现类。
+- **[Service]** 将原本耦合在 [AnalysisController](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/user/AnalysisController.java#27-66) 中的“今日热量计算”、“营养结构分布”、“健康趋势统计”逻辑全部下沉至 Service 层。
+- **[Safety]** 针对管理端 `ClassCastException` (Long 强转 Integer) 的历史遗留 Bug，采用 `Long.parseLong().intValue()` 安全转换方案。
+- **[Consistency]** 通过 Service 层下沉，确保了管理端和小程序端展示的健康度数据 100% 同源，消除由于逻辑重复导致的潜在误差。
+
+### 3. 推荐系统优化 (Recommendation Engine - Next Stage)
+- **[Algorithm]** 初步完成了推荐算法的“内存打分”逻辑预研，为下一步结合“用户口味偏好 (Taste Tags)”进行动态权衡打下基础。
+
+---
+
+## 📈 交付成果 (Deliverables)
+- **Backend**: 完成 [AnalysisService](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/AnalysisService.java#6-33) 重构，修复 [AdminUserController](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/controller/admin/AdminUserController.java#26-569) 崩溃。
+- **Frontend (UniApp)**: 首页销量榜单完全动态化。
+- **Verification**: 经过 `mvn clean compile` 与 Node.js 联调测试，所有接口返回正常，数据一致。
+
+---
+
+## 🗓️ 下一步计划 (Next Steps)
+1. **智能推荐深度优化**：结合用户设置的口味偏好（酸辣、咸淡等）与健康目标，重构 [getSmartPick6](file:///c:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/hanye-take-out-main/hanye-take-out-main/hanye-take-out-springboot3/server/src/main/java/fun/cyhgraph/service/impl/DishServiceImpl.java#157-205) 算法权系数。
+2. **前端样式微调**：优化小程序和管理端的图表展示细节。
+
+---
+**汇报人**：Antigravity (EricKingWhy Project Assistant)  
+**日期**：2026-03-05

@@ -4,13 +4,18 @@ export type DishItem = {
   name: string
   image: string  // 【修复】与后端 Dish.image 保持一致
   price: number
-  detail?: string
   description?: string  // 后端实际字段
   categoryId: number
   flavors: FlavorItem[]
   calories?: number
+  protein?: number
+  fat?: number
+  carbohydrates?: number
+  mainIngredients?: string
+  allergenTags?: string
   stallName?: string
   recommendReason?: string
+  pic?: string
 }
 
 // 口味列表

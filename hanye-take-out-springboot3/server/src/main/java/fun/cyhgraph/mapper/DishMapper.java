@@ -10,8 +10,8 @@ import java.io.Serializable;
 @Mapper
 public interface DishMapper extends BaseMapper<Dish> {
 
-    // 兼容性查询：使用 Integer
-    @Select("select * from dish where id = #{id}")
+    // 兼容性查询：使用 Integer，并且强制绑定新字段以防 mapUnderscoreToCamelCase 失效
+    @Select("select *, main_ingredients as mainIngredients, allergen_tags as allergenTags, carbon_water as carbohydrates from dish where id = #{id}")
     Dish getById(Serializable id);
 
     // 状态统计

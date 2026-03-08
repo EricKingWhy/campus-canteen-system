@@ -55,6 +55,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DishFlavor::getDishId, dish.getId());
         dto.setFlavors(dishFlavorMapper.selectList(queryWrapper));
+        log.info("[数据打捞测试] 返回给前端的菜品详情 DTO: {}", dto);
         return dto;
     }
 
@@ -169,6 +170,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             log.info("[漏斗L1] 无画像 -> 冷启动: 按销量Top6");
             LambdaQueryWrapper<Dish> cold = new LambdaQueryWrapper<>();
             cold.eq(Dish::getStatus, 1);
+            // 【核心防线】即使在兜底层也要过滤忌口
+            applyAvoidTags(cold, dto.getAvoidTags());
             cold.orderByDesc(Dish::getSold);
             cold.last("LIMIT 6");
             return dishMapper.selectList(cold);
@@ -240,18 +243,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         }
 
         // L3: 忌口红线（始终应用，这是安全底线）
-        if (dto.getAvoidTags() != null && !dto.getAvoidTags().trim().isEmpty()) {
-            String[] tags = dto.getAvoidTags().split(",");
-            for (String tag : tags) {
-                String trimmed = tag.trim();
-                if (!trimmed.isEmpty()) {
-                    w.and(wrapper -> wrapper
-                            .isNull(Dish::getAllergenTags)
-                            .or()
-                            .notLike(Dish::getAllergenTags, trimmed));
-                }
-            }
-        }
+        applyAvoidTags(w, dto.getAvoidTags());
 
         // 【升级】SQL粗筛：先按销量降序捞出Top20候选菜品
         w.orderByDesc(Dish::getSold);
@@ -285,6 +277,25 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 finalPick.size(), dto.getTasteTags());
 
         return finalPick;
+    }
+
+    /**
+     * 【绝对防线】统一注入过敏源忌口拦截逻辑
+     * 支持多个忌口，使用严格的 AND + NOT LIKE
+     */
+    private void applyAvoidTags(LambdaQueryWrapper<Dish> w, String avoidTags) {
+        if (avoidTags != null && !avoidTags.trim().isEmpty()) {
+            String[] tags = avoidTags.split(",");
+            for (String tag : tags) {
+                String trimmed = tag.trim();
+                if (!trimmed.isEmpty()) {
+                    w.and(wrapper -> wrapper
+                            .isNull(Dish::getAllergenTags)
+                            .or()
+                            .notLike(Dish::getAllergenTags, trimmed));
+                }
+            }
+        }
     }
 
     /**

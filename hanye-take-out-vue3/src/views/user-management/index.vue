@@ -607,7 +607,7 @@ fetchUserList()
                   <div class="spend-label">预计月末消费</div>
                   <div class="spend-value">¥ {{ Number(spendAnalytics.forecastMonthEnd || 0).toFixed(2) }}</div>
                   <el-progress 
-                    :percentage="Math.min(100, Math.round(spendAnalytics.monthSpend / spendAnalytics.forecastMonthEnd * 100))" 
+                    :percentage="spendAnalytics.forecastMonthEnd > 0 ? Math.min(100, Math.round((spendAnalytics.monthSpend / spendAnalytics.forecastMonthEnd) * 100)) : 0" 
                     :stroke-width="10"
                   />
                 </el-card>
@@ -616,25 +616,26 @@ fetchUserList()
               <!-- 消费趋势 -->
               <el-card class="chart-card" shadow="never">
                 <template #header>消费趋势</template>
-                <div class="chart-placeholder">
+                <div class="chart-placeholder" v-if="spendAnalytics.dailySpendTrend && spendAnalytics.dailySpendTrend.length > 0">
                   <div v-for="item in spendAnalytics.dailySpendTrend" :key="item.date" class="trend-bar">
-                    <div class="bar" :style="{ height: Math.max(10, item.value * 2) + 'px' }"></div>
-                    <span class="bar-label">{{ item.day }}</span>
+                    <div class="bar" :style="{ height: Math.max(10, (item.amount || 0) * 2) + 'px' }"></div>
+                    <span class="bar-label">{{ item.date.substring(5) }}</span>
                   </div>
                 </div>
+                <el-empty v-else description="暂无趋势数据" :image-size="60" style="padding: 10px;" />
               </el-card>
 
               <!-- 消费构成 -->
               <el-card class="chart-card" shadow="never">
                 <template #header>消费构成</template>
-                <div class="composition-list">
+                <div class="composition-list" v-if="spendAnalytics.spendComposition && spendAnalytics.spendComposition.length > 0">
                   <div v-for="item in spendAnalytics.spendComposition" :key="item.name" class="comp-item">
                     <span class="comp-name">{{ item.name }}</span>
                     <el-progress :percentage="item.percent" :stroke-width="8" />
                     <span class="comp-amount">¥{{ Number(item.amount).toFixed(0) }}</span>
                   </div>
-                  <el-empty v-if="!spendAnalytics.spendComposition?.length" description="暂无消费数据" />
                 </div>
+                <el-empty v-else description="暂无消费数据" :image-size="60" style="padding: 10px;" />
               </el-card>
 
               <!-- 助手建议 -->

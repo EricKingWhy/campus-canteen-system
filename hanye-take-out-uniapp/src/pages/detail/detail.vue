@@ -5,7 +5,30 @@
     <image class="image" :src="dish.pic" mode="aspectFill" />
     <view class="dishinfo">
       <view class="name ellipsis">{{ dish.name }}</view>
-      <view class="detail ellipsis">{{ dish.detail }}</view>
+      <view class="detail ellipsis">{{ dish.description }}</view>
+      <view class="detail-section ingredients-box" v-if="dish.mainIngredients" style="margin-top: 30rpx; padding-top: 20rpx; border-top: 2rpx dashed #eee;">
+          <view style="font-size: 28rpx; font-weight: bold; color: #333; margin-bottom: 10rpx;">🥘 主要成分</view>
+          <view style="font-size: 26rpx; color: #666; line-height: 1.5;">{{ dish.mainIngredients }}</view>
+      </view>
+
+      <view class="detail-section allergen-box" v-if="dish.allergenTags" style="margin-top: 20rpx;">
+          <view v-if="dish.allergenTags !== '无'" style="background-color: #fff0f0; border-left: 8rpx solid #d93025; padding: 16rpx; border-radius: 8rpx;">
+              <text style="font-size: 26rpx; font-weight: bold; color: #d93025;">⚠️ 忌口/过敏原提示：{{ dish.allergenTags }}</text>
+          </view>
+          <view v-else style="background-color: #e6f4ea; border-left: 8rpx solid #0b8043; padding: 16rpx; border-radius: 8rpx;">
+              <text style="font-size: 26rpx; font-weight: bold; color: #0b8043;">✅ 忌口/过敏原提示：无，请放心食用</text>
+          </view>
+      </view>
+      <view class="nutrition-box" v-if="dish.calories || dish.protein || dish.fat || dish.carbohydrates">
+        <view class="nutrition-title">营养成分</view>
+        <view class="nutrition-flex">
+          <view class="n-item" v-if="dish.calories"><text class="n-val">{{ dish.calories }}</text><text class="n-lb">大卡</text></view>
+          <view class="n-item" v-if="dish.protein"><text class="n-val">{{ dish.protein }}</text><text class="n-lb">蛋白质(g)</text></view>
+          <view class="n-item" v-if="dish.fat"><text class="n-val">{{ dish.fat }}</text><text class="n-lb">脂肪(g)</text></view>
+          <view class="n-item" v-if="dish.carbohydrates"><text class="n-val">{{ dish.carbohydrates }}</text><text class="n-lb">碳水(g)</text></view>
+        </view>
+      </view>
+
       <view class="price">
         <text class="symbol">¥</text>
         <text class="number">{{ dish.price }}</text>
@@ -42,12 +65,12 @@
       <image :src="item.pic" />
       <view class="dishinfo">
         <view class="name ellipsis">{{ item.name }}</view>
-        <view class="detail ellipsis">{{ item.detail }}</view>
+        <view class="detail ellipsis">{{ item.description }}</view>
       </view>
     </view>
     <!-- 套餐信息 -->
     <view class="setmeal_info">
-      <view class="detail ellipsis">{{ setmeal.detail }}</view>
+      <view class="detail ellipsis">{{ setmeal.description }}</view>
       <view class="price">
         <text class="symbol">¥</text>
         <text class="number">{{ setmeal?.price }}</text>
@@ -201,6 +224,7 @@ const init = async (id: number, type: string) => {
   console.log('init', id, type)
   if (type === 'dishId') {
     res = await getDishByIdAPI(id)
+    console.log("【核弹级审查】C端收到的菜品完整数据：", res.data);
     dish.value = res.data
   } else {
     res = await getSetmealAPI(id)
@@ -501,6 +525,66 @@ const submitOrder = () => {
       padding: 5rpx;
       font-size: 25rpx;
       color: #333;
+    }
+
+    .allergen-warning {
+      margin: 10rpx 0;
+      padding: 10rpx 15rpx;
+      background-color: #fff0f0;
+      border: 1px solid #ffbaba;
+      border-radius: 8rpx;
+      color: #d13232;
+      font-size: 22rpx;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+
+      .warning-icon {
+        margin-right: 10rpx;
+        font-size: 26rpx;
+      }
+    }
+
+    .nutrition-box {
+      margin: 10rpx 0;
+      padding: 15rpx;
+      background-color: #f8f9fa;
+      border-radius: 12rpx;
+      
+      .nutrition-title {
+        font-size: 24rpx;
+        font-weight: bold;
+        color: #444;
+        margin-bottom: 10rpx;
+      }
+
+      .nutrition-flex {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10rpx;
+
+        .n-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .n-val {
+            font-size: 26rpx;
+            font-weight: bold;
+            color: #111;
+          }
+
+          .n-lb {
+            font-size: 20rpx;
+            color: #888;
+          }
+        }
+      }
+
+      .n-main {
+        font-size: 22rpx;
+        color: #666;
+      }
     }
 
     .price {

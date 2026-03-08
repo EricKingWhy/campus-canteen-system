@@ -4,7 +4,8 @@ export type SetmealItem = {
   name: string
   pic: string
   price: number
-  detail: string
+  price: number
+  description: string
   categoryId: number
 }
 
@@ -14,7 +15,8 @@ export type SetmealVOItem = {
   name: string
   pic: string
   price: number
-  detail: string
+  price: number
+  description: string
   categoryId: number
   setmealDishes: SetmealDishItem[]
 }
@@ -23,6 +25,7 @@ export type SetmealVOItem = {
 export type SetmealDishItem = {
   name: string
   pic: string
-  detail: string
+  pic: string
+  description: string
   copies: number
 }

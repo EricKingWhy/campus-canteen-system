@@ -363,6 +363,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Override
     public void cancel(OrderCancelDTO orderCancelDTO) { // 商家取消
         Orders orders = orderMapper.selectById(orderCancelDTO.getId());
+
+        // 【核心防御】阻止时空倒流的非法取消请求
+        if (orders.getStatus().equals(Orders.COMPLETED)) {
+            throw new OrderBusinessException("订单已结单，无法取消！");
+        }
+        if (orders.getStatus().equals(Orders.CANCELLED)) {
+            throw new OrderBusinessException("订单已是取消状态，请勿重复操作！");
+        }
+
         Orders updateOrder = new Orders();
         updateOrder.setId(orders.getId());
         updateOrder.setStatus(Orders.CANCELLED);

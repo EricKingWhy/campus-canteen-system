@@ -54,15 +54,15 @@ public class DishController {
     }
 
     /**
-     * 【核心新增】获取全校真实热销榜 (Top 5)
+     * 【核心新增】获取全校真实热销榜 (Top 10)
      */
     @GetMapping("/hotSales")
     public Result<List<DishVO>> hotSales() {
-        log.info("C端-获取全校真实热销榜 Top 5");
+        log.info("C端-获取全校真实热销榜 Top 10");
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Dish::getStatus, StatusConstant.ENABLE);
         queryWrapper.orderByDesc(Dish::getSold);
-        queryWrapper.last("LIMIT 5");
+        queryWrapper.last("LIMIT 10");
 
         List<Dish> list = dishService.list(queryWrapper);
         List<DishVO> dishVOList = list.stream().map(d -> {

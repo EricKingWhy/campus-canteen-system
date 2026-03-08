@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableField;
 
 @Data
 @Builder
@@ -33,9 +34,15 @@ public class Dish implements Serializable {
     private Double calories;
     private Double protein;
     private Double fat;
+
+    @TableField("carbon_water")
     private Double carbohydrates;
 
+    @TableField("main_ingredients")
+    private String mainIngredients;
+
     // 食材/过敏原标签 (逗号分隔，如 "海鲜,花生,乳制品")
+    @TableField("allergen_tags")
     private String allergenTags;
 
     // 销量字段

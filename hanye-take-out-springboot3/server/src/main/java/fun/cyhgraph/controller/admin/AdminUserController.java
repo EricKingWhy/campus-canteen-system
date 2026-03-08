@@ -250,14 +250,44 @@ public class AdminUserController {
     }
 
     /**
-     * 餐费分析
+     * 餐费分析 (安全同源适配层)
      */
     @GetMapping("/{id}/analytics/spend")
     public Result<Map<String, Object>> getSpendAnalytics(
             @PathVariable Long id,
             @RequestParam(defaultValue = "7") Integer range) {
         log.info("获取用户餐费分析: userId={}, range={}", id, range);
-        return Result.success(analysisService.getCostSummary(id));
+
+        // 1. 获取同源底层服务聚合数据
+        Map<String, Object> baseCost = analysisService.getCostSummary(id);
+
+        // 2. 强类型安全适配前端所需的 key
+        Map<String, Object> adminResponse = new HashMap<>();
+
+        // 安全类型转换辅助方法内联，防止 ClassCastException
+        adminResponse.put("monthSpend", safeToDouble(baseCost.get("monthSpent")));
+        adminResponse.put("forecastMonthEnd", safeToDouble(baseCost.get("predictedMonthTotal")));
+
+        adminResponse.put("statusLabel", baseCost.getOrDefault("statusTag", "暂无数据"));
+        adminResponse.put("assistantTip", baseCost.getOrDefault("tip", "暂无更多消费建议"));
+
+        adminResponse.put("spendComposition", baseCost.getOrDefault("byCategory", new ArrayList<>()));
+        adminResponse.put("dailySpendTrend", baseCost.getOrDefault("trendData", new ArrayList<>()));
+
+        return Result.success(adminResponse);
+    }
+
+    private Double safeToDouble(Object value) {
+        if (value == null)
+            return 0.0;
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        try {
+            return Double.parseDouble(value.toString());
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
 
     /**

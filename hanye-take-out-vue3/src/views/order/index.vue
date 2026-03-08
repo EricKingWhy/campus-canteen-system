@@ -405,9 +405,10 @@ onMounted(async () => {
                   @click="orderReject(scope.row), (isTableOperateBtn = true)">
                   拒单
                 </el-button>
-                <el-button v-if="[1, 3, 4, 5].includes(scope.row.status)" type="danger" link
+                <el-button type="danger" link
+                  :disabled="scope.row.status === 5 || scope.row.status === 6"
                   @click="cancelOrder(scope.row)">
-                  取消
+                  {{ (scope.row.status === 5 || scope.row.status === 6) ? '不可取消' : '取消' }}
                 </el-button>
               </div>
               <el-divider direction="vertical" />
@@ -498,10 +499,8 @@ onMounted(async () => {
               </div>
             </div>
             <div class="dish-all-amount">
-              <label>菜品小计</label>
-              <span>￥{{ diaForm && diaForm.amount && diaForm?.packAmount ?
-                (diaForm!.amount - 6 - diaForm!.packAmount).toFixed(2) : 0
-                }}</span>
+              <label>实际菜品小计</label>
+              <span>{{ diaForm && diaForm.amount ? '￥' + Number(diaForm.amount).toFixed(2) : '￥0.00' }}</span>
             </div>
           </div>
         </div>
@@ -511,24 +510,12 @@ onMounted(async () => {
             <div class="amount-label">费用</div>
             <div class="amount-list">
               <div class="dish-amount">
-                <span class="amount-name">菜品小计：</span>
-                <span class="amount-price">￥{{ (diaForm && typeof diaForm.amount === 'number' && typeof
-                  diaForm.packAmount === 'number') ? (((diaForm.amount - 6 - diaForm.packAmount) * 100) /
-                  100).toFixed(2) : 0 }}</span>
-              </div>
-              <div class="send-amount">
-                <span class="amount-name">派送费：</span>
-                <span class="amount-price">￥{{ 6 }}</span>
-              </div>
-              <div class="package-amount">
-                <span class="amount-name">打包费：</span>
-                <span class="amount-price">￥{{ diaForm && diaForm.amount && diaForm.packAmount ?
-                  ((diaForm!.packAmount * 100) / 100).toFixed(2) : '' }}</span>
+                <span class="amount-name">菜品金额：</span>
+                <span class="amount-price">{{ diaForm && diaForm.amount ? '￥' + Number(diaForm.amount).toFixed(2) : '￥0.00' }}</span>
               </div>
               <div class="all-amount">
-                <span class="amount-name">合计：</span>
-                <span class="amount-price">￥{{ diaForm && diaForm.amount && diaForm.packAmount ?
-                  ((diaForm!.amount * 100) / 100).toFixed(2) : '' }}</span>
+                <span class="amount-name">合计支付：</span>
+                <span class="amount-price">{{ diaForm && diaForm.amount ? '￥' + Number(diaForm.amount).toFixed(2) : '￥0.00' }}</span>
               </div>
               <div class="pay-type">
                 <span class="pay-name">支付渠道：</span>

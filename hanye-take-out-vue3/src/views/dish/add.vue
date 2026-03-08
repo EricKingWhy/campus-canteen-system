@@ -37,15 +37,16 @@ const formLabelWidth = '70px'
 const form = reactive({
   id: 0,
   name: '',
-  pic: '',
+  image: '',
   dishFlavors: [] as DishFlavor[],
-  detail: '',
+  description: '',
   price: '',
   calories: '',
   mainIngredients: '',
   protein: '',
   fat: '',
-  carbonWater: '',
+  carbohydrates: '',
+  allergenTags: '',
   status: '',
   categoryId: ''
 })
@@ -59,11 +60,14 @@ const rules = {
   name: [
     { required: true, trigger: 'blur', message: '不能为空' },
   ],
-  detail: [
+  description: [
     { required: true, trigger: 'blur', message: '不能为空' },
   ],
   price: [
     { required: true, trigger: 'blur', message: '不能为空' },
+  ],
+  mainIngredients: [
+    { required: true, message: '主要成分不能为空，请如实填写', trigger: 'blur' }
   ],
   categoryId: [
     { required: true, trigger: 'blur', message: '不能为空' },
@@ -102,11 +106,16 @@ const onFileChange1 = (e: Event) => {
     // 3. 监听 fr 的 onload 事件，文件转为base64字符串成功后会触发该事件
     fr.onload = () => {
       // 4. 通过 e.target.result 获取到读取的结果，值是字符串（base64 格式的字符串）
-      form.pic = fr.result as string
+      form.image = fr.result as string
       console.log('avatar')
-      console.log(form.pic)
+      console.log(form.image)
     }
   }
+}
+
+// ImageUpload 组件的回调
+const imageChange = (url: string) => {
+  form.image = url
 }
 
 // 按钮 - 添加口味
@@ -177,6 +186,12 @@ const submit = async (keep: any) => {
   const valid = await addRef.value.validate();
   if (valid) {
     let params: any = { ...form }
+    
+    // 忌口空值自动兜底拦截
+    if (!params.allergenTags || params.allergenTags.trim() === '') {
+      params.allergenTags = '无';
+    }
+    
     console.log('看看有没有拷贝成功？', params)
     // 需要先对口味数组进行json.stringfy序列化
     params.flavors = form.dishFlavors.map(obj => ({
@@ -202,15 +217,16 @@ const submit = async (keep: any) => {
       if (keep) {
         form.id = 0
         form.name = ''
-        form.pic = ''
+        form.image = ''
         form.dishFlavors = []
-        form.detail = ''
+        form.description = ''
         form.price = ''
         form.calories = ''
         form.mainIngredients = ''
         form.protein = ''
         form.fat = ''
-        form.carbonWater = ''
+        form.carbohydrates = ''
+        form.allergenTags = ''
         form.status = ''
         form.categoryId = ''
         getLeftDishFlavors()
@@ -265,6 +281,7 @@ const init = async () => {
     console.log(dish)
     // 【修复】dish.data.data 可能为 null，需防御性编程
     const dbDish = dish.data.data || {}
+    console.log('【管理端】回显的数据:', dbDish)
     Object.assign(form, dbDish)
     console.log(form)
     // 3. 如果是修改页面，需要将口味数组中的list字符串反序列化
@@ -292,9 +309,9 @@ init()
       <el-form-item label="名称" :label-width="formLabelWidth" prop="name">
         <el-input v-model="form.name" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="图片" :label-width="formLabelWidth" prop="pic">
-        <img class="the_img" v-if="!form.pic" src="/src/assets/image/user_default.png" alt="" />
-        <img class="the_img" v-else :src="form.pic" alt="" />
+      <el-form-item label="图片" :label-width="formLabelWidth" prop="image">
+        <img class="the_img" v-if="!form.image" src="/src/assets/image/user_default.png" alt="" />
+        <img class="the_img" v-else :src="form.image" alt="" />
         <input type="file" accept="image/*" style="display: none" ref="inputRef1" @change="onFileChange1" />
         <el-button type="primary" @click="chooseImg">
           <el-icon style="font-size: 15px; margin-right: 10px;">
@@ -331,8 +348,8 @@ init()
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="详情" :label-width="formLabelWidth" prop="detail">
-        <el-input v-model="form.detail" autocomplete="off" type="textarea" />
+      <el-form-item label="详情" :label-width="formLabelWidth" prop="description">
+        <el-input v-model="form.description" autocomplete="off" type="textarea" />
       </el-form-item>
       <el-form-item label="价格" :label-width="formLabelWidth" prop="price">
         <el-input v-model="form.price" autocomplete="off" />
@@ -343,6 +360,9 @@ init()
       <el-form-item label="主要成分" :label-width="formLabelWidth" prop="mainIngredients">
         <el-input v-model="form.mainIngredients" autocomplete="off" />
       </el-form-item>
+      <el-form-item label="忌口/过敏源" :label-width="formLabelWidth" prop="allergenTags">
+        <el-input v-model="form.allergenTags" autocomplete="off" placeholder="多个忌口请用逗号分隔，如：豆制品,海鲜,辛辣" />
+      </el-form-item>
       <div class="nutrition-row">
         <el-form-item label="蛋白质" :label-width="formLabelWidth" prop="protein" class="nutrition-item">
           <el-input v-model="form.protein" autocomplete="off" />
@@ -350,8 +370,8 @@ init()
         <el-form-item label="脂肪" :label-width="formLabelWidth" prop="fat" class="nutrition-item">
           <el-input v-model="form.fat" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="碳水" :label-width="formLabelWidth" prop="carbonWater" class="nutrition-item">
-          <el-input v-model="form.carbonWater" autocomplete="off" />
+        <el-form-item label="碳水" :label-width="formLabelWidth" prop="carbohydrates" class="nutrition-item">
+          <el-input v-model="form.carbohydrates" autocomplete="off" />
         </el-form-item>
       </div>
       <el-form-item label="分类" :label-width="formLabelWidth" prop="categoryId">

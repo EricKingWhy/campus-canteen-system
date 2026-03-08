@@ -1,5 +1,6 @@
 package fun.cyhgraph.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +16,6 @@ public class DishFlavor implements Serializable {
     private Long id;
     private Long dishId; // 菜品id
     private String name; // 口味名称
+    @TableField("list")
     private String value; // 口味数据list
 }

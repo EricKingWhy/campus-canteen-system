@@ -73,6 +73,20 @@
             <text class="description">{{ dish.description || '精选优质食材，由专业营养师搭配，采用健康烹饪方式，锁住食材本味。口感鲜美，营养均衡。' }}</text>
           </view>
 
+          <view class="detail-section ingredients-box" v-if="dish.mainIngredients" style="margin-top: 30rpx; padding-top: 20rpx; border-top: 2rpx dashed #eee; margin-bottom: 48rpx;">
+              <view style="font-size: 28rpx; font-weight: bold; color: #333; margin-bottom: 10rpx;">🥘 主要成分</view>
+              <view style="font-size: 26rpx; color: #666; line-height: 1.5;">{{ dish.mainIngredients }}</view>
+          </view>
+
+          <view class="detail-section allergen-box" v-if="dish.allergenTags" style="margin-bottom: 48rpx;">
+              <view v-if="dish.allergenTags !== '无'" style="background-color: #fff0f0; border-left: 8rpx solid #d93025; padding: 16rpx; border-radius: 8rpx;">
+                  <text style="font-size: 26rpx; font-weight: bold; color: #d93025;">⚠️ 忌口/过敏原提示：{{ dish.allergenTags }}</text>
+              </view>
+              <view v-else style="background-color: #e6f4ea; border-left: 8rpx solid #0b8043; padding: 16rpx; border-radius: 8rpx;">
+                  <text style="font-size: 26rpx; font-weight: bold; color: #0b8043;">✅ 忌口/过敏原提示：无，请放心食用</text>
+              </view>
+          </view>
+
           <!-- Smart Flavors -->
           <view class="section" v-if="smartFlavors.length > 0">
              <text class="section-title">选择口味</text>

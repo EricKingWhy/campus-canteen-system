@@ -272,6 +272,23 @@ public class AnalysisServiceImpl implements AnalysisService {
         result.put("byCategory", byCategory);
         result.put("topCategoryName", sortedCategories.isEmpty() ? "--" : sortedCategories.get(0).getKey());
 
+        // 【新增】组装每日消费趋势 (近7天)
+        List<Map<String, Object>> trendData = new ArrayList<>();
+        LocalDate loopDate = today.minusDays(6); // 近7天包含今天
+        while (!loopDate.isAfter(today)) {
+            final LocalDate currentLoopDate = loopDate;
+            BigDecimal daySpent = sumOrderAmount(userId, currentLoopDate.atStartOfDay(),
+                    currentLoopDate.atTime(LocalTime.MAX));
+
+            Map<String, Object> point = new HashMap<>();
+            point.put("date", currentLoopDate.toString());
+            // Vue前端期望的结构通常是 { date: 'xxxx-xx-xx', 字段名视情况定 }
+            point.put("amount", daySpent.doubleValue());
+            trendData.add(point);
+            loopDate = loopDate.plusDays(1);
+        }
+        result.put("trendData", trendData);
+
         return result;
     }
 

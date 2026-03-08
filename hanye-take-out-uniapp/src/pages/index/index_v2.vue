@@ -96,7 +96,7 @@
               <text v-if="index === 0" class="trophy">🏆</text>
               <text v-else-if="index === 1" class="rank-num silver">#2</text>
               <text v-else-if="index === 2" class="rank-num bronze">#3</text>
-              <text v-else class="rank-num normal">{{ index + 1 }}</text>
+              <text v-else class="rank-num normal">#{{ index + 1 }}</text>
            </view>
            
            <!-- 【核心修复】图片路径处理: 以前端传入的 baseUrl 为前缀 (如果不是http开头) -->
@@ -277,10 +277,7 @@ const getRecommendData = () => {
          if (res.data.code === 0 || res.data.code === 1) {
             const dishes = res.data.data || [];
             recommendList.value = dishes.map((dish: any) => ({
-               id: dish.id,
-               name: dish.name,
-               price: dish.price,
-               calories: dish.calories || 0,
+               ...dish,
                tags: buildSmartTags(dish, dto),
                image: dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
             }));
@@ -317,10 +314,7 @@ const fallbackRecommend = () => {
          if (res.data.code === 0 || res.data.code === 1) {
             const dishes = res.data.data || [];
             recommendList.value = dishes.slice(0, 6).map((dish: any) => ({
-               id: dish.id,
-               name: dish.name,
-               price: dish.price,
-               calories: dish.calories || 0,
+               ...dish,
                tags: ['推荐'],
                image: dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
             }));
@@ -685,7 +679,7 @@ $spacing: 32rpx;
         
         .silver { color: #A0A0A0; }
         .bronze { color: #CD7F32; }
-        .normal { color: #999; font-size: 28rpx; font-style: normal; font-weight: normal; }
+        .normal { color: #999; font-size: 28rpx; }
      }
 
      .dish-img { width: 140rpx; height: 140rpx; border-radius: 20rpx; margin-right: 24rpx; }
