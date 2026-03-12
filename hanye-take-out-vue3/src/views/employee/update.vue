@@ -172,7 +172,12 @@ const init = async () => {
     // form = song.data.data
     // 重新赋值，不改变引用的写法
     console.log(employee)
-    Object.assign(form, employee.data.data)
+    const empData = employee.data.data
+    // 【核心修复】后端传回的是 username，前端表单绑定的叫 account，需要手动转换回显
+    if (empData.username && !empData.account) {
+      empData.account = empData.username
+    }
+    Object.assign(form, empData)
     console.log(form)
   } else {
     console.log('没有id')

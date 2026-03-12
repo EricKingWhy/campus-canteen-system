@@ -77,7 +77,7 @@ export const getEmployeePageListAPI = (params: any) => {
  */
 export const getEmployeeByIdAPI = (id: number) => {
   return request({
-    url: `/employee/${id}`,
+    url: `/admin/employee/${id}`,
     method: 'get'
   })
 }
@@ -89,7 +89,7 @@ export const getEmployeeByIdAPI = (id: number) => {
  */
 export const updateEmployeeAPI = (params: any) => {
   return request({
-    url: '/employee',
+    url: '/admin/employee',
     method: 'put',
     data: { ...params }
   })
@@ -102,7 +102,7 @@ export const updateEmployeeAPI = (params: any) => {
  */
 export const updateEmployeeStatusAPI = (status: number, id: number) => {
   return request({
-    url: `/employee/status/${status}`,
+    url: `/admin/employee/status/${status}`,
     method: 'post',
     params: { id }
   })
@@ -115,7 +115,7 @@ export const updateEmployeeStatusAPI = (status: number, id: number) => {
  */
 export const deleteEmployeeAPI = (id: number) => {
   return request({
-    url: `/employee`,  // Query param id or Path variable? Backend usually needs ID. I'll make backend accept param or path. Let's start with query for safety or path. Standard is path. I will use Query param `?id=` to match common pattern or just path.
+    url: `/admin/employee`,  // Query param id or Path variable? Backend usually needs ID. I'll make backend accept param or path. Let's start with query for safety or path. Standard is path. I will use Query param `?id=` to match common pattern or just path.
     // Wait, backend delete is usually DELETE /{id}. 
     // Let's create DELETE mapping in backend.
     method: 'delete',

@@ -41,7 +41,7 @@
             <image class="image" :src="dish.pic"></image>
             <view class="dishinfo">
               <view class="name ellipsis">{{ dish.name }}</view>
-              <view class="detail ellipsis">{{ dish.detail }}</view>
+              <view class="detail">{{ dish.detail }}</view>
               <view class="price">
                 <text class="symbol">¥</text>
                 <text class="number">{{ dish.price }}</text>
@@ -598,8 +598,8 @@ onShow(async () => {
 /* 一级分类 */
 .primary {
   overflow: hidden;
-  width: 180rpx;
-  flex: none;
+  width: 170rpx !important;
+  flex: 0 0 170rpx !important; /* 绝对不放大，绝对不缩小，死锁 170rpx */
   background-color: #f6f6f6;
 
   .item {
@@ -633,6 +633,10 @@ onShow(async () => {
 
 /* 二级分类 */
 .secondary {
+  flex: 1 !important;
+  width: 0 !important; /* Flex 经典神技：强制其宽度由父级分配，不被子元素撑开 */
+  min-width: 0 !important;
+  overflow: hidden !important; /* 防止溢出内容撑破布局 */
   background-color: #fff;
 
   .carousel {
@@ -687,23 +691,36 @@ onShow(async () => {
         flex-direction: column;
         justify-content: space-between;
         flex: 1;
+        min-width: 0; /* 这是 Flex 垂直排列防溢出的杀手锏 */
 
         .ellipsis {
+          display: block !important; /* 强制块级元素，独占一行 */
+          width: 100% !important; /* 强制占满父容器宽度 */
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
 
         .name {
+          display: block !important; /* 强制块级，独占一行 */
+          width: 100% !important;
           padding: 5rpx;
           font-size: 24rpx;
           color: #222;
         }
 
         .detail {
+          display: -webkit-box !important; /* 强制 webkit-box 布局 */
+          -webkit-box-orient: vertical !important;
+          -webkit-line-clamp: 2 !important; /* 核心：最多显示两行 */
+          overflow: hidden !important;
+          width: 100% !important; /* 强制占满父容器 */
+          white-space: normal !important; /* 绝对允许换行 */
+          word-break: break-all;
           padding: 5rpx;
-          font-size: 18rpx;
-          color: #333;
+          margin-top: 4rpx;
+          font-size: 20rpx;
+          color: #999;
         }
 
         .price {

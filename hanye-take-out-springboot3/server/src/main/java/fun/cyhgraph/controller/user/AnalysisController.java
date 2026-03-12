@@ -62,4 +62,26 @@ public class AnalysisController {
         Long userId = BaseContext.getCurrentId();
         return Result.success(analysisService.getCostSummary(userId));
     }
+
+    /**
+     * 获取餐费分析趋势
+     */
+    @GetMapping("/cost/trend")
+    public Result<List<Map<String, Object>>> getCostTrend(@RequestParam(defaultValue = "7") int range) {
+        Long userId = BaseContext.getCurrentId();
+        Map<String, Object> summary = analysisService.getCostSummary(userId);
+        return Result.success((List<Map<String, Object>>) summary.get("trendData"));
+    }
+
+    /**
+     * 获取餐费分析构成
+     */
+    @GetMapping("/cost/composition")
+    public Result<Map<String, Object>> getCostComposition(@RequestParam(defaultValue = "month") String range) {
+        Long userId = BaseContext.getCurrentId();
+        Map<String, Object> summary = analysisService.getCostSummary(userId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("byCategory", summary.get("byCategory"));
+        return Result.success(result);
+    }
 }

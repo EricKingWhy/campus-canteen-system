@@ -211,18 +211,23 @@
             </view>
           </view>
           
-          <view class="bar-chart">
+          <view class="bar-chart" v-if="weeklyCostTrend && weeklyCostTrend.length > 0">
             <view 
               v-for="(item, index) in weeklyCostTrend" 
               :key="index"
               class="bar-item"
               :class="{ highlight: item.isToday }"
             >
-              <view class="bar" :style="{ height: item.heightPct + '%' }">
-                <text class="bar-tooltip">¥{{ item.value }}</text>
+              <view class="bar-area">
+                <view class="bar" :style="{ height: item.barHeight + 'rpx' }">
+                  <text class="bar-tooltip">¥{{ item.value }}</text>
+                </view>
               </view>
               <text class="bar-label">{{ item.day }}</text>
             </view>
+          </view>
+          <view v-else style="text-align: center; color: #999; line-height: 500rpx; height: 500rpx;">
+            加载中或暂无数据...
           </view>
         </view>
 
@@ -230,7 +235,7 @@
         <view class="card composition-card">
           <text class="card-title">消费构成</text>
           
-          <view class="composition-content">
+          <view class="composition-content" v-if="categoryBreakdown && categoryBreakdown.length > 0">
             <!-- Donut Chart -->
             <view class="composition-donut">
               <view class="composition-ring" :style="compositionDonutStyle"></view>
@@ -248,6 +253,9 @@
                 <text class="cat-amount">¥{{ formatMoney(cat.amount) }}</text>
               </view>
             </view>
+          </view>
+          <view v-else style="text-align: center; color: #999; line-height: 500rpx; height: 500rpx;">
+            加载中或暂无数据...
           </view>
           
           <!-- Tip -->
@@ -342,7 +350,7 @@ const spendingProgress = computed(() => {
   return Math.min(100, (monthSpent.value / baseline.value) * 100)
 })
 
-const weeklyCostTrend = ref<{ day: string; value: number; heightPct: number; isToday: boolean }[]>([])
+const weeklyCostTrend = ref<{ day: string; value: number; barHeight: number; isToday: boolean }[]>([])
 const categoryBreakdown = ref<{ name: string; amount: number; color: string }[]>([])
 const topCategory = computed(() => {
   if (!categoryBreakdown.value.length) return '--'
@@ -431,6 +439,25 @@ const fetchHealthTrend = async () => {
   }
 }
 
+// ============ 日期工具 ============
+const getDayName = (dateStr: string): string => {
+  try {
+    const d = new Date(dateStr)
+    const names = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    return names[d.getDay()] || dateStr
+  } catch { return dateStr }
+}
+
+const isToday = (dateStr: string): boolean => {
+  try {
+    const d = new Date(dateStr)
+    const now = new Date()
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()
+  } catch { return false }
+}
+
+// ============ 【核心修复】统一从 /cost/summary 获取所有餐费数据 ============
+// /cost/summary 后端已返回 trendData + byCategory，无需额外接口
 const fetchCostSummary = async () => {
   try {
     const res = await uni.request({
@@ -439,69 +466,66 @@ const fetchCostSummary = async () => {
       header: { 'authentication': uni.getStorageSync('token') }
     })
     const data = (res as any).data?.data
+    console.log('===== 餐费分析完整响应 =====', JSON.stringify(data))
+
     if (data) {
+      // 1) 金额摘要
       monthSpent.value = toNum(data.monthSpent)
       predictedTotal.value = toNum(data.predictedMonthTotal)
       baseline.value = toNum(data.baseline)
       costTip.value = data.tip || ''
+
+      // 2) 【致命修复】消费趋势 - 直接从 summary 响应中提取 trendData
+      const trendArr = data.trendData
+      console.log('===== 趋势原始数据 =====', JSON.stringify(trendArr))
+      if (trendArr && Array.isArray(trendArr) && trendArr.length > 0) {
+        const maxValue = Math.max(...trendArr.map((t: any) => parseFloat(t.amount || t.value || 0))) || 1
+        const MAX_BAR_RPX = 380  // .bar-area 高度 400rpx，柱子最高 380rpx
+        const MIN_BAR_RPX = 20   // 最低高度 20rpx，保证有数据的天显示可见凸起
+        weeklyCostTrend.value = JSON.parse(JSON.stringify(
+          trendArr.map((t: any) => {
+            const amt = parseFloat(t.amount || t.value || 0)
+            const ratio = maxValue > 0 ? amt / maxValue : 0
+            const barHeight = amt > 0 ? Math.max(MIN_BAR_RPX, Math.round(ratio * MAX_BAR_RPX)) : MIN_BAR_RPX
+            return {
+              day: getDayName(t.date || t.day || ''),
+              value: amt,
+              barHeight,
+              isToday: isToday(t.date || '')
+            }
+          })
+        ))
+        console.log('===== 趋势组装结果 =====', JSON.stringify(weeklyCostTrend.value))
+      } else {
+        // 无趋势数据时的安全回退
+        const defaultDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+        weeklyCostTrend.value = defaultDays.map((day, i) => ({
+          day,
+          value: 0,
+          barHeight: 20,
+          isToday: i === new Date().getDay()
+        }))
+      }
+
+      // 3) 【致命修复】消费构成 - 直接从 summary 响应中提取 byCategory
+      const catArr = data.byCategory
+      console.log('===== 构成原始数据 =====', JSON.stringify(catArr))
+      if (catArr && Array.isArray(catArr) && catArr.length > 0) {
+        const colorPalette = ['#4A90E2', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#5AC8FA']
+        categoryBreakdown.value = JSON.parse(JSON.stringify(
+          catArr.map((c: any, index: number) => ({
+            name: c.name || c.categoryName || '其他',
+            amount: parseFloat(c.amount || c.value || 0),
+            color: c.color || colorPalette[index % colorPalette.length]
+          }))
+        ))
+        console.log('===== 构成组装结果 =====', JSON.stringify(categoryBreakdown.value))
+      } else {
+        categoryBreakdown.value = []
+      }
     }
   } catch (e) {
     console.error('获取餐费分析数据失败:', e)
-  }
-}
-
-// 获取消费趋势（新接口）
-const fetchCostTrend = async () => {
-  try {
-    const res = await uni.request({
-      url: 'http://localhost:8081/analysis/cost/trend?range=7',
-      method: 'GET',
-      header: { 'authentication': uni.getStorageSync('token') }
-    })
-    const data = (res as any).data?.data
-    console.log('消费趋势数据:', data)
-    if (data && Array.isArray(data) && data.length > 0) {
-      const maxValue = Math.max(...data.map((t: any) => toNum(t.value))) || 1
-      weeklyCostTrend.value = data.map((t: any) => ({
-        day: t.day || '',
-        value: toNum(t.value),
-        heightPct: maxValue > 0 ? (toNum(t.value) / maxValue) * 70 + 20 : 20,
-        isToday: t.isToday || false
-      }))
-    } else {
-      // 填充默认数据，避免空白
-      const defaultDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-      weeklyCostTrend.value = defaultDays.map((day, i) => ({
-        day,
-        value: 0,
-        heightPct: 20,
-        isToday: i === new Date().getDay()
-      }))
-    }
-  } catch (e) {
-    console.error('获取消费趋势失败:', e)
-  }
-}
-
-// 获取消费构成（新接口）
-const fetchCostComposition = async () => {
-  try {
-    const res = await uni.request({
-      url: 'http://localhost:8081/analysis/cost/composition?range=month',
-      method: 'GET',
-      header: { 'authentication': uni.getStorageSync('token') }
-    })
-    const data = (res as any).data?.data
-    console.log('消费构成数据:', data)
-    if (data && data.byCategory && data.byCategory.length > 0) {
-      categoryBreakdown.value = data.byCategory.map((c: any) => ({
-        name: c.name || '其他',
-        amount: toNum(c.amount),
-        color: c.color || '#13ec5b'
-      }))
-    }
-  } catch (e) {
-    console.error('获取消费构成失败:', e)
   }
 }
 
@@ -512,9 +536,7 @@ const loadAllData = async () => {
   await Promise.all([
     fetchHealthSummary(),
     fetchHealthTrend(),
-    fetchCostSummary(),
-    fetchCostTrend(),
-    fetchCostComposition()
+    fetchCostSummary()
   ])
 }
 
@@ -1009,8 +1031,8 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  height: 240rpx;
   padding-top: 40rpx;
+  padding-bottom: 16rpx;
 }
 
 .bar-item {
@@ -1018,7 +1040,15 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  gap: 8rpx;
+}
+
+.bar-area {
+  width: 100%;
+  height: 400rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .bar {
@@ -1070,6 +1100,8 @@ onMounted(() => {
   gap: 32rpx;
   align-items: center;
   margin-top: 24rpx;
+  height: 500rpx !important;
+  min-height: 500rpx !important;
 }
 
 .composition-donut {
