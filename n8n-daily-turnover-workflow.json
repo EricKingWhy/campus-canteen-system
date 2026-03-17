@@ -1,0 +1,99 @@
+{
+  "name": "Daily Canteen Turnover Report",
+  "nodes": [
+    {
+      "id": "schedule_1",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [220, 300],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 23,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mysql_1",
+      "name": "Query Turnover",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [480, 300],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), '%Y-%m-%d') AS stat_date,\n       COUNT(*) AS order_count,\n       COALESCE(SUM(amount), 0) AS total_turnover\nFROM orders\nWHERE order_time >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)\n  AND order_time < CURDATE()\n  AND pay_status = 1;",
+        "options": {}
+      }
+    },
+    {
+      "id": "code_1",
+      "name": "Build Report Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 300],
+      "parameters": {
+        "language": "javaScript",
+        "mode": "runOnceForAllItems",
+        "jsCode": "const row = items[0]?.json ?? {};\nconst date = row.stat_date ?? new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);\nconst orderCount = Number(row.order_count ?? 0);\nconst turnover = Number(row.total_turnover ?? 0).toFixed(2);\nreturn [{\n  json: {\n    subject: `Canteen Daily Report ${date}`,\n    message: `Canteen Daily Report\\nDate: ${date}\\nOrder Count: ${orderCount}\\nTurnover: RMB ${turnover}`\n  }\n}];"
+      }
+    },
+    {
+      "id": "email_1",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1040, 300],
+      "parameters": {
+        "fromEmail": "canteen-report@example.com",
+        "toEmail": "boss@example.com",
+        "subject": "={{$json.subject}}",
+        "message": "={{$json.message}}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Query Turnover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Turnover": {
+      "main": [
+        [
+          {
+            "node": "Build Report Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Report Text": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "Asia/Shanghai"
+  }
+}

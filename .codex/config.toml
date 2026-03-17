@@ -1,0 +1,82 @@
+[mcp_servers.mysql]
+command = "py"
+args = ["-m", "mysql_mcp_server_pro.server", "--mode", "stdio"]
+startup_timeout_sec = 120
+
+[mcp_servers.mysql.env]
+MYSQL_USER = "root"
+MYSQL_PASSWORD = "123456"
+MYSQL_DATABASE = "hanye_take_out"
+MYSQL_HOST = "127.0.0.1"
+MYSQL_PORT = "3306"
+MYSQL_ROLE = "admin"
+
+[mcp_servers.redis]
+command = "py"
+args = ["-c", "from src.main import cli; cli()"]
+startup_timeout_sec = 120
+
+[mcp_servers.redis.env]
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = "6379"
+REDIS_PASSWORD = ""
+REDIS_PWD = ""
+
+[mcp_servers.swagger]
+command = "npx"
+args = ["-y", "mcp-swagger-server", "-t", "stdio", "-o", "http://localhost:8081/v3/api-docs", "--base-url", "http://localhost:8081"]
+startup_timeout_sec = 120
+
+[mcp_servers.swagger.env]
+NODE_TLS_REJECT_UNAUTHORIZED = "0"
+NPM_CONFIG_OFFLINE = "false"
+NPM_CONFIG_CACHE = "C:/npm-cache-mcp"
+
+[mcp_servers.openapi]
+command = "py"
+args = ["-m", "openapi_mcp_server"]
+startup_timeout_sec = 120
+
+[mcp_servers.openapi.env]
+OPENAPI_SPEC_PATH = "http://localhost:8081/v3/api-docs"
+API_BASE_URL = "http://localhost:8081"
+
+[mcp_servers.chrome_devtools]
+command = "npx"
+args = ["-y", "chrome-local-mcp"]
+startup_timeout_sec = 120
+
+[mcp_servers.chrome_devtools.env]
+NODE_TLS_REJECT_UNAUTHORIZED = "0"
+NPM_CONFIG_OFFLINE = "false"
+NPM_CONFIG_CACHE = "C:/npm-cache-mcp"
+
+[mcp_servers.puppeteer]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-puppeteer"]
+startup_timeout_sec = 120
+
+[mcp_servers.puppeteer.env]
+NODE_TLS_REJECT_UNAUTHORIZED = "0"
+NPM_CONFIG_OFFLINE = "false"
+NPM_CONFIG_CACHE = "C:/npm-cache-mcp"
+
+[mcp_servers.jetbrains]
+command = "npx"
+args = ["-y", "@jetbrains/mcp-proxy"]
+startup_timeout_sec = 120
+
+[mcp_servers.jetbrains.env]
+NODE_TLS_REJECT_UNAUTHORIZED = "0"
+NPM_CONFIG_OFFLINE = "false"
+NPM_CONFIG_CACHE = "C:/npm-cache-mcp"
+
+[mcp_servers.excel]
+command = "py"
+args = ["-m", "excel_mcp", "stdio"]
+startup_timeout_sec = 120
+
+[mcp_servers.sql_analyzer]
+command = "py"
+args = ["-c", "import mcp_server_sql_analyzer; mcp_server_sql_analyzer.main()"]
+startup_timeout_sec = 120
