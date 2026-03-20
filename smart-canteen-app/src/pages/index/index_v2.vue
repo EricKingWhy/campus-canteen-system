@@ -20,8 +20,7 @@
              <view class="weather-box">
                 <text class="icon">☀</text>
                 <view class="w-info">
-                   <text class="temp">{{ temperature }}°C</text>
-                   <text class="cond">{{ weatherText }}</text>
+                   <text class="temp">{{ temperature }}°C {{ weatherText }}</text>
                 </view>
              </view>
           </view>
@@ -64,7 +63,11 @@
       </view>
       <scroll-view class="recommend-scroll" scroll-x show-scrollbar="false">
         <view class="rec-card" v-for="(item, index) in recommendList" :key="index" @click="openDishDetail(item)">
-          <image class="rec-img" :src="item.image" mode="aspectFill" />
+          <image
+            class="rec-img"
+            :src="item.image && item.image.startsWith('http') ? item.image : (item.image ? (baseUrl + item.image) : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c')"
+            mode="aspectFill"
+          />
           <view class="rec-info">
             <view class="rec-name">{{ item.name }}</view>
             <view class="rec-tags">
@@ -165,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/modules/user'
 import { useUserProfileStore } from '@/stores/modules/userProfile'
@@ -466,25 +469,25 @@ const cartTotalPrice = computed(() => {
 // 【核心新增】请求和风天气实时数据
 const getRealTimeWeather = () => {
    uni.request({
-      url: 'https://pw5u9wqmtr.re.qweatherapi.com/v7/weather/now?location=101180101&key=你的KEY填在这里',
+      url: 'https://pw5u9wqmtr.re.qweatherapi.com/v7/weather/now?location=101180101&key=5af48e8eef184bd2b780c7e570b06426',
       method: 'GET',
       success: (res: any) => {
-         console.log("天气API返回:", res);
          if (res.data && res.data.code === '200' && res.data.now) {
             temperature.value = res.data.now.temp
             weatherText.value = res.data.now.text
-         } else {
-            console.error("天气API返回非预期格式:", res.data);
          }
       },
       fail: (err) => {
-         console.error('天气API失败:', err)
+         console.error('天气API请求失败', err)
       }
    })
 }
 
+onMounted(() => {
+   getRealTimeWeather()
+})
+
 onLoad(async () => {
-   getRealTimeWeather()                 // 获取实时天气
    await profileStore.fetchProfile()    // 先加载画像(TDEE依赖)
    await fetchTodayNutrition()          // 再获取今日营养
    getRecommendData()                   // 然后调智选6道菜

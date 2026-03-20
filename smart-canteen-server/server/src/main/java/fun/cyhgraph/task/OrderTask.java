@@ -23,7 +23,7 @@ public class OrderTask {
      */
     @Scheduled(cron = "0 * * * * ?")
     public void processTimeoutOrder() {
-        log.info("处理支付超时订单：{}", new Date());
+        log.debug("处理支付超时订单：{}", new Date());
 
         LocalDateTime time = LocalDateTime.now().plusMinutes(-15);
 
