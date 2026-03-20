@@ -1,0 +1,510 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+/* Design Token Variables */
+.container.data-v-4046d630 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* 1. Header */
+.header.data-v-4046d630 {
+  padding: 16rpx 32rpx;
+  background: white;
+  border-bottom: 1rpx solid #f3f4f6;
+  flex: none;
+}
+.header .search-box.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+  background: #F7F8FA;
+  height: 80rpx;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+}
+.header .search-box .search-icon.data-v-4046d630 {
+  margin-right: 16rpx;
+}
+.header .search-box .search-input.data-v-4046d630 {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1d160c;
+}
+
+/* 2. Body Layout */
+.main-body.data-v-4046d630 {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar */
+.sidebar.data-v-4046d630 {
+  width: 176rpx; /* 88px * 2 */
+  background: #F7F8FA;
+  height: 100%;
+}
+.sidebar .menu-item.data-v-4046d630 {
+  padding: 32rpx 16rpx;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+.sidebar .menu-item .menu-text.data-v-4046d630 {
+  font-size: 26rpx;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.4;
+}
+.sidebar .menu-item.active.data-v-4046d630 {
+  background: white;
+}
+.sidebar .menu-item.active .menu-text.data-v-4046d630 {
+  color: #1d160c;
+  font-weight: bold;
+}
+.sidebar .menu-item.active .active-indicator.data-v-4046d630 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8rpx;
+  background: #ff9900;
+  border-radius: 0 4rpx 4rpx 0;
+}
+
+/* Right Content */
+.content.data-v-4046d630 {
+  flex: 1;
+  height: 100%;
+  background: white;
+}
+.content .content-wrapper.data-v-4046d630 {
+  padding: 0 24rpx;
+}
+.content .category-title-sticky.data-v-4046d630 {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 10;
+  padding: 24rpx 0 16rpx 0;
+}
+.content .category-title-sticky .title-text.data-v-4046d630 {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #1d160c;
+}
+.content .dish-item.data-v-4046d630 {
+  display: flex;
+  margin-bottom: 48rpx;
+}
+.content .dish-item .dish-img.data-v-4046d630 {
+  width: 192rpx; /* 24 * 4 * 2 = 192rpx (Tailwind w-24) */
+  height: 192rpx;
+  border-radius: 16rpx;
+  background: #f3f4f6;
+  flex: none;
+  margin-right: 24rpx;
+}
+.content .dish-item .dish-info-col.data-v-4046d630 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0; /* truncate fix */
+}
+.content .dish-item .dish-info-col .dish-name.data-v-4046d630 {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1d160c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.content .dish-item .dish-info-col .dish-desc.data-v-4046d630 {
+  font-size: 24rpx;
+  color: #9ca3af;
+  margin-top: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.content .dish-item .dish-info-col .tags-row.data-v-4046d630 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge.data-v-4046d630 {
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge.grey.data-v-4046d630 {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge.orange.data-v-4046d630 {
+  background: #fff7ed;
+  color: #ff9900;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge.green.data-v-4046d630 {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+.content .dish-item .dish-info-col .price-action-row.data-v-4046d630 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 16rpx;
+}
+.content .dish-item .dish-info-col .price-action-row .price-wrap.data-v-4046d630 {
+  padding-bottom: 4rpx;
+}
+.content .dish-item .dish-info-col .price-action-row .price-wrap .symbol.data-v-4046d630 {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #ef4444;
+}
+.content .dish-item .dish-info-col .price-action-row .price-wrap .amount.data-v-4046d630 {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #ef4444;
+  margin-left: 4rpx;
+}
+.content .dish-item .dish-info-col .price-action-row .add-btn-wrap.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+}
+.content .dish-item .dish-info-col .price-action-row .add-btn.data-v-4046d630 {
+  background: #ff9900;
+  color: white;
+  padding: 8rpx 24rpx;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 0, 0.2);
+}
+.content .dish-item .dish-info-col .price-action-row .add-btn .plus-icon.data-v-4046d630 {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+.content .dish-item .dish-info-col .price-action-row .stepper.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.content .dish-item .dish-info-col .price-action-row .stepper .stepper-btn.data-v-4046d630 {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  background: #f5f5f5;
+  color: #666;
+}
+.content .dish-item .dish-info-col .price-action-row .stepper .stepper-btn.stepper-add.data-v-4046d630 {
+  background: #ff9900;
+  color: white;
+}
+.content .dish-item .dish-info-col .price-action-row .stepper .stepper-num.data-v-4046d630 {
+  font-size: 28rpx;
+  font-weight: bold;
+  min-width: 36rpx;
+  text-align: center;
+}
+.content .empty-state.data-v-4046d630 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 100rpx;
+}
+
+/* Floating Cart Bar */
+.cart-floater.data-v-4046d630 {
+  position: fixed;
+  bottom: 48rpx;
+  left: 32rpx;
+  right: 32rpx;
+  z-index: 50;
+}
+.cart-floater .cart-bar.data-v-4046d630 {
+  height: 112rpx; /* h-14 * 2 approx */
+  background: #1A1A1A;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16rpx 0 24rpx;
+  box-shadow: 0 20rpx 50rpx rgba(0, 0, 0, 0.25);
+}
+.cart-floater .cart-bar .cart-left.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+}
+.cart-floater .cart-bar .cart-left .icon-circle.data-v-4046d630 {
+  width: 80rpx;
+  height: 80rpx;
+  background: #333;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-right: 24rpx;
+}
+.cart-floater .cart-bar .cart-left .icon-circle .badge.data-v-4046d630 {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  background: #ef4444;
+  color: white;
+  font-size: 20rpx;
+  font-weight: bold;
+  padding: 4rpx 10rpx;
+  border-radius: 999px;
+  border: 4rpx solid #1A1A1A;
+}
+.cart-floater .cart-bar .cart-left .price-info.data-v-4046d630 {
+  display: flex;
+  flex-direction: column;
+}
+.cart-floater .cart-bar .cart-left .price-info .main-price.data-v-4046d630 {
+  color: white;
+  font-weight: bold;
+  font-size: 36rpx;
+}
+.cart-floater .cart-bar .cart-left .price-info .sub-text.data-v-4046d630 {
+  color: #9ca3af;
+  font-size: 20rpx;
+}
+.cart-floater .cart-bar .checkout-btn.data-v-4046d630 {
+  background: #ff9900;
+  color: white;
+  font-size: 28rpx;
+  font-weight: bold;
+  height: 80rpx;
+  padding: 0 48rpx;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+}
+
+/* Cart Popup */
+.mask.data-v-4046d630 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+.cart-popup.data-v-4046d630 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  z-index: 45;
+  border-radius: 32rpx 32rpx 0 0;
+  padding-bottom: 200rpx; /* Space for floater */
+  transform: translateY(100%);
+  transition: transform 0.3s;
+}
+.cart-popup.show.data-v-4046d630 {
+  transform: translateY(0);
+}
+.cart-popup .popup-header.data-v-4046d630 {
+  padding: 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.cart-popup .popup-header .clear-btn.data-v-4046d630 {
+  color: #9ca3af;
+  font-size: 26rpx;
+}
+.cart-popup .popup-list.data-v-4046d630 {
+  max-height: 600rpx;
+}
+.cart-popup .popup-item.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid #f9fafb;
+}
+.cart-popup .popup-item .info.data-v-4046d630 {
+  flex: 1;
+}
+.cart-popup .popup-item .info .name.data-v-4046d630 {
+  font-size: 30rpx;
+  color: #1d160c;
+  font-weight: 500;
+}
+.cart-popup .popup-item .info .spec.data-v-4046d630 {
+  font-size: 22rpx;
+  color: #9ca3af;
+  margin-top: 4rpx;
+}
+.cart-popup .popup-item .price.data-v-4046d630 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1d160c;
+  margin-right: 32rpx;
+}
+.cart-popup .popup-item .stepper.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+}
+.cart-popup .popup-item .stepper .btn.data-v-4046d630 {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.cart-popup .popup-item .stepper .sub.data-v-4046d630 {
+  border: 2rpx solid #e5e7eb;
+  color: #6b7280;
+  background: white;
+}
+.cart-popup .popup-item .stepper .add.data-v-4046d630 {
+  background: #ff9900;
+  color: white;
+}
+.cart-popup .popup-item .stepper .num.data-v-4046d630 {
+  margin: 0 24rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+/* Nutrition Popup */
+.nutrition-mask.data-v-4046d630 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nutrition-mask .nutrition-card.data-v-4046d630 {
+  width: 600rpx;
+  background: white;
+  border-radius: 40rpx;
+  overflow: hidden;
+}
+.nutrition-mask .nutrition-card .card-img.data-v-4046d630 {
+  width: 100%;
+  height: 450rpx;
+  background: #eee;
+}
+.nutrition-mask .nutrition-card .card-content.data-v-4046d630 {
+  padding: 32rpx;
+}
+.nutrition-mask .nutrition-card .card-content .card-header.data-v-4046d630 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.nutrition-mask .nutrition-card .card-content .card-header .c-name.data-v-4046d630 {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1d160c;
+}
+.nutrition-mask .nutrition-card .card-content .card-header .c-price.data-v-4046d630 {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #ff9900;
+}
+.nutrition-mask .nutrition-card .card-content .c-desc.data-v-4046d630 {
+  font-size: 26rpx;
+  color: #9ca3af;
+  margin-bottom: 40rpx;
+  display: block;
+}
+.nutrition-mask .nutrition-card .card-content .bento-grid.data-v-4046d630 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin-bottom: 48rpx;
+}
+.nutrition-mask .nutrition-card .card-content .bento-grid .bento-box.data-v-4046d630 {
+  background: #F7F8FA;
+  border-radius: 24rpx;
+  padding: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.nutrition-mask .nutrition-card .card-content .bento-grid .bento-box .lbl.data-v-4046d630 {
+  font-size: 22rpx;
+  color: #9ca3af;
+  margin-bottom: 8rpx;
+}
+.nutrition-mask .nutrition-card .card-content .bento-grid .bento-box .val.data-v-4046d630 {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1d160c;
+}
+.nutrition-mask .nutrition-card .card-content .bento-grid .bento-box .val.orange.data-v-4046d630 {
+  color: #ff9900;
+}
+.nutrition-mask .nutrition-card .card-content .bento-grid .bento-box .val.green.data-v-4046d630 {
+  color: #16a34a;
+}
+.nutrition-mask .nutrition-card .card-content .card-action .add-cart-pill.data-v-4046d630 {
+  width: 100%;
+  height: 96rpx;
+  background: #ff9900;
+  color: white;
+  border-radius: 999px;
+  font-size: 32rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

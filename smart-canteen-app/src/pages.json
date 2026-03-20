@@ -1,0 +1,183 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/index/index_v2",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationBarTextStyle": "white",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/category/category",
+			"style": {
+				"navigationBarTitleText": "点餐",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/my/my",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/order/order",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "点餐"
+			}
+		},
+		{
+			"path": "pages/detail/detail",
+			"style": {
+				"navigationBarTitleText": "详情"
+			}
+		},
+		{
+			"path": "pages/submit/submit",
+			"style": {
+				"navigationBarTitleText": "提交订单"
+			}
+		},
+		{
+			"path": "pages/submit/success",
+			"style": {
+				"navigationBarTitleText": "提交成功"
+			}
+		},
+		{
+			"path": "pages/address/address",
+			"style": {
+				"navigationBarTitleText": "地址管理"
+			}
+		},
+		{
+			"path": "pages/favorite/favorite",
+			"style": {
+				"navigationBarTitleText": "我的收藏",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/addOrEditAddress/addOrEditAddress",
+			"style": {
+				"navigationBarTitleText": "新增/修改地址"
+			}
+		},
+		{
+			"path": "pages/remark/remark",
+			"style": {
+				"navigationBarTitleText": "备注"
+			}
+		},
+		{
+			"path": "pages/pay/pay",
+			"style": {
+				"navigationBarTitleText": "支付订单",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/pay/success",
+			"style": {
+				"navigationBarTitleText": "支付成功",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/orderDetail/orderDetail",
+			"style": {
+				"navigationBarTitleText": "订单详情",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/history/history",
+			"style": {
+				"navigationBarTitleText": "历史订单"
+			}
+		},
+		{
+			"path": "pages/updateMy/updateMy",
+			"style": {
+				"navigationBarTitleText": "信息设置"
+			}
+		},
+		{
+			"path": "pages/info-setting/info-setting",
+			"style": {
+				"navigationBarTitleText": "健康画像设置",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/health-analysis/health-analysis",
+			"style": {
+				"navigationBarTitleText": "健康分析",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/user/weekly-report",
+			"style": {
+				"navigationBarTitleText": "消费周报",
+				"navigationBarBackgroundColor": "#FF8C42",
+				"navigationBarTextStyle": "white"
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#999",
+		"selectedColor": "#FF8C42",
+		"backgroundColor": "#fff",
+		"borderStyle": "white",
+		"list": [
+			{
+				"text": "首页",
+				"pagePath": "pages/index/index_v2",
+				"iconPath": "static/icons/shouye.png",
+				"selectedIconPath": "static/icons/shouye.png"
+			},
+			{
+				"text": "点餐",
+				"pagePath": "pages/category/category",
+				"iconPath": "static/icons/diancan.png",
+				"selectedIconPath": "static/icons/diancan.png"
+			},
+			{
+				"text": "健康分析",
+				"pagePath": "pages/health-analysis/health-analysis",
+				"iconPath": "static/icons/shujufenxi-baobeifenxi.png",
+				"selectedIconPath": "static/icons/shujufenxi-baobeifenxi.png"
+			},
+			{
+				"text": "我的",
+				"pagePath": "pages/my/my",
+				"iconPath": "static/icons/wode.png",
+				"selectedIconPath": "static/icons/wode.png"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "智能食堂",
+		"navigationBarBackgroundColor": "#FF9F43",
+		"backgroundColor": "#F8F8F8"
+	}
+}

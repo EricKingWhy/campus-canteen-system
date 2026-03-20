@@ -1,0 +1,1 @@
+import{h as e}from"./http.75680628.js";const r=r=>e({url:`/user/favorite/add?dishId=${r}`,method:"POST"}),s=r=>e({url:`/user/favorite/remove?dishId=${r}`,method:"POST"}),t=()=>e({url:"/user/favorite/list",method:"GET"}),o=r=>e({url:`/user/favorite/check/${r}`,method:"GET"});export{r as a,o as b,t as c,s as f};

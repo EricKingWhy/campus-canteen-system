@@ -1,0 +1,10 @@
+﻿
+{
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.project.importOnFirstTimeStartup": "automatic",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "maven.executable.preferMavenWrapper": true,
+  "java.project.sourcePaths": [
+    "smart-canteen-server"
+  ]
+}

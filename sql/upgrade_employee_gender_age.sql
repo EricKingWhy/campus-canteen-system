@@ -1,0 +1,5 @@
+﻿ALTER TABLE employee
+    ADD COLUMN gender TINYINT NOT NULL DEFAULT 0 COMMENT '性别: 1男 2女 0未知';
+
+ALTER TABLE employee
+    ADD COLUMN age INT NULL COMMENT '年龄';

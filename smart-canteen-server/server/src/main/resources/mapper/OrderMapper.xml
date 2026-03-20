@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fun.cyhgraph.mapper.OrderMapper">
+
+    <select id="getWeeklyDailyTrend" resultType="fun.cyhgraph.vo.DailyTrendVO">
+        SELECT DATE_FORMAT(order_time, '%Y-%m-%d') as day, SUM(amount) as dailyTotal
+        FROM orders
+        WHERE user_id = #{userId} AND order_time >= #{startTime} AND order_time &lt;= #{endTime}
+        GROUP BY day
+        ORDER BY day ASC
+    </select>
+
+    <select id="getMealPeriodDistribution" resultType="fun.cyhgraph.vo.MealPeriodVO">
+        SELECT 
+            CASE 
+                WHEN HOUR(o.order_time) BETWEEN 5 AND 10 THEN '早餐'
+                WHEN HOUR(o.order_time) BETWEEN 11 AND 15 THEN '午餐'
+                ELSE '晚餐'
+            END as mealPeriod,
+            COUNT(*) as percentage
+        FROM orders o
+        JOIN order_detail od ON o.id = od.order_id
+        WHERE o.user_id = #{userId} AND o.order_time >= #{startTime} AND o.order_time &lt;= #{endTime}
+        GROUP BY mealPeriod
+    </select>
+
+    <select id="getMaxSpendDish" resultType="map">
+        SELECT od.name as dishName, SUM(od.amount) as totalSpend
+        FROM order_detail od
+        JOIN orders o ON od.order_id = o.id
+        WHERE o.user_id = #{userId} AND o.order_time >= #{startTime} AND o.order_time &lt;= #{endTime}
+        GROUP BY od.name
+        ORDER BY totalSpend DESC
+        LIMIT 1
+    </select>
+
+    <select id="getMostFrequentDish" resultType="map">
+        SELECT od.name as dishName, SUM(od.number) as totalCount
+        FROM order_detail od
+        JOIN orders o ON od.order_id = o.id
+        WHERE o.user_id = #{userId} AND o.order_time >= #{startTime} AND o.order_time &lt;= #{endTime}
+        GROUP BY od.name
+        ORDER BY totalCount DESC
+        LIMIT 1
+    </select>
+
+</mapper>

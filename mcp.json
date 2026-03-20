@@ -1,0 +1,76 @@
+{
+  "mcpServers": {
+    "mysql": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@f4ww4z/mcp-mysql-server"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "123456",
+        "MYSQL_DATABASE": "smart_canteen"
+      }
+    },
+    "redis": {
+      "command": "C:/Users/王浩宇/AppData/Local/Programs/Python/Python312/Scripts/redis-mcp-server.exe",
+      "args": [
+        "--host",
+        "localhost",
+        "--port",
+        "6379",
+        "--db",
+        "0"
+      ]
+    },
+    "openapi": {
+      "command": "C:/Users/王浩宇/AppData/Local/Programs/Python/Python312/Scripts/openapi_mcp_server.exe",
+      "env": {
+        "OPENAPI_SPEC_PATH": "http://localhost:8081/v3/api-docs",
+        "API_BASE_URL": "http://localhost:8081"
+      }
+    },
+    "echarts": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "mcp-echarts"
+      ]
+    },
+    "sql-analyzer": {
+      "command": "C:/Users/王浩宇/AppData/Local/Programs/Python/Python312/Scripts/mcp-server-sql-analyzer.exe"
+    },
+    "jetbrains": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@jetbrains/mcp-proxy"
+      ],
+      "env": {
+        "HOST": "127.0.0.1",
+        "IDE_PORT": "63342",
+        "LOG_ENABLED": "true"
+      }
+    },
+    "chrome-devtools": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--channel=stable",
+        "--isolated=true",
+        "--no-usage-statistics"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1 @@
+"use strict";const e=require("../../common/vendor.js"),o=e.defineComponent({__name:"Empty",props:{isSearch:{type:Boolean,default:!1}},setup(o){const t=o;return(o,r)=>({a:e.t(t.isSearch?"Sorry，木有找到您搜索的内容哦~":"这里如也~")})}}),t=e._export_sfc(o,[["__scopeId","data-v-93033322"]]);wx.createComponent(t);

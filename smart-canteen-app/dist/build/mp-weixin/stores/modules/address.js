@@ -1,0 +1,1 @@
+"use strict";const e=require("../../common/vendor.js"),r=e.defineStore("address",(()=>{const r=e.ref(""),s=e.ref("请依据实际情况填写，避免浪费");return{addressBackUrl:r,defaultCook:s,updateAddressBackUrl:function(e){r.value=e}}}));exports.useAddressStore=r;

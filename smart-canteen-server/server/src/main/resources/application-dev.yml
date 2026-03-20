@@ -1,0 +1,49 @@
+server:
+  port: 8081 # 【核心修复】改为 8081
+
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    database: 0
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+  datasource:
+    # 通用数据源配置
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/smart_canteen?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: "123456"
+    type: com.alibaba.druid.pool.DruidDataSource
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: fun.cyhgraph.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    fun:
+      cyhgraph:
+        mapper: debug
+        service: info
+        controller: info
+
+# JWT 配置 - 用于生成用户/管理员 Token
+smartcanteen:
+  jwt:
+    # 管理端员工 JWT 配置
+    admin-secret-key: cangqiongzhihuishitang
+    admin-ttl: 7200000
+    admin-token-name: Authorization
+    # 用户端 JWT 配置
+    user-secret-key: cangqiongzhihuishitang
+    user-ttl: 7200000
+    user-token-name: authentication

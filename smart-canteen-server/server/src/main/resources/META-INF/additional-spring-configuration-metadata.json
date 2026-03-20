@@ -1,0 +1,43 @@
+{
+  "properties": [
+    {
+      "name": "smartcanteen.datasource.driver-class-name",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.datasource.driver-class-name."
+    },
+    {
+      "name": "smartcanteen.datasource.url",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.datasource.url."
+    },
+    {
+      "name": "smartcanteen.datasource.username",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.datasource.username."
+    },
+    {
+      "name": "smartcanteen.datasource.password",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.datasource.password."
+    },
+    {
+      "name": "smartcanteen.redis.host",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.redis.host."
+    },
+    {
+      "name": "smartcanteen.redis.port",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.redis.port."
+    },
+    {
+      "name": "smartcanteen.redis.password",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.redis.password."
+    },
+    {
+      "name": "smartcanteen.redis.database",
+      "type": "java.lang.String",
+      "description": "Description for smartcanteen.redis.database."
+    }
+  ] }

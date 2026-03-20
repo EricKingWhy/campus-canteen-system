@@ -1,0 +1,18 @@
+
+> smart-canteen-uniapp@0.0.0 dev:mp-weixin
+> uni -p mp-weixin
+
+请注意运行模式下，因日志输出、sourcemap 以及未压缩源码等原因，性能和包体积，均不及发行模式。若要正式发布，请点击发行菜单或使用 cli 发布命令进行发布
+正在编译中...
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/5.04.2026031801.html
+​Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme​
+DONE  Build complete. Watching for changes...
+运行方式：打开 微信开发者工具, 导入 [36mdist\dev\mp-weixin[39m 运行。
+[36mready in 60470ms.[39m
+
+DONE  Build complete. Watching for changes...
+DONE  Build complete. Watching for changes...
+^C^C

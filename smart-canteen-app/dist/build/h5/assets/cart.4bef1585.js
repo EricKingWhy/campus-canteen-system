@@ -1,0 +1,1 @@
+import{h as s}from"./http.75680628.js";const a=a=>s({method:"POST",url:"/user/shoppingCart/add",data:a}),t=a=>s({method:"PUT",url:"/user/shoppingCart/sub",data:a}),r=()=>s({method:"GET",url:"/user/shoppingCart/list"}),o=()=>s({method:"DELETE",url:"/user/shoppingCart/clean"});export{a,o as c,r as g,t as s};

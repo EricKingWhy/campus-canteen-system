@@ -1,0 +1,1 @@
+"use strict";const r=require("../utils/http.js");exports.getOrderPageAPI=e=>(console.log("params",e),r.http({url:"/user/order/historyOrders",method:"GET",data:e})),exports.reOrderAPI=e=>r.http({url:`/user/order/reOrder/${e}`,method:"POST"});

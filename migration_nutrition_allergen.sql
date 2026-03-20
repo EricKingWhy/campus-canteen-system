@@ -1,2 +1,0 @@
-USE hanye_take_out;
-ALTER TABLE dish ADD COLUMN IF NOT EXISTS main_ingredients VARCHAR(255) DEFAULT NULL COMMENT '主要成分';

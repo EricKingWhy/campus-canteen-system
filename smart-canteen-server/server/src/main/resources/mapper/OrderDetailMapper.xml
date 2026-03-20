@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="fun.cyhgraph.mapper.OrderDetailMapper">
+
+    <insert id="insertBatch">
+        insert into order_detail
+        (name, order_id, dish_id, setmeal_id, dish_flavor, number, amount, pic)
+        values
+        <foreach collection="orderDetailList" item="od" separator=",">
+            (#{od.name},#{od.orderId},#{od.dishId},#{od.setmealId},#{od.dishFlavor},
+            #{od.number},#{od.amount},#{od.pic})
+        </foreach>
+    </insert>
+
+    <select id="getOrderDetailWithDishImage" resultType="fun.cyhgraph.entity.OrderDetail">
+        SELECT 
+            od.id, od.name, od.order_id, od.dish_id, od.setmeal_id, 
+            od.dish_flavor, od.number, od.amount, 
+            COALESCE(d.image, od.pic) AS pic 
+        FROM order_detail od
+        LEFT JOIN dish d ON od.dish_id = d.id
+        WHERE od.order_id = #{orderId}
+    </select>
+</mapper>

@@ -1,0 +1,84 @@
+
+> smart-canteen-uniapp@0.0.0 dev:mp-weixin
+> uni -p mp-weixin
+
+请注意运行模式下，因日志输出、sourcemap 以及未压缩源码等原因，性能和包体积，均不及发行模式。若要正式发布，请点击发行菜单或使用 cli 发布命令进行发布
+正在编译中...
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/5.04.2026031801.html
+​Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme​
+DONE  Build complete. Watching for changes...
+运行方式：打开 微信开发者工具, 导入 [36mdist\dev\mp-weixin[39m 运行。
+[36mready in 43268ms.[39m
+
+copy static\cash_pay.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\cash_pay.png
+copy static\wechat_pay.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\wechat_pay.png
+copy static\images=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images
+copy static\styles=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\styles
+copy static\icon=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon
+copy static\tabs=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs
+copy static\icons=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons
+copy static\tabbar=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabbar
+copy static\styles\iconfont.css=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\styles\iconfont.css
+copy static\styles\iconfont.ttf=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\styles\iconfont.ttf
+copy static\images\btn_waiter_nor.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\btn_waiter_nor.png
+copy static\images\btn_waiter_sel.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\btn_waiter_sel.png
+copy static\images\cart_active.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\cart_active.png
+copy static\images\cart_empty.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\cart_empty.png
+copy static\images\home.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\home.png
+copy static\images\login.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\login.png
+copy static\images\logo.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\logo.png
+copy static\images\navigator_bg.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\navigator_bg.png
+copy static\images\search_table_empty.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\search_table_empty.png
+copy static\images\success.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\success.png
+copy static\images\swp1.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\swp1.png
+copy static\images\swp2.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\swp2.png
+copy static\images\swp3.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\swp3.png
+copy static\images\table_empty.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\table_empty.png
+copy static\images\user_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\user_default.png
+copy static\images\选择规格.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\选择规格.png
+copy static\icon\add.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\add.png
+copy static\icon\address.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\address.png
+copy static\icon\back.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\back.png
+copy static\icon\boy.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\boy.png
+copy static\icon\choose.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\choose.png
+copy static\icon\clear.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\clear.png
+copy static\icon\close.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\close.png
+copy static\icon\edit.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\edit.png
+copy static\icon\finish.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\finish.png
+copy static\icon\girl.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\girl.png
+copy static\icon\history.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\history.png
+copy static\icon\icon-radio.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\icon-radio.png
+copy static\icon\icon-radio-selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\icon-radio-selected.png
+copy static\icon\my.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\my.png
+copy static\icon\pay.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\pay.png
+copy static\icon\remove.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\remove.png
+copy static\icon\sub.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\sub.png
+copy static\icon\toRight.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\toRight.png
+copy static\icon\饿饿.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\饿饿.png
+copy static\tabs\cart_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\cart_default.png
+copy static\tabs\cart_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\cart_selected.png
+copy static\tabs\category_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\category_default.png
+copy static\tabs\category_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\category_selected.png
+copy static\tabs\health_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\health_default.png
+copy static\tabs\health_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\health_selected.png
+copy static\tabs\home_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\home_default.png
+copy static\tabs\home_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\home_selected.png
+copy static\tabs\user_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\user_default.png
+copy static\tabs\user_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\user_selected.png
+copy static\icons\diancan.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\diancan.png
+copy static\icons\gerenxinxishezhi.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\gerenxinxishezhi.png
+copy static\icons\lishidingdan.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\lishidingdan.png
+copy static\icons\shouye.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\shouye.png
+copy static\icons\shujufenxi-baobeifenxi.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\shujufenxi-baobeifenxi.png
+copy static\icons\wode.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\wode.png
+copy static\icons\wodeshoucangyong.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\wodeshoucangyong.png
+copy static\icons\xiaofeijilu.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\xiaofeijilu.png
+copy static\tabbar\order.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabbar\order.png
+copy static\tabbar\order_active.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabbar\order_active.png
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...

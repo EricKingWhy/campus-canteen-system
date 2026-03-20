@@ -1,0 +1,1 @@
+"use strict";const t=require("../utils/http.js");exports.getSetmealAPI=e=>t.http({method:"GET",url:`/user/setmeal/${e}`}),exports.getSetmealListAPI=e=>t.http({method:"GET",url:`/user/setmeal/list/${e}`});

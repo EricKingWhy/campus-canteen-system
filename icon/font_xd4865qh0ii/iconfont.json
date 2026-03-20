@@ -1,0 +1,65 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "7429",
+      "name": "首页",
+      "font_class": "shouye",
+      "unicode": "f029d",
+      "unicode_decimal": 983709
+    },
+    {
+      "icon_id": "338327",
+      "name": "点餐",
+      "font_class": "diancan",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "1718359",
+      "name": "我的",
+      "font_class": "wode",
+      "unicode": "f0350",
+      "unicode_decimal": 983888
+    },
+    {
+      "icon_id": "5200052",
+      "name": "消费记录",
+      "font_class": "xiaofeijilu",
+      "unicode": "e6cb",
+      "unicode_decimal": 59083
+    },
+    {
+      "icon_id": "5540725",
+      "name": "我的收藏用",
+      "font_class": "wodeshoucangyong",
+      "unicode": "e660",
+      "unicode_decimal": 58976
+    },
+    {
+      "icon_id": "7898737",
+      "name": "数据分析-宝贝分析",
+      "font_class": "shujufenxi-baobeifenxi",
+      "unicode": "e51b",
+      "unicode_decimal": 58651
+    },
+    {
+      "icon_id": "11641904",
+      "name": "历史订单",
+      "font_class": "lishidingdan",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "11661839",
+      "name": "个人信息设置",
+      "font_class": "gerenxinxishezhi",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    }
+  ]
+}

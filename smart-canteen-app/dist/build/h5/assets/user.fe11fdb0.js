@@ -1,0 +1,1 @@
+import{h as r}from"./http.75680628.js";const e=e=>r({url:`/user/user/${e}`,method:"GET"}),s=e=>r({url:"/user/user",method:"PUT",data:e}),u=()=>r({url:"/user/user/profile",method:"GET"}),t=e=>r({url:"/user/user/profile",method:"PUT",data:e});export{u as a,t as b,e as g,s as u};

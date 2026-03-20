@@ -1,0 +1,2 @@
+USE smart_canteen;
+ALTER TABLE dish ADD COLUMN IF NOT EXISTS main_ingredients VARCHAR(255) DEFAULT NULL COMMENT '主要成分';

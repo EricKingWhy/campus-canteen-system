@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "点餐",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "dish-detail-popup": "../../components/DishDetailPopup"
+  }
+}

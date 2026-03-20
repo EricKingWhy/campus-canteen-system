@@ -1,0 +1,19 @@
+
+> smart-canteen-uniapp@0.0.0 dev:mp-weixin
+> uni -p mp-weixin
+
+Please note that in running mode, due to log output, sourcemap, and uncompressed source code, the performance and package size are not as good as release mode.To officially release, please click the release menu or use the cli release command to release
+Compiling...
+[31mfailed to load config from C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\vite.config.ts[39m
+error during build:
+Error: spawn EPERM
+    at ChildProcess.spawn (node:internal/child_process:420:11)
+    at Object.spawn (node:child_process:787:9)
+    at ensureServiceIsRunning (C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\node_modules\esbuild\lib\main.js:2120:29)
+    at build (C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\node_modules\esbuild\lib\main.js:2011:26)
+    at bundleConfigFile (file:///C:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/smart-canteen-main/smart-canteen-main/smart-canteen-app/node_modules/vite/dist/node/chunks/dep-934dbc7c.js:64337:26)
+    at loadConfigFromFile (file:///C:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/smart-canteen-main/smart-canteen-main/smart-canteen-app/node_modules/vite/dist/node/chunks/dep-934dbc7c.js:64313:31)
+    at resolveConfig (file:///C:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/smart-canteen-main/smart-canteen-main/smart-canteen-app/node_modules/vite/dist/node/chunks/dep-934dbc7c.js:63922:34)
+    at Module.build (file:///C:/Users/%E7%8E%8B%E6%B5%A9%E5%AE%87/Desktop/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E5%B7%A5%E5%85%B7/%E6%A0%A1%E5%9B%AD%E9%A3%9F%E5%A0%82%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/smart-canteen-main/smart-canteen-main/smart-canteen-app/node_modules/vite/dist/node/chunks/dep-934dbc7c.js:46282:26)
+    at C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\node_modules\vite\index.cjs:23:55
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
