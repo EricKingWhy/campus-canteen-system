@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
 const formLabelWidth = '60px'
+const baseURL = 'http://127.0.0.1:8081'
 const form = reactive({
   id: 0,
   name: '',
@@ -72,6 +73,13 @@ const chooseImg = () => {
   if (inputRef1.value) {
     inputRef1.value.click()
   }
+}
+
+const resolvePhotoPreview = (photoPath?: string) => {
+  if (!photoPath) return '/src/assets/image/user_default.png'
+  if (photoPath.startsWith('data:image') || photoPath.startsWith('http')) return photoPath
+  if (photoPath.startsWith('/static/')) return baseURL + photoPath
+  return baseURL + '/static/upload/employee_photos/' + photoPath.replace(/^\/+/, '')
 }
 
 const onFileChange1 = (e: Event) => {
@@ -142,8 +150,7 @@ const cancel = () => {
         </el-radio-group>
       </el-form-item>
       <el-form-item label="头像" :label-width="formLabelWidth" prop="pic">
-        <img class="the_img" v-if="!form.pic" src="/src/assets/image/user_default.png" alt="" />
-        <img class="the_img" v-else :src="form.pic" alt="" />
+        <img class="the_img" :src="resolvePhotoPreview(form.pic)" alt="" />
         <input type="file" accept="image/*" style="display: none" ref="inputRef1" @change="onFileChange1" />
         <el-button type="primary" @click="chooseImg">
           <el-icon style="font-size: 15px; margin-right: 10px;">

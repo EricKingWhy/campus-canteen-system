@@ -3,7 +3,7 @@
     <!-- Header -->
     <view class="header">
       <view class="back-btn" @click="handleBack">
-        <text class="iconfont icon-left"></text>
+        <text class="back-arrow">‹</text>
       </view>
       <text class="title">信息设置</text>
       <view v-if="currentStep === 2" class="save-btn" @click="handleSave">
@@ -15,7 +15,7 @@
     <!-- Progress -->
     <view class="progress-section">
       <view class="progress-info">
-        <text class="step-text">第{{ currentStep }}(</text>
+        <text class="step-text">第 {{ currentStep }} 页</text>
         <text class="step-desc">{{ currentStep === 1 ? '基本信息' : '饮食偏好' }}</text>
       </view>
       <view class="progress-bar">
@@ -30,7 +30,7 @@
         <view class="avatar-upload" @click="chooseAvatar">
           <image 
             class="avatar-preview" 
-            :src="formData.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop'" 
+            :src="(!formData.avatar || formData.avatar.includes('photo-1599566150163-29194dcaad36') || formData.avatar.includes('images.unsplash.com') || (formData.avatar.startsWith('http') && !formData.avatar.includes('127.0.0.1') && !formData.avatar.includes('localhost'))) ? '/static/images/default_avatar.jpg' : formData.avatar" 
             mode="aspectFill"
           />
           <view class="avatar-overlay">
@@ -115,7 +115,7 @@
           :value="formData.height || 170" 
           :min="120" 
           :max="220" 
-          activeColor="#13ec5b"
+          activeColor="#34c759"
           @change="onHeightSliderChange"
         />
       </view>
@@ -138,7 +138,7 @@
           :value="formData.weight || 65" 
           :min="30" 
           :max="200" 
-          activeColor="#13ec5b"
+          activeColor="#34c759"
           @change="onWeightSliderChange"
         />
       </view>
@@ -304,7 +304,7 @@
           :value="formData.mealBudget || 15" 
           :min="5" 
           :max="100" 
-          activeColor="#13ec5b"
+          activeColor="#34c759"
           @change="onBudgetSliderChange"
         />
         <view class="slider-labels">
@@ -317,12 +317,12 @@
     <!-- Footer -->
     <view class="footer">
       <button v-if="currentStep === 1" class="primary-btn" @click="nextStep">
-        下一楼
+        下一页
         <text class="arrow"></text>
       </button>
       <template v-else>
         <button class="primary-btn" @click="handleSave" :loading="loading">
-          保存并完
+          保存完毕
         </button>
         <view class="skip-btn" @click="handleSkip">以后再说</view>
       </template>
@@ -557,12 +557,12 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-$primary: #13ec5b;
-$bg: #f6f8f6;
+$primary: #ff8c42;
+$bg: #fffaf5;
 $card-bg: #ffffff;
-$text-primary: #1a1a1a;
-$text-secondary: #666;
-$text-muted: #999;
+$text-primary: #2d241f;
+$text-secondary: #6e6159;
+$text-muted: #a4978f;
 
 // ===== Profile Header Section =====
 .profile-header-section {
@@ -572,7 +572,7 @@ $text-muted: #999;
   background: $card-bg;
   border-radius: 24rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  box-shadow: 0 10rpx 28rpx rgba(45, 36, 31, 0.05);
 
   .avatar-upload {
     position: relative;
@@ -645,19 +645,29 @@ $text-muted: #999;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx 32rpx;
-  background: $bg;
+  padding: calc(env(safe-area-inset-top) + 12rpx) 32rpx 18rpx;
+  background: rgba(255, 250, 245, 0.96);
+  backdrop-filter: blur(20rpx);
   position: sticky;
   top: 0;
   z-index: 100;
 
   .back-btn {
-    width: 80rpx;
-    height: 80rpx;
+    width: 76rpx;
+    height: 76rpx;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40rpx;
+    border-radius: 38rpx;
+    background: #ffffff;
+    box-shadow: 0 6rpx 18rpx rgba(45, 36, 31, 0.08);
+
+    .back-arrow {
+      color: #5c4f47;
+      font-size: 46rpx;
+      line-height: 1;
+      transform: translateX(-2rpx);
+    }
   }
 
   .title {
@@ -678,7 +688,7 @@ $text-muted: #999;
 }
 
 .progress-section {
-  padding: 0 32rpx 24rpx;
+  padding: 8rpx 32rpx 24rpx;
 
   .progress-info {
     display: flex;
@@ -699,13 +709,13 @@ $text-muted: #999;
 
   .progress-bar {
     height: 16rpx;
-    background: #e0e0e0;
+    background: #f1e9df;
     border-radius: 8rpx;
     overflow: hidden;
 
     .progress-fill {
       height: 100%;
-      background: $primary;
+      background: linear-gradient(90deg, #ffb17a 0%, $primary 100%);
       transition: width 0.3s;
     }
   }
@@ -713,7 +723,7 @@ $text-muted: #999;
 
 .content {
   flex: 1;
-  padding: 0 24rpx 200rpx;
+  padding: 0 28rpx 200rpx;
 }
 
 .section {
@@ -769,7 +779,7 @@ $text-muted: #999;
   border-radius: 24rpx;
   padding: 28rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 
   .card-header {
     display: flex;
@@ -843,14 +853,14 @@ $text-muted: #999;
 
   .activity-card {
     background: $card-bg;
-    border-radius: 20rpx;
-    padding: 28rpx;
-    border: 4rpx solid transparent;
+    border-radius: 24rpx;
+    padding: 30rpx;
+    border: 2rpx solid transparent;
     transition: all 0.2s;
 
     &.active {
-      border-color: $primary;
-      background: rgba($primary, 0.05);
+      border-color: rgba(255, 140, 66, 0.55);
+      background: rgba(255, 140, 66, 0.07);
 
       .activity-icon {
         background: $card-bg;
@@ -860,7 +870,7 @@ $text-muted: #999;
     .activity-icon {
       width: 80rpx;
       height: 80rpx;
-      background: #f0f0f0;
+      background: #f8f2ea;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -890,10 +900,10 @@ $text-muted: #999;
 
   .goal-card {
     background: $card-bg;
-    border-radius: 20rpx;
+    border-radius: 24rpx;
     padding: 24rpx;
     text-align: center;
-    border: 4rpx solid transparent;
+    border: 2rpx solid transparent;
     height: 160rpx;
     display: flex;
     flex-direction: column;
@@ -901,8 +911,8 @@ $text-muted: #999;
     justify-content: center;
 
     &.active {
-      border-color: $primary;
-      background: rgba($primary, 0.05);
+      border-color: rgba(255, 140, 66, 0.55);
+      background: rgba(255, 140, 66, 0.07);
     }
 
     .goal-icon {
@@ -1075,8 +1085,8 @@ $text-muted: #999;
 .custom-input {
   display: flex;
   align-items: center;
-  background: #f5f5f5;
-  border-radius: 20rpx;
+  background: #f8f2ea;
+  border-radius: 24rpx;
   padding: 0 24rpx;
   margin-top: 20rpx;
   height: 88rpx;
@@ -1104,9 +1114,9 @@ $text-muted: #999;
   .budget-value {
     display: flex;
     align-items: baseline;
-    background: #f5f5f5;
+    background: #f8f2ea;
     padding: 12rpx 24rpx;
-    border-radius: 12rpx;
+    border-radius: 16rpx;
 
     .budget-num {
       font-size: 44rpx;
@@ -1138,13 +1148,13 @@ $text-muted: #999;
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(20rpx);
-  border-top: 1rpx solid #eee;
+  border-top: 1rpx solid #f3e9de;
 
   .primary-btn {
     width: 100%;
     height: 100rpx;
     background: $primary;
-    border-radius: 20rpx;
+    border-radius: 24rpx;
     font-size: 34rpx;
     font-weight: 700;
     color: $text-primary;

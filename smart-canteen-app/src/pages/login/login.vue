@@ -1,11 +1,14 @@
 <template>
   <view class="login-container">
     <view class="login-header">
-      <!-- <image class="logo-img" src="/static/logo.png" mode="aspectFill"></image> -->
+      <view class="brand-badge">
+        <image class="brand-icon" :src="authBrandIcon" mode="aspectFit" />
+      </view>
       <text class="app-title">智能食堂</text>
+      <text class="app-subtitle">{{ isLoginMode ? 'SMART CANTEEN SAAS' : '开启您的智能膳食新体验' }}</text>
     </view>
 
-    <view class="login-card">
+    <view class="login-card" :class="{ 'register-mode': !isLoginMode }">
       <view class="tabs">
         <view class="tab-item" :class="{ active: isLoginMode }" @click="isLoginMode = true">
           登录
@@ -24,7 +27,20 @@
         </view>
         <view class="input-item">
           <text class="input-icon">🔒</text>
-          <input class="uni-input" type="password" v-model="loginForm.password" placeholder="请输入密码" placeholder-class="placeholder-style"/>
+          <input
+            class="uni-input"
+            type="text"
+            :password="!showLoginPassword"
+            v-model="loginForm.password"
+            placeholder="请输入密码"
+            placeholder-class="placeholder-style"
+          />
+          <image
+            class="password-eye"
+            :src="showLoginPassword ? eyeOpenIcon : eyeClosedIcon"
+            mode="aspectFit"
+            @click="showLoginPassword = !showLoginPassword"
+          />
         </view>
         <button class="submit-btn" hover-class="btn-hover" @click="handleLogin" :disabled="isLoading">
           {{ isLoading ? '登录中...' : '立即登录' }}
@@ -38,15 +54,28 @@
         </view>
         <view class="input-item">
           <text class="input-icon">🔒</text>
-          <input class="uni-input" type="password" v-model="registerForm.password" placeholder="设置密码" placeholder-class="placeholder-style"/>
+          <input
+            class="uni-input"
+            type="text"
+            :password="!showRegisterPassword"
+            v-model="registerForm.password"
+            placeholder="设置密码"
+            placeholder-class="placeholder-style"
+          />
+          <image
+            class="password-eye"
+            :src="showRegisterPassword ? eyeOpenIcon : eyeClosedIcon"
+            mode="aspectFit"
+            @click="showRegisterPassword = !showRegisterPassword"
+          />
         </view>
         <view class="input-item">
           <text class="input-icon">😊</text>
-          <input class="uni-input" type="text" v-model="registerForm.nickname" placeholder="昵称 (如: 大大怪)" placeholder-class="placeholder-style"/>
+          <input class="uni-input" type="text" v-model="registerForm.nickname" placeholder="昵称" placeholder-class="placeholder-style"/>
         </view>
          <view class="input-item">
           <text class="input-icon">📧</text>
-          <input class="uni-input" type="text" v-model="registerForm.email" placeholder="电子邮箱 (选填)" placeholder-class="placeholder-style"/>
+          <input class="uni-input" type="text" v-model="registerForm.email" placeholder="电子邮箱" placeholder-class="placeholder-style"/>
         </view>
         <button class="submit-btn register-btn" hover-class="btn-hover" @click="handleRegister" :disabled="isLoading">
           {{ isLoading ? '注册中...' : '注册并登录' }}
@@ -55,17 +84,31 @@
     </view>
     
     <view class="footer-tips">
-        © 2026 智能食堂推荐系统 by 王浩宇
+      <view class="policy-row">
+        <text class="policy-link">服务协议</text>
+        <text class="policy-dot">•</text>
+        <text class="policy-link">隐私政策</text>
+      </view>
+      <text class="copyright">© 2026 智能食堂推荐系统 by 王浩宇</text>
     </view>
   </view>
 </template>
 
 <script>
+import authBrandIcon from '@/assets/images/icons/auth_brand_icon.png'
+import eyeOpenIcon from '@/assets/images/icons/eye_open.png'
+import eyeClosedIcon from '@/assets/images/icons/eye_closed.png'
+
 export default {
   data() {
     return {
+      authBrandIcon,
+      eyeOpenIcon,
+      eyeClosedIcon,
       isLoginMode: true,
       isLoading: false,
+      showLoginPassword: false,
+      showRegisterPassword: false,
       loginForm: { username: '', password: '' },
       registerForm: { username: '', password: '', nickname: '', email: '' },
       baseUrl: 'http://127.0.0.1:8081'
@@ -75,21 +118,26 @@ export default {
     handleLogin() {
       // 防止重复点击
       if (this.isLoading) return;
+
+      const loginPayload = {
+        username: (this.loginForm.username || '').trim(),
+        password: (this.loginForm.password || '').trim()
+      };
       
-      if (!this.loginForm.username || !this.loginForm.password) {
+      if (!loginPayload.username || !loginPayload.password) {
         return uni.showToast({ title: '请填写完整', icon: 'none' });
       }
       
       this.isLoading = true;
       console.log('===== 发起登录请求 =====');
       console.log('请求地点点址:', `${this.baseUrl}/user/user/login`);
-      console.log('请求数据:', JSON.stringify(this.loginForm));
+      console.log('请求数据:', JSON.stringify(loginPayload));
       
       uni.request({
         url: `${this.baseUrl}/user/user/login`,
         method: 'POST',
         header: { 'Content-Type': 'application/json' },
-        data: this.loginForm,
+        data: loginPayload,
         success: (res) => {
           console.log('===== 登录响应 =====');
           console.log('完整响应:', JSON.stringify(res));
@@ -112,7 +160,7 @@ export default {
             uni.setStorageSync('token', res.data.data.token);
             uni.setStorageSync('userInfo', { 
               id: res.data.data.id, 
-              username: this.loginForm.username 
+              username: loginPayload.username 
             });
             
             uni.showToast({ title: '登录成功', icon: 'success' });
@@ -141,8 +189,15 @@ export default {
     
     handleRegister() {
       if (this.isLoading) return;
+
+      const registerPayload = {
+        username: (this.registerForm.username || '').trim(),
+        password: (this.registerForm.password || '').trim(),
+        nickname: (this.registerForm.nickname || '').trim() || (this.registerForm.username || '').trim(),
+        email: (this.registerForm.email || '').trim()
+      };
       
-      if (!this.registerForm.username || !this.registerForm.password) {
+      if (!registerPayload.username || !registerPayload.password) {
         return uni.showToast({ title: '账号密码不能为', icon: 'none' });
       }
       
@@ -153,7 +208,7 @@ export default {
         url: `${this.baseUrl}/user/user/register`,
         method: 'POST',
         header: { 'Content-Type': 'application/json' },
-        data: this.registerForm,
+        data: registerPayload,
         success: (res) => {
           console.log('===== 注册响应 =====');
           console.log('完整响应:', JSON.stringify(res));
@@ -171,8 +226,8 @@ export default {
             
             // 自动填充登录表单
             this.isLoginMode = true;
-            this.loginForm.username = this.registerForm.username;
-            this.loginForm.password = this.registerForm.password;
+            this.loginForm.username = registerPayload.username;
+            this.loginForm.password = registerPayload.password;
           } else {
             uni.showToast({ title: res.data.msg || '注册失败', icon: 'none' });
           }
@@ -193,11 +248,14 @@ export default {
 <style lang="scss" scoped>
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #ffbe76 0%, #ff9f43 100%);
+  background-color: #f7f8fa;
+  background-image:
+    radial-gradient(at 8% 10%, rgba(255, 140, 66, 0.09) 0rpx, transparent 46%),
+    radial-gradient(at 92% 88%, rgba(255, 140, 66, 0.05) 0rpx, transparent 44%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40rpx;
+  padding: calc(env(safe-area-inset-top) + 36rpx) 42rpx 36rpx;
   box-sizing: border-box;
 }
 
@@ -205,54 +263,95 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 80rpx;
-  margin-bottom: 50rpx;
-  .logo-img {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 50%;
-    margin-bottom: 20rpx;
-    background-color: #fff;
+  margin-top: 46rpx;
+  margin-bottom: 44rpx;
+
+  .brand-badge {
+    width: 136rpx;
+    height: 136rpx;
+    border-radius: 34rpx;
+    background: #ffffff;
+    box-shadow: 0 20rpx 44rpx rgba(0, 0, 0, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22rpx;
   }
+
+  .brand-symbol {
+    font-size: 62rpx;
+    line-height: 1;
+  }
+
+  .brand-icon {
+    width: 100rpx;
+    height: 100rpx;
+    display: block;
+  }
+
   .app-title {
-    font-size: 36rpx;
-    font-weight: bold;
-    color: #fff;
-    letter-spacing: 2rpx;
+    font-size: 62rpx;
+    font-weight: 700;
+    color: #1a1c1e;
+    letter-spacing: 1.2rpx;
+  }
+
+  .app-subtitle {
+    margin-top: 10rpx;
+    font-size: 24rpx;
+    font-weight: 500;
+    color: #999999;
+    letter-spacing: 3rpx;
   }
 }
 
 .login-card {
   width: 100%;
   background-color: #fff;
-  border-radius: 24rpx;
-  padding: 40rpx 30rpx;
-  box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.08);
+  border-radius: 40rpx;
+  padding: 40rpx 34rpx 42rpx;
+  box-shadow: 0 24rpx 60rpx rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+
+  &.register-mode {
+    padding-bottom: 52rpx;
+  }
 
   .tabs {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 50rpx;
-    border-bottom: 2rpx solid #f0f0f0;
+    justify-content: space-between;
+    margin-bottom: 42rpx;
+    background: #f3f4f6;
+    border-radius: 26rpx;
+    padding: 8rpx;
+
     .tab-item {
-      font-size: 32rpx;
-      color: #999;
-      padding-bottom: 20rpx;
+      flex: 1;
+      text-align: center;
+      font-size: 30rpx;
+      color: #9ca3af;
+      font-weight: 500;
+      padding: 18rpx 0;
       position: relative;
       transition: all 0.3s;
+      border-radius: 20rpx;
+
       &.active {
-        color: #ff9f43;
-        font-weight: bold;
+        color: #1a1c1e;
+        font-weight: 700;
+        background: #ffffff;
+        box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.04);
       }
+
       .tab-line {
         position: absolute;
-        bottom: -2rpx;
+        bottom: 6rpx;
         left: 50%;
         transform: translateX(-50%);
-        width: 60rpx;
+        width: 54rpx;
         height: 6rpx;
-        background-color: #ff9f43;
-        border-radius: 6rpx;
+        background-color: #ff8c42;
+        border-radius: 999rpx;
       }
     }
   }
@@ -261,42 +360,67 @@ export default {
     .input-item {
       display: flex;
       align-items: center;
-      background-color: #f8f9fa;
-      border-radius: 50rpx;
-      padding: 24rpx 36rpx;
-      margin-bottom: 30rpx;
-      .input-icon {
-        font-size: 36rpx;
-        margin-right: 20rpx;
+      background-color: #f5f5f7;
+      border-radius: 24rpx;
+      height: 96rpx;
+      padding: 0 30rpx;
+      margin-bottom: 24rpx;
+      border: 2rpx solid transparent;
+      transition: all 0.22s ease;
+
+      &:focus-within {
+        background-color: #ffffff;
+        border-color: rgba(255, 140, 66, 0.36);
+        box-shadow: 0 0 0 8rpx rgba(255, 140, 66, 0.11);
       }
+
+      .input-icon {
+        font-size: 34rpx;
+        margin-right: 18rpx;
+        color: #b0b0b0;
+      }
+
       .uni-input {
         flex: 1;
         font-size: 30rpx;
         color: #333;
+        font-weight: 500;
+      }
+
+      .password-eye {
+        width: 40rpx;
+        height: 40rpx;
+        margin-left: 14rpx;
+        flex-shrink: 0;
+        opacity: 0.88;
       }
     }
 
     .submit-btn {
       width: 100%;
-      height: 90rpx;
-      line-height: 90rpx;
-      background: linear-gradient(to right, #ffbe76, #ff9f43);
+      height: 100rpx;
+      line-height: 100rpx;
+      background: #ff8c42;
       color: #fff;
-      font-size: 34rpx;
-      font-weight: bold;
-      border-radius: 50rpx;
-      margin-top: 50rpx;
-      box-shadow: 0 8rpx 20rpx rgba(255, 159, 67, 0.3);
+      font-size: 36rpx;
+      font-weight: 700;
+      border-radius: 999rpx;
+      margin-top: 40rpx;
+      box-shadow: 0 16rpx 32rpx rgba(255, 140, 66, 0.25);
+      transition: all 0.2s ease;
+
       &.register-btn {
-        background: linear-gradient(to right, #fab1a0, #e17055);
-        box-shadow: 0 8rpx 20rpx rgba(225, 112, 85, 0.3);
+        background: #ff8c42;
+        box-shadow: 0 16rpx 32rpx rgba(255, 140, 66, 0.25);
       }
+
       &.btn-hover {
-        opacity: 0.9;
+        opacity: 0.94;
         transform: scale(0.98);
       }
+
       &[disabled] {
-        opacity: 0.6;
+        opacity: 0.58;
       }
     }
   }
@@ -304,10 +428,34 @@ export default {
 
 .footer-tips {
   margin-top: auto;
-  color: #fff;
-  font-size: 24rpx;
-  opacity: 0.8;
-  margin-bottom: 30rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+
+  .policy-row {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+  }
+
+  .policy-link {
+    font-size: 24rpx;
+    color: #9ca3af;
+    font-weight: 500;
+  }
+
+  .policy-dot {
+    font-size: 24rpx;
+    color: #d1d5db;
+  }
+
+  .copyright {
+    font-size: 22rpx;
+    color: #b7bdc6;
+    letter-spacing: 1rpx;
+  }
 }
 
 .animate-fade-in {
@@ -319,6 +467,6 @@ export default {
 }
 
 .placeholder-style {
-  color: #c0c4cc;
+  color: #b0b0b0;
 }
 </style>

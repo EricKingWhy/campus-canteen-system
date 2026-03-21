@@ -96,7 +96,7 @@
         <view class="card nutrition-card">
           <view class="card-header">
             <text class="card-title">营养结构</text>
-            <text class="info-icon">ℹ️</text>
+            <image class="info-icon-image" :src="healthAnalysisIcon" mode="aspectFit" />
           </view>
           
           <view class="nutrition-content">
@@ -134,12 +134,12 @@
           
           <!-- Suggestion -->
           <view class="suggestion-box" v-if="nutritionSuggestion">
-            <text class="suggestion-icon">💡</text>
+            <image class="suggestion-icon" :src="promptIcon" mode="aspectFit" />
             <text class="suggestion-text">{{ nutritionSuggestion }}</text>
           </view>
           
           <button class="primary-btn recommend-btn" @click="goToRecommend">
-            推荐补齐 →
+            推荐补齐
           </button>
         </view>
 
@@ -149,7 +149,7 @@
             <text class="card-title">健康趋势</text>
             <view class="trend-badge" v-if="trendChange">
               <text class="trend-value">{{ trendChange }}</text>
-              <text class="trend-icon">📈</text>
+              <image class="trend-icon-image" :src="healthAnalysisIcon" mode="aspectFit" />
             </view>
           </view>
           
@@ -206,12 +206,12 @@
           <view class="card-header">
             <text class="card-title">消费趋势</text>
             <view class="period-toggle">
-              <text class="period active">近7天</text>
-              <text class="period">近30天</text>
+              <text class="period" :class="{ active: selectedRange === '7days' }" @click="setRange('7days')">近7天</text>
+              <text class="period" :class="{ active: selectedRange === '30days' }" @click="setRange('30days')">近30天</text>
             </view>
           </view>
           
-          <view class="bar-chart" v-if="weeklyCostTrend && weeklyCostTrend.length > 0">
+          <view class="bar-chart" v-if="selectedRange === '7days' && weeklyCostTrend && weeklyCostTrend.length > 0">
             <view 
               v-for="(item, index) in weeklyCostTrend" 
               :key="index"
@@ -224,6 +224,25 @@
                 </view>
               </view>
               <text class="bar-label">{{ item.day }}</text>
+            </view>
+          </view>
+          <view class="area-chart" v-else-if="selectedRange === '30days' && monthlyCostTrend.length > 0">
+            <view class="area-tooltip">{{ areaTooltipText }}</view>
+            <canvas
+              canvas-id="costTrendCanvas"
+              id="costTrendCanvas"
+              class="area-canvas"
+              @touchstart="onAreaCanvasTouch"
+            />
+            <view class="area-x-axis">
+              <text
+                v-for="(item, index) in monthlyCostTrend"
+                :key="`x-${index}`"
+                class="area-x-label"
+                :class="{ today: item.isToday }"
+              >
+                {{ item.displayLabel }}
+              </text>
             </view>
           </view>
           <view v-else style="text-align: center; color: #999; line-height: 500rpx; height: 500rpx;">
@@ -270,9 +289,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserProfileStore } from '@/stores/modules/userProfile'
+import promptIcon from '@/assets/images/icons/prompt.png'
+import healthAnalysisIcon from '@/assets/images/icons/icon_health_analysis_new.png'
 
 const profileStore = useUserProfileStore()
 
@@ -330,7 +351,7 @@ const macros = ref({
 const donutStyle = computed(() => {
   const { proteinPct, carbPct, fatPct } = macros.value
   return {
-    background: `conic-gradient(#13ec5b 0% ${proteinPct}%, #4A90E2 ${proteinPct}% ${proteinPct + carbPct}%, #FFB347 ${proteinPct + carbPct}% 100%)`
+    background: `conic-gradient(#34c759 0% ${proteinPct}%, #4A90E2 ${proteinPct}% ${proteinPct + carbPct}%, #FFB347 ${proteinPct + carbPct}% 100%)`
   }
 })
 const nutritionSuggestion = ref('')
@@ -350,7 +371,20 @@ const spendingProgress = computed(() => {
   return Math.min(100, (monthSpent.value / baseline.value) * 100)
 })
 
-const weeklyCostTrend = ref<{ day: string; value: number; barHeight: number; isToday: boolean }[]>([])
+type TrendPoint = {
+  day: string
+  date: string
+  value: number
+  barHeight: number
+  isToday: boolean
+  displayLabel: string
+}
+
+const selectedRange = ref<'7days' | '30days'>('7days')
+const weeklyCostTrend = ref<TrendPoint[]>([])
+const monthlyCostTrend = ref<TrendPoint[]>([])
+const selectedAreaIndex = ref(0)
+const areaCanvasRect = ref<{ left: number; width: number } | null>(null)
 const categoryBreakdown = ref<{ name: string; amount: number; color: string }[]>([])
 const topCategory = computed(() => {
   if (!categoryBreakdown.value.length) return '--'
@@ -367,6 +401,11 @@ const compositionDonutStyle = computed(() => {
   return { background: `conic-gradient(${gradientParts.join(', ')})` }
 })
 const costTip = ref('')
+const areaTooltipText = computed(() => {
+  const point = monthlyCostTrend.value[selectedAreaIndex.value]
+  if (!point) return ''
+  return `${point.date}  ¥${formatMoney(point.value)}`
+})
 
 // Has any data check
 const hasAnyData = computed(() => monthSpent.value > 0 || todayIntake.value > 0)
@@ -456,6 +495,191 @@ const isToday = (dateStr: string): boolean => {
   } catch { return false }
 }
 
+const formatMonthDay = (dateStr: string): string => {
+  try {
+    const d = new Date(dateStr)
+    const mm = d.getMonth() + 1
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${mm}-${dd}`
+  } catch {
+    return dateStr
+  }
+}
+
+const rpxToPx = (rpx: number): number => {
+  const { windowWidth } = uni.getSystemInfoSync()
+  return Math.round((windowWidth / 750) * rpx)
+}
+
+const queryAreaCanvasRect = () => {
+  uni.createSelectorQuery()
+    .select('#costTrendCanvas')
+    .boundingClientRect((rect: any) => {
+      if (rect && rect.width) {
+        areaCanvasRect.value = { left: rect.left, width: rect.width }
+      }
+    })
+    .exec()
+}
+
+const draw30DayAreaChart = () => {
+  if (selectedRange.value !== '30days' || !monthlyCostTrend.value.length) return
+
+  const ctx = uni.createCanvasContext('costTrendCanvas')
+  const width = rpxToPx(610)
+  const height = rpxToPx(320)
+  const padding = {
+    top: rpxToPx(24),
+    right: rpxToPx(16),
+    bottom: rpxToPx(22),
+    left: rpxToPx(16)
+  }
+  const chartWidth = width - padding.left - padding.right
+  const chartHeight = height - padding.top - padding.bottom
+  const baseY = height - padding.bottom
+
+  const values = monthlyCostTrend.value.map(item => item.value)
+  const max = Math.max(...values, 1)
+  const min = Math.min(...values, 0)
+  const range = Math.max(max - min, 1)
+
+  const points = monthlyCostTrend.value.map((item, index, arr) => {
+    const x = padding.left + (arr.length === 1 ? 0 : (index / (arr.length - 1)) * chartWidth)
+    const y = padding.top + (1 - (item.value - min) / range) * chartHeight
+    return { x, y }
+  })
+
+  ctx.clearRect(0, 0, width, height)
+
+  if (points.length > 1) {
+    // 平滑面积填充（莫兰迪紫渐变）
+    const areaGradient = ctx.createLinearGradient(0, padding.top, 0, baseY)
+    areaGradient.addColorStop(0, 'rgba(142, 124, 195, 0.30)')
+    areaGradient.addColorStop(1, 'rgba(142, 124, 195, 0.03)')
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, baseY)
+    ctx.lineTo(points[0].x, points[0].y)
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1]
+      const curr = points[i]
+      const cx = (prev.x + curr.x) / 2
+      const cy = (prev.y + curr.y) / 2
+      ctx.quadraticCurveTo(prev.x, prev.y, cx, cy)
+    }
+    const last = points[points.length - 1]
+    ctx.lineTo(last.x, last.y)
+    ctx.lineTo(last.x, baseY)
+    ctx.closePath()
+    ctx.setFillStyle(areaGradient)
+    ctx.fill()
+
+    // 平滑主线
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, points[0].y)
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1]
+      const curr = points[i]
+      const cx = (prev.x + curr.x) / 2
+      const cy = (prev.y + curr.y) / 2
+      ctx.quadraticCurveTo(prev.x, prev.y, cx, cy)
+    }
+    const lineGradient = ctx.createLinearGradient(0, 0, width, 0)
+    lineGradient.addColorStop(0, '#9E8CD6')
+    lineGradient.addColorStop(1, '#8F77D0')
+    ctx.setStrokeStyle(lineGradient)
+    ctx.setLineWidth(rpxToPx(4))
+    ctx.setLineCap('round')
+    ctx.setLineJoin('round')
+    ctx.stroke()
+  }
+
+  // 今日/选中点高亮
+  const focusIndex = Math.min(selectedAreaIndex.value, points.length - 1)
+  if (focusIndex >= 0 && points[focusIndex]) {
+    const p = points[focusIndex]
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, rpxToPx(7), 0, 2 * Math.PI)
+    ctx.setFillStyle('#8F77D0')
+    ctx.fill()
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, rpxToPx(11), 0, 2 * Math.PI)
+    ctx.setStrokeStyle('rgba(143, 119, 208, 0.28)')
+    ctx.setLineWidth(rpxToPx(3))
+    ctx.stroke()
+  }
+
+  ctx.draw()
+}
+
+const setRange = async (range: '7days' | '30days') => {
+  if (selectedRange.value === range) return
+  selectedRange.value = range
+  const dayRange = range === '30days' ? 30 : 7
+  await fetchCostTrend(dayRange)
+  if (range === '30days') {
+    await nextTick()
+    queryAreaCanvasRect()
+    draw30DayAreaChart()
+  }
+}
+
+const onAreaCanvasTouch = (e: any) => {
+  if (!monthlyCostTrend.value.length || !areaCanvasRect.value) return
+  const touchX = e?.changedTouches?.[0]?.x
+  if (typeof touchX !== 'number') return
+  const ratio = Math.min(1, Math.max(0, (touchX - areaCanvasRect.value.left) / areaCanvasRect.value.width))
+  const index = Math.round(ratio * (monthlyCostTrend.value.length - 1))
+  selectedAreaIndex.value = index
+  draw30DayAreaChart()
+}
+
+const fetchCostTrend = async (range: 7 | 30 = 7) => {
+  try {
+    const res = await uni.request({
+      url: `http://127.0.0.1:8081/analysis/cost/trend?range=${range}`,
+      method: 'GET',
+      header: { 'authentication': uni.getStorageSync('token') }
+    })
+
+    const data = (res as any).data?.data
+    if (!Array.isArray(data) || data.length === 0) {
+      if (range === 7) weeklyCostTrend.value = []
+      if (range === 30) monthlyCostTrend.value = []
+      return
+    }
+
+    const maxValue = Math.max(...data.map((t: any) => parseFloat(t.amount || t.value || 0))) || 1
+    const MAX_BAR_RPX = 380
+    const MIN_BAR_RPX = 20
+
+    const points: TrendPoint[] = data.map((t: any, index: number) => {
+      const amount = parseFloat(t.amount || t.value || 0)
+      const ratio = maxValue > 0 ? amount / maxValue : 0
+      const barHeight = amount > 0 ? Math.max(MIN_BAR_RPX, Math.round(ratio * MAX_BAR_RPX)) : MIN_BAR_RPX
+      const date = t.date || ''
+      const showTick = index === 0 || index === data.length - 1 || index % 5 === 0
+      return {
+        day: getDayName(date),
+        date,
+        value: amount,
+        barHeight,
+        isToday: isToday(date),
+        displayLabel: range === 30 ? (showTick ? formatMonthDay(date) : '') : getDayName(date)
+      }
+    })
+
+    if (range === 7) {
+      weeklyCostTrend.value = points
+    } else {
+      monthlyCostTrend.value = points
+      const todayIndex = points.findIndex(point => point.isToday)
+      selectedAreaIndex.value = todayIndex >= 0 ? todayIndex : points.length - 1
+    }
+  } catch (e) {
+    console.error(`获取${range}天餐费趋势失败:`, e)
+  }
+}
+
 // ============ 【核心修复】统一从 /cost/summary 获取所有餐费数据 ============
 // /cost/summary 后端已返回 trendData + byCategory，无需额外接口
 const fetchCostSummary = async () => {
@@ -475,39 +699,7 @@ const fetchCostSummary = async () => {
       baseline.value = toNum(data.baseline)
       costTip.value = data.tip || ''
 
-      // 2) 【致命修复】消费趋势 - 直接从 summary 响应中提取 trendData
-      const trendArr = data.trendData
-      console.log('===== 趋势原始数据 =====', JSON.stringify(trendArr))
-      if (trendArr && Array.isArray(trendArr) && trendArr.length > 0) {
-        const maxValue = Math.max(...trendArr.map((t: any) => parseFloat(t.amount || t.value || 0))) || 1
-        const MAX_BAR_RPX = 380  // .bar-area 高度 400rpx，柱子最高 380rpx
-        const MIN_BAR_RPX = 20   // 最低高度 20rpx，保证有数据的天显示可见凸起
-        weeklyCostTrend.value = JSON.parse(JSON.stringify(
-          trendArr.map((t: any) => {
-            const amt = parseFloat(t.amount || t.value || 0)
-            const ratio = maxValue > 0 ? amt / maxValue : 0
-            const barHeight = amt > 0 ? Math.max(MIN_BAR_RPX, Math.round(ratio * MAX_BAR_RPX)) : MIN_BAR_RPX
-            return {
-              day: getDayName(t.date || t.day || ''),
-              value: amt,
-              barHeight,
-              isToday: isToday(t.date || '')
-            }
-          })
-        ))
-        console.log('===== 趋势组装结果 =====', JSON.stringify(weeklyCostTrend.value))
-      } else {
-        // 无趋势数据时的安全回退
-        const defaultDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-        weeklyCostTrend.value = defaultDays.map((day, i) => ({
-          day,
-          value: 0,
-          barHeight: 20,
-          isToday: i === new Date().getDay()
-        }))
-      }
-
-      // 3) 【致命修复】消费构成 - 直接从 summary 响应中提取 byCategory
+      // 2) 消费构成 - 直接从 summary 响应中提取 byCategory
       const catArr = data.byCategory
       console.log('===== 构成原始数据 =====', JSON.stringify(catArr))
       if (catArr && Array.isArray(catArr) && catArr.length > 0) {
@@ -536,9 +728,23 @@ const loadAllData = async () => {
   await Promise.all([
     fetchHealthSummary(),
     fetchHealthTrend(),
-    fetchCostSummary()
+    fetchCostSummary(),
+    fetchCostTrend(7)
   ])
 }
+
+watch(selectedRange, async (range) => {
+  if (range !== '30days' || !monthlyCostTrend.value.length) return
+  await nextTick()
+  queryAreaCanvasRect()
+  draw30DayAreaChart()
+})
+
+watch(selectedAreaIndex, () => {
+  if (selectedRange.value === '30days') {
+    draw30DayAreaChart()
+  }
+})
 
 // ============ Lifecycle ============
 onShow(() => {
@@ -553,7 +759,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .health-analysis-page {
   min-height: 100vh;
-  background: #f6f8f6;
+  background: #f7f8fa;
   display: flex;
   flex-direction: column;
   padding-bottom: 120rpx;
@@ -564,7 +770,7 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(246, 248, 246, 0.95);
+  background: rgba(247, 248, 250, 0.95);
   backdrop-filter: blur(10px);
   padding: 20rpx 32rpx;
   padding-top: calc(env(safe-area-inset-top) + 20rpx);
@@ -573,7 +779,7 @@ onMounted(() => {
 .tab-toggle {
   display: flex;
   height: 88rpx;
-  background: #e8efe9;
+  background: #edf0f4;
   border-radius: 44rpx;
   padding: 8rpx;
 }
@@ -586,14 +792,14 @@ onMounted(() => {
   border-radius: 40rpx;
   font-size: 28rpx;
   font-weight: 500;
-  color: #61896f;
+  color: #666666;
   transition: all 0.3s;
   
   &.active {
     background: #fff;
     color: #111813;
     font-weight: 700;
-    box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+    box-shadow: 0 12rpx 28rpx rgba(0, 0, 0, 0.05);
   }
 }
 
@@ -616,7 +822,7 @@ onMounted(() => {
 .empty-icon-wrap {
   width: 320rpx;
   height: 320rpx;
-  background: #f0f4f2;
+  background: #eef1f4;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -637,7 +843,7 @@ onMounted(() => {
   right: 40rpx;
   background: #fff;
   padding: 16rpx;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1);
   font-size: 36rpx;
 }
@@ -658,14 +864,14 @@ onMounted(() => {
 }
 
 .primary-btn {
-  background: #13ec5b;
-  color: #053316;
+  background: #ff8c42;
+  color: #ffffff;
   font-weight: 700;
   font-size: 30rpx;
   padding: 24rpx 64rpx;
   border-radius: 48rpx;
   border: none;
-  box-shadow: 0 8rpx 24rpx rgba(19, 236, 91, 0.3);
+  box-shadow: 0 16rpx 40rpx rgba(255, 140, 66, 0.2);
 }
 
 // Cards
@@ -674,7 +880,7 @@ onMounted(() => {
   border-radius: 32rpx;
   padding: 40rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 }
 
 .card-header {
@@ -694,6 +900,12 @@ onMounted(() => {
   font-size: 32rpx;
   font-weight: 700;
   color: #111813;
+}
+
+.info-icon-image {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
 }
 
 // Health Overview
@@ -717,8 +929,8 @@ onMounted(() => {
 }
 
 .activity-badge {
-  background: rgba(19, 236, 91, 0.1);
-  color: #094d25;
+  background: rgba(255, 140, 66, 0.14);
+  color: #b85b00;
   padding: 12rpx 20rpx;
   border-radius: 32rpx;
   font-size: 22rpx;
@@ -745,7 +957,7 @@ onMounted(() => {
 
 .progress-fill {
   height: 100%;
-  background: #13ec5b;
+  background: #ff8c42;
   border-radius: 8rpx;
   transition: width 0.8s ease-out;
 }
@@ -754,7 +966,7 @@ onMounted(() => {
 .bmi-section {
   margin-top: 40rpx;
   padding-top: 24rpx;
-  border-top: 1rpx solid #f0f4f2;
+  border-top: none;
 }
 
 .bmi-header {
@@ -771,7 +983,7 @@ onMounted(() => {
 
 .bmi-scale {
   height: 12rpx;
-  background: linear-gradient(to right, #93c5fd, #13ec5b, #fb923c);
+  background: linear-gradient(to right, #9ec5ff, #ffbd7a, #ff8c42);
   border-radius: 6rpx;
   position: relative;
   opacity: 0.8;
@@ -867,7 +1079,7 @@ onMounted(() => {
   height: 16rpx;
   border-radius: 50%;
   
-  &.protein { background: #13ec5b; }
+  &.protein { background: #34c759; }
   &.carb { background: #4A90E2; }
   &.fat { background: #FFB347; }
 }
@@ -894,7 +1106,10 @@ onMounted(() => {
 }
 
 .suggestion-icon {
-  font-size: 32rpx;
+  width: 34rpx;
+  height: 34rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
 }
 
 .suggestion-text {
@@ -917,9 +1132,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8rpx;
-  color: #13ec5b;
+  color: #34c759;
   font-size: 24rpx;
   font-weight: 600;
+}
+
+.trend-icon-image {
+  width: 30rpx;
+  height: 30rpx;
+  flex-shrink: 0;
 }
 
 .chart-area {
@@ -932,7 +1153,7 @@ onMounted(() => {
   position: absolute;
   bottom: 0;
   width: 8rpx;
-  background: #13ec5b;
+  background: #34c759;
   border-radius: 4rpx 4rpx 0 0;
 }
 
@@ -962,7 +1183,7 @@ onMounted(() => {
     right: -80rpx;
     width: 200rpx;
     height: 200rpx;
-    background: rgba(19, 236, 91, 0.1);
+    background: rgba(255, 140, 66, 0.12);
     border-radius: 50%;
     filter: blur(40rpx);
   }
@@ -1055,14 +1276,14 @@ onMounted(() => {
   width: 36rpx;
   max-width: 48rpx;
   min-height: 20rpx;
-  background: rgba(19, 236, 91, 0.3);
+  background: rgba(255, 140, 66, 0.28);
   border-radius: 8rpx 8rpx 0 0;
   position: relative;
   transition: all 0.3s;
   
   .highlight & {
-    background: #13ec5b;
-    box-shadow: 0 0 16rpx rgba(19, 236, 91, 0.4);
+    background: #ff8c42;
+    box-shadow: 0 12rpx 30rpx rgba(255, 140, 66, 0.25);
   }
 }
 
@@ -1092,6 +1313,49 @@ onMounted(() => {
     color: #111813;
     font-weight: 700;
   }
+}
+
+// 30-day smooth area chart
+.area-chart {
+  position: relative;
+  padding-top: 24rpx;
+  padding-bottom: 8rpx;
+}
+
+.area-tooltip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 14rpx;
+  border-radius: 20rpx;
+  background: rgba(143, 119, 208, 0.12);
+  color: #6f5aa4;
+  font-size: 22rpx;
+  font-weight: 600;
+  margin-bottom: 14rpx;
+}
+
+.area-canvas {
+  width: 610rpx;
+  height: 320rpx;
+}
+
+.area-x-axis {
+  margin-top: 10rpx;
+  display: flex;
+  justify-content: space-between;
+}
+
+.area-x-label {
+  flex: 1;
+  text-align: center;
+  font-size: 18rpx;
+  color: #9ca3af;
+  min-height: 26rpx;
+}
+
+.area-x-label.today {
+  color: #6f5aa4;
+  font-weight: 700;
 }
 
 // Composition
@@ -1201,12 +1465,13 @@ onMounted(() => {
   font-size: 22rpx;
   color: #6b7280;
   border-radius: 10rpx;
+  transition: all 0.2s ease;
   
   &.active {
     background: #fff;
     color: #111813;
     font-weight: 600;
-    box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
+    box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.04);
   }
 }
 </style>

@@ -14,5 +14,12 @@ const reOrderAPI = (id) => {
     method: "POST"
   });
 };
+const getWeeklyAnalysisAPI = () => {
+  return utils_http.http({
+    url: "/analysis/weekly-analysis",
+    method: "GET"
+  });
+};
 exports.getOrderPageAPI = getOrderPageAPI;
+exports.getWeeklyAnalysisAPI = getWeeklyAnalysisAPI;
 exports.reOrderAPI = reOrderAPI;

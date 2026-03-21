@@ -18,40 +18,44 @@
           <p class="deep">{{ orderdata.totalOrderCount }}</p>
         </div>
       </div>
-      <div id="ordermain" style="width: 100%; height: 300px"></div>
+      <div ref="chartDomRef" style="width: 100%; height: 300px"></div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from 'vue';
-import * as echarts from 'echarts';
+import { markRaw, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import * as echarts from 'echarts'
 
 interface OrderData {
-  orderCompletionRate: number;
-  validOrderCount: number;
-  totalOrderCount: number;
+  orderCompletionRate: number
+  validOrderCount: number
+  totalOrderCount: number
   data: {
-    dateList: string[];
-    orderCountList: number[];
-    validOrderCountList: number[];
-  };
+    dateList: string[]
+    orderCountList: number[]
+    validOrderCountList: number[]
+  }
 }
 
 interface OverviewData {
-  // Define the structure of overviewData if needed
+  [key: string]: unknown
 }
 
 const props = defineProps<{
-  orderdata: OrderData;
-  overviewData: OverviewData;
-}>();
+  orderdata: OrderData
+  overviewData: OverviewData
+}>()
 
+const chartDomRef = shallowRef<HTMLElement | null>(null)
+const chartInstance = shallowRef<echarts.ECharts | null>(null)
 
-const initChart = () => {
-  const chartDom = document.getElementById('ordermain') as HTMLElement;
-  const myChart = echarts.init(chartDom);
-  const option = {
+const createOption = () => {
+  const isSingleDay = props.orderdata.data.dateList.length <= 1
+  const singleTotal = props.orderdata.data.orderCountList[0] ?? 0
+  const singleValid = props.orderdata.data.validOrderCountList[0] ?? 0
+
+  return {
     tooltip: {
       trigger: 'axis',
       backgroundColor: '#fff',
@@ -90,7 +94,6 @@ const initChart = () => {
       {
         type: 'value',
         min: 0,
-        // interval: 50,
         axisLabel: {
           textStyle: {
             color: '#666',
@@ -100,24 +103,26 @@ const initChart = () => {
       },
     ],
     legend: {
-      // 对指定的data线，设置不同的legend格式
-      // data: ['用户总量（个）', '新增用户（个）'],
       bottom: '0%',
       icon: 'rect',
       itemWidth: 20,
       itemHeight: 2,
       textStyle: {
         fontSize: 12,
-        color: '#666'
-      }
+        color: '#666',
+      },
     },
     series: [
       {
         name: '订单总数（个）',
         type: 'line',
         smooth: false,
-        showSymbol: false,
+        showSymbol: isSingleDay,
+        symbol: 'circle',
         symbolSize: 10,
+        lineStyle: {
+          width: 2,
+        },
         itemStyle: {
           normal: {
             color: '#FFD000',
@@ -132,27 +137,43 @@ const initChart = () => {
           },
         },
         areaStyle: {
-          // opacity: 0.5,
-          // 从上到下渐变，(0,0)是上部，(0,1)是下部
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: 'rgba(255, 221, 0, 1)'
+              color: 'rgba(255, 221, 0, 1)',
             },
             {
               offset: 1,
-              color: 'rgba(255, 221, 0, 0)'
-            }
-          ])
+              color: 'rgba(255, 221, 0, 0)',
+            },
+          ]),
         },
+        markLine: isSingleDay
+          ? {
+              symbol: 'none',
+              silent: true,
+              label: { show: false },
+              lineStyle: {
+                color: '#FFD000',
+                width: 1.5,
+                type: 'solid',
+                opacity: 0.45,
+              },
+              data: [{ yAxis: singleTotal }],
+            }
+          : undefined,
         data: props.orderdata.data.orderCountList,
       },
       {
         name: '有效订单（个）',
         type: 'line',
         smooth: false,
-        showSymbol: false,
+        showSymbol: isSingleDay,
+        symbol: 'circle',
         symbolSize: 10,
+        lineStyle: {
+          width: 2,
+        },
         itemStyle: {
           normal: {
             color: '#FD7F7F',
@@ -167,37 +188,69 @@ const initChart = () => {
           },
         },
         areaStyle: {
-          // opacity: 0.5,
-          // 从上到下渐变，(0,0)是上部，(0,1)是下部
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: 'rgba(255, 1, 0, 1)'
+              color: 'rgba(255, 1, 0, 1)',
             },
             {
               offset: 1,
-              color: 'rgba(255, 1, 0, 0)'
-            }
-          ])
+              color: 'rgba(255, 1, 0, 0)',
+            },
+          ]),
         },
+        markLine: isSingleDay
+          ? {
+              symbol: 'none',
+              silent: true,
+              label: { show: false },
+              lineStyle: {
+                color: '#FD7F7F',
+                width: 1.5,
+                type: 'dashed',
+                opacity: 0.55,
+              },
+              data: [{ yAxis: singleValid }],
+            }
+          : undefined,
         data: props.orderdata.data.validOrderCountList,
       },
     ],
-  };
-  myChart.setOption(option);
-};
+  }
+}
+
+const renderChart = async () => {
+  await nextTick()
+  if (!chartDomRef.value) return
+
+  if (!chartInstance.value) {
+    chartInstance.value = markRaw(echarts.init(chartDomRef.value))
+  } else {
+    chartInstance.value.clear()
+  }
+
+  chartInstance.value.setOption(createOption(), true)
+}
+
+watch(
+  () => props.orderdata,
+  () => {
+    void renderChart()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
-  initChart();
-});
+  void renderChart()
+})
 
-watch(() => props.orderdata, (newVal) => {
-  if (newVal) {
-    initChart();
+onBeforeUnmount(() => {
+  if (chartInstance.value) {
+    chartInstance.value.dispose()
+    chartInstance.value = null
   }
-});
+})
 </script>
-
 
 <style lang="less" scoped>
 .chartTitle {
@@ -209,16 +262,19 @@ watch(() => props.orderdata, (newVal) => {
 .orderProportion {
   display: flex;
   margin-left: 20px;
-  .simple{
+
+  .simple {
     font-size: 14px;
     color: #666;
   }
-  .deep{
+
+  .deep {
     font-size: 16px;
     font-weight: bold;
     color: #333;
   }
-  .symbol{
+
+  .symbol {
     font-size: 16px;
     font-weight: bold;
     color: #666;

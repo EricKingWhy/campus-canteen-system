@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
 const api_favorite = require("../api/favorite.js");
+const common_assets = require("../common/assets.js");
 require("../utils/http.js");
 require("../stores/modules/user.js");
 const baseUrl = "http://127.0.0.1:8081";
@@ -117,17 +118,21 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         n: common_vendor.t(_ctx.dish.description || "精选优质食材，由专业营养师搭配，采用健康烹饪方式，锁住食材本味。口感鲜美，营养均衡。"),
         o: _ctx.dish.mainIngredients
       }, _ctx.dish.mainIngredients ? {
-        p: common_vendor.t(_ctx.dish.mainIngredients)
+        p: common_vendor.unref(common_assets.ingredientsWheatIcon),
+        q: common_vendor.t(_ctx.dish.mainIngredients)
       } : {}, {
-        q: _ctx.dish.allergenTags
+        r: _ctx.dish.allergenTags
       }, _ctx.dish.allergenTags ? common_vendor.e({
-        r: _ctx.dish.allergenTags !== "无"
+        s: _ctx.dish.allergenTags !== "无"
       }, _ctx.dish.allergenTags !== "无" ? {
-        s: common_vendor.t(_ctx.dish.allergenTags)
-      } : {}) : {}, {
-        t: smartFlavors.value.length > 0
+        t: common_vendor.unref(common_assets.calorieCheckNewIcon),
+        v: common_vendor.t(_ctx.dish.allergenTags)
+      } : {
+        w: common_vendor.unref(common_assets.calorieCheckNewIcon)
+      }) : {}, {
+        x: smartFlavors.value.length > 0
       }, smartFlavors.value.length > 0 ? {
-        v: common_vendor.f(smartFlavors.value, (flavor, index, i0) => {
+        y: common_vendor.f(smartFlavors.value, (flavor, index, i0) => {
           return {
             a: common_vendor.t(flavor),
             b: index,
@@ -136,10 +141,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        w: common_vendor.o(handleAddToCart),
-        x: common_vendor.o(() => {
+        z: common_vendor.o(handleAddToCart),
+        A: common_vendor.o(() => {
         }),
-        y: common_vendor.o(close)
+        B: common_vendor.o(close)
       }) : {});
     };
   }

@@ -2,29 +2,32 @@
   <div class="container">
     <h2 class="chartTitle">用户统计</h2>
     <div class="charBox">
-      <div id="usermain" style="width: 100%; height: 320px"></div>
+      <div ref="chartDomRef" style="width: 100%; height: 320px"></div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from 'vue';
-import * as echarts from 'echarts';
+import { markRaw, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import * as echarts from 'echarts'
 
 interface UserData {
-  dateList: string[];
-  totalUserList: number[];
-  newUserList: number[];
+  dateList: string[]
+  totalUserList: number[]
+  newUserList: number[]
 }
 
 const props = defineProps<{
-  userdata: UserData;
-}>();
+  userdata: UserData
+}>()
 
-const initChart = () => {
-  const chartDom = document.getElementById('usermain') as HTMLElement;
-  const myChart = echarts.init(chartDom);
-  const option = {
+const chartDomRef = shallowRef<HTMLElement | null>(null)
+const chartInstance = shallowRef<echarts.ECharts | null>(null)
+
+const createOption = () => {
+  const isSingleDay = props.userdata.dateList.length <= 1
+
+  return {
     tooltip: {
       trigger: 'axis',
       backgroundColor: '#fff',
@@ -72,24 +75,26 @@ const initChart = () => {
       },
     ],
     legend: {
-      // 对指定的data线，设置不同的legend格式
-      // data: ['用户总量（个）', '新增用户（个）'],
       bottom: '0%',
       icon: 'rect',
       itemWidth: 20,
       itemHeight: 2,
       textStyle: {
         fontSize: 12,
-        color: '#666'
-      }
+        color: '#666',
+      },
     },
     series: [
       {
         name: '用户总量（个）',
         type: 'line',
         smooth: false,
-        showSymbol: false,
+        showSymbol: isSingleDay,
+        symbol: 'circle',
         symbolSize: 10,
+        lineStyle: {
+          width: 2,
+        },
         itemStyle: {
           normal: {
             color: '#FFD000',
@@ -103,28 +108,18 @@ const initChart = () => {
             borderColor: '#FFC100',
           },
         },
-        // areaStyle: {
-        //   // opacity: 0.5,
-        //   // 从上到下渐变，(0,0)是上部，(0,1)是下部
-        //   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        //     {
-        //       offset: 0,
-        //       color: 'rgba(255, 221, 0, 1)'
-        //     },
-        //     {
-        //       offset: 1,
-        //       color: 'rgba(255, 221, 0, 0)'
-        //     }
-        //   ])
-        // },
         data: props.userdata.totalUserList,
       },
       {
         name: '新增用户（个）',
         type: 'line',
         smooth: false,
-        showSymbol: false,
+        showSymbol: isSingleDay,
+        symbol: 'circle',
         symbolSize: 10,
+        lineStyle: {
+          width: 2,
+        },
         itemStyle: {
           normal: {
             color: '#FD7F7F',
@@ -139,35 +134,54 @@ const initChart = () => {
           },
         },
         areaStyle: {
-          // opacity: 0.5,
-          // 从上到下渐变，(0,0)是上部，(0,1)是下部
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: 'rgba(255, 1, 0, 1)'
+              color: 'rgba(255, 1, 0, 1)',
             },
             {
               offset: 1,
-              color: 'rgba(255, 1, 0, 0)'
-            }
-          ])
+              color: 'rgba(255, 1, 0, 0)',
+            },
+          ]),
         },
         data: props.userdata.newUserList,
       },
     ],
-  };
-  myChart.setOption(option);
-};
+  }
+}
+
+const renderChart = async () => {
+  await nextTick()
+  if (!chartDomRef.value) return
+
+  if (!chartInstance.value) {
+    chartInstance.value = markRaw(echarts.init(chartDomRef.value))
+  } else {
+    chartInstance.value.clear()
+  }
+
+  chartInstance.value.setOption(createOption(), true)
+}
+
+watch(
+  () => props.userdata,
+  () => {
+    void renderChart()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
-  initChart();
-});
+  void renderChart()
+})
 
-watch(() => props.userdata, (newVal) => {
-  if (newVal) {
-    initChart()
+onBeforeUnmount(() => {
+  if (chartInstance.value) {
+    chartInstance.value.dispose()
+    chartInstance.value = null
   }
-});
+})
 </script>
 
 <style lang="less" scoped>

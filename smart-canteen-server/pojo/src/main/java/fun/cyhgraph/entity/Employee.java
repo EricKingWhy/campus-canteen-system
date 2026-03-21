@@ -28,6 +28,10 @@ public class Employee implements Serializable {
     private Integer age;
     private String idNumber; // 身份证号
     private Integer status;
+    @TableField("photo_path")
+    private String photoPath;
+    @TableField(exist = false)
+    private String pic;
 
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

@@ -3,7 +3,7 @@
   <view class="submit">
     <form @submit="submit">
       <view class="pic_box" @click="picChange">
-        <image v-if="!user.pic" src="../../static/images/user_default.png" mode="aspectFill"></image>
+        <image v-if="!user.pic || isLegacyDefaultAvatar(user.pic)" src="../../static/images/default_avatar.jpg" mode="aspectFill"></image>
         <image v-else :src="user.pic" mode="aspectFill"></image>
         <view class="text">点击上传头像</view>
       </view>
@@ -45,6 +45,14 @@ const user = reactive({
   phone: '未设置',
   pic: '',
 })
+const isLegacyDefaultAvatar = (avatar: string) => {
+  return !!avatar && (
+    avatar.includes('photo-1599566150163-29194dcaad36') ||
+    avatar.includes('images.unsplash.com') ||
+    (avatar.startsWith('http') && !avatar.includes('127.0.0.1') && !avatar.includes('localhost'))
+  )
+}
+
 const items = [
   {
     value: 1,

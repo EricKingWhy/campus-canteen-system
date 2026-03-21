@@ -16,6 +16,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       phone: "未设置",
       pic: ""
     });
+    const isLegacyDefaultAvatar = (avatar) => {
+      return !!avatar && (avatar.includes("photo-1599566150163-29194dcaad36") || avatar.includes("images.unsplash.com") || avatar.startsWith("http") && !avatar.includes("127.0.0.1") && !avatar.includes("localhost"));
+    };
     const items = [
       {
         value: 1,
@@ -127,8 +130,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: !user.pic
-      }, !user.pic ? {} : {
+        a: !user.pic || isLegacyDefaultAvatar(user.pic)
+      }, !user.pic || isLegacyDefaultAvatar(user.pic) ? {} : {
         b: user.pic
       }, {
         c: common_vendor.o(picChange),

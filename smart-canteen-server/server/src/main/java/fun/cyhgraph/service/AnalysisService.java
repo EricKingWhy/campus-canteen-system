@@ -29,4 +29,15 @@ public interface AnalysisService {
      * @return 包含餐费分析指标的映射
      */
     Map<String, Object> getCostSummary(Long userId);
+
+    /**
+     * 获取餐费趋势（按天）
+     *
+     * @param userId 目标用户ID
+     * @param range  查询范围（最近多少天）
+     * @return 每日餐费趋势数据
+     */
+    List<Map<String, Object>> getCostTrend(Long userId, int range);
+
+    fun.cyhgraph.vo.WeeklyAnalysisVO getWeeklyAnalysis(Long userId);
 }

@@ -16,11 +16,17 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
+        private static final String UPLOAD_STATIC_ROOT_RELATIVE_DIR = "smart-canteen-admin/src/assets/images";
 
         @Autowired
         private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
@@ -129,8 +135,42 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 registry.addResourceHandler("/favicon.ico")
                                 .addResourceLocations("classpath:/META-INF/resources/");
 
-                // 【核心修复】静态资源映射 (图片)
+                Path uploadStaticRootDir = resolveUploadStaticRootDirectory();
+                try {
+                        Files.createDirectories(uploadStaticRootDir.resolve("employee_photos"));
+                } catch (IOException e) {
+                        throw new RuntimeException("创建员工照片目录失败: " + uploadStaticRootDir.resolve("employee_photos"), e);
+                }
+                registry.addResourceHandler("/static/upload/**")
+                                .addResourceLocations(uploadStaticRootDir.toUri().toString());
+
+                // 【核心修复】静态资源映射 (项目 classpath 静态资源)
                 registry.addResourceHandler("/static/**")
                                 .addResourceLocations("classpath:/static/");
+        }
+
+        private Path resolveUploadStaticRootDirectory() {
+                Path userDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
+                List<Path> candidates = new ArrayList<>();
+
+                candidates.add(userDir.resolve(UPLOAD_STATIC_ROOT_RELATIVE_DIR));
+
+                Path current = userDir;
+                for (int i = 0; i < 6 && current != null; i++) {
+                        candidates.add(current.resolve(UPLOAD_STATIC_ROOT_RELATIVE_DIR));
+                        current = current.getParent();
+                }
+
+                for (Path candidate : candidates) {
+                        Path normalized = candidate.normalize();
+                        if (Files.exists(normalized.getParent())) {
+                                log.info("员工照片目录候选命中: {}", normalized);
+                                return normalized;
+                        }
+                }
+
+                Path fallback = userDir.resolve(UPLOAD_STATIC_ROOT_RELATIVE_DIR).normalize();
+                log.warn("员工照片目录未命中已存在路径，使用fallback: {}", fallback);
+                return fallback;
         }
 }

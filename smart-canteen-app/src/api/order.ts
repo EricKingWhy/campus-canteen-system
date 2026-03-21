@@ -1,5 +1,5 @@
 import { http } from '@/utils/http'
-import type { OrderPageDTO, OrderSubmitVO, OrderVO, PageVO, OrderPaymentDTO } from '@/types/order'
+import type { OrderPageDTO, OrderSubmitVO, OrderVO, PageVO, OrderPaymentDTO, WeeklyAnalysisVO } from '@/types/order'
 
 // 用户下单
 export const submitOrderAPI = (params: any) => {
@@ -66,6 +66,13 @@ export const reOrderAPI = (id: number) => {
 export const urgeOrderAPI = (id: number) => {
   return http({
     url: `/user/order/reminder/${id}`,
+    method: 'GET',
+  })
+}
+
+export const getWeeklyAnalysisAPI = () => {
+  return http<WeeklyAnalysisVO>({
+    url: '/analysis/weekly-analysis',
     method: 'GET',
   })
 }

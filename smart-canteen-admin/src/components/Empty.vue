@@ -2,14 +2,16 @@
 <template>
   <div class="empty-box">
     <div class="img-box">
-      <img v-if="!props.isSearch" src="../assets/image/table_empty.png" alt="">
-      <img v-else src="../assets/image/search_table_empty.png">
+      <img v-if="!props.isSearch" :src="welcomeSvg" alt="">
+      <img v-else src="../assets/image/search_table_empty.png" alt="">
       <p>{{ !props.isSearch ? '这里空空如也~' : 'Sorry，木有找到您搜索的内容哦~' }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang='ts'>
+import welcomeSvg from '@/assets/images/dashboard/welcome.svg'
+
 const props = defineProps({
   isSearch: {
     type: Boolean,

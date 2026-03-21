@@ -4,6 +4,7 @@ const stores_modules_user = require("../../stores/modules/user.js");
 const stores_modules_userProfile = require("../../stores/modules/userProfile.js");
 const api_user = require("../../api/user.js");
 require("../../utils/http.js");
+const common_assets = require("../../common/assets.js");
 if (!Math) {
   pushMsg();
 }
@@ -139,20 +140,22 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         d: common_vendor.t(common_vendor.unref(profileStore).bodyStats),
         e: common_vendor.t(common_vendor.unref(profileStore).calculatedBMI || "--"),
         f: common_vendor.t(common_vendor.unref(profileStore).bmiCategory),
-        g: common_vendor.t(monthlySpend.value),
-        h: common_vendor.t(monthlyOrders.value),
-        i: common_vendor.t(todayCalories.value),
-        j: common_vendor.t(caloriesStatus.value.text),
-        k: common_vendor.n(caloriesStatus.value.class),
-        l: common_vendor.t(todayProtein.value),
-        m: common_vendor.t(proteinStatus.value.text),
-        n: common_vendor.n(proteinStatus.value.class),
-        o: common_vendor.o(goHistory),
-        p: common_vendor.o(goWeeklyReport),
-        q: common_vendor.o(goFavorites),
-        r: common_vendor.o(goMyself),
-        s: common_vendor.o(handleLogout),
-        t: common_vendor.sr(childComp, "d3687551-0", {
+        g: common_vendor.unref(common_assets.spendingIcon),
+        h: common_vendor.t(monthlySpend.value),
+        i: common_vendor.t(monthlyOrders.value),
+        j: common_vendor.unref(common_assets.dietIcon),
+        k: common_vendor.t(todayCalories.value),
+        l: common_vendor.t(caloriesStatus.value.text),
+        m: common_vendor.n(caloriesStatus.value.class),
+        n: common_vendor.t(todayProtein.value),
+        o: common_vendor.t(proteinStatus.value.text),
+        p: common_vendor.n(proteinStatus.value.class),
+        q: common_vendor.o(goHistory),
+        r: common_vendor.o(goWeeklyReport),
+        s: common_vendor.o(goFavorites),
+        t: common_vendor.o(goMyself),
+        v: common_vendor.o(handleLogout),
+        w: common_vendor.sr(childComp, "d3687551-0", {
           "k": "childComp"
         })
       });

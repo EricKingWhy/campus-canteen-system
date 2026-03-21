@@ -69,8 +69,7 @@ public class AnalysisController {
     @GetMapping("/cost/trend")
     public Result<List<Map<String, Object>>> getCostTrend(@RequestParam(defaultValue = "7") int range) {
         Long userId = BaseContext.getCurrentId();
-        Map<String, Object> summary = analysisService.getCostSummary(userId);
-        return Result.success((List<Map<String, Object>>) summary.get("trendData"));
+        return Result.success(analysisService.getCostTrend(userId, range));
     }
 
     /**
@@ -83,5 +82,11 @@ public class AnalysisController {
         Map<String, Object> result = new HashMap<>();
         result.put("byCategory", summary.get("byCategory"));
         return Result.success(result);
+    }
+
+    @GetMapping("/weekly-analysis")
+    public Result<fun.cyhgraph.vo.WeeklyAnalysisVO> getWeeklyAnalysis() {
+        Long userId = BaseContext.getCurrentId();
+        return Result.success(analysisService.getWeeklyAnalysis(userId));
     }
 }

@@ -5,6 +5,18 @@ const useUserProfileStore = common_vendor.defineStore("userProfile", () => {
   const profile = common_vendor.ref({});
   const loading = common_vendor.ref(false);
   const isLoaded = common_vendor.ref(false);
+  const defaultAvatarPath = "/static/images/default_avatar.jpg";
+  const legacyDefaultAvatarKeys = ["photo-1599566150163-29194dcaad36", "images.unsplash.com"];
+  const normalizeAvatar = (avatar) => {
+    const avatarValue = (avatar || "").trim();
+    if (!avatarValue)
+      return defaultAvatarPath;
+    if (legacyDefaultAvatarKeys.some((key) => avatarValue.includes(key)))
+      return defaultAvatarPath;
+    if (avatarValue.startsWith("http") && !avatarValue.includes("127.0.0.1") && !avatarValue.includes("localhost"))
+      return defaultAvatarPath;
+    return avatarValue;
+  };
   const activityMultiplier = common_vendor.computed(() => {
     const multipliers = {
       1: 1.2,
@@ -71,7 +83,7 @@ const useUserProfileStore = common_vendor.defineStore("userProfile", () => {
     return profile.value.nickname || "未设置昵称";
   });
   const displayAvatar = common_vendor.computed(() => {
-    return profile.value.avatar || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop";
+    return normalizeAvatar(profile.value.avatar);
   });
   const bodyStats = common_vendor.computed(() => {
     const h = profile.value.height;

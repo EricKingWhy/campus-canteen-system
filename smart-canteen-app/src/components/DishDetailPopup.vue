@@ -73,17 +73,26 @@
             <text class="description">{{ dish.description || '精选优质食材，由专业营养师搭配，采用健康烹饪方式，锁住食材本味。口感鲜美，营养均衡。' }}</text>
           </view>
 
-          <view class="detail-section ingredients-box" v-if="dish.mainIngredients" style="margin-top: 30rpx; padding-top: 20rpx; border-top: 2rpx dashed #eee; margin-bottom: 48rpx;">
-              <view style="font-size: 28rpx; font-weight: bold; color: #333; margin-bottom: 10rpx;">🥘 主要成分</view>
+          <view class="detail-section ingredients-box" v-if="dish.mainIngredients" style="margin-top: 30rpx; padding-top: 20rpx; margin-bottom: 48rpx;">
+              <view class="detail-title-row">
+                <image class="detail-title-icon" :src="ingredientsWheatIcon" mode="aspectFit" />
+                <text class="detail-title-text">主要成分</text>
+              </view>
               <view style="font-size: 26rpx; color: #666; line-height: 1.5;">{{ dish.mainIngredients }}</view>
           </view>
 
           <view class="detail-section allergen-box" v-if="dish.allergenTags" style="margin-bottom: 48rpx;">
-              <view v-if="dish.allergenTags !== '无'" style="background-color: #fff0f0; border-left: 8rpx solid #d93025; padding: 16rpx; border-radius: 8rpx;">
-                  <text style="font-size: 26rpx; font-weight: bold; color: #d93025;">⚠️ 忌口/过敏原提示：{{ dish.allergenTags }}</text>
+              <view v-if="dish.allergenTags !== '无'" style="background-color: #fff1f0; padding: 16rpx; border-radius: 12rpx;">
+                  <view class="allergen-title-row">
+                    <image class="allergen-icon" :src="calorieCheckNewIcon" mode="aspectFit" />
+                    <text style="font-size: 26rpx; font-weight: bold; color: #d93025;">忌口/过敏原提示：{{ dish.allergenTags }}</text>
+                  </view>
               </view>
-              <view v-else style="background-color: #e6f4ea; border-left: 8rpx solid #0b8043; padding: 16rpx; border-radius: 8rpx;">
-                  <text style="font-size: 26rpx; font-weight: bold; color: #0b8043;">✅ 忌口/过敏原提示：无，请放心食用</text>
+              <view v-else style="background-color: #edf9f0; padding: 16rpx; border-radius: 12rpx;">
+                  <view class="allergen-title-row">
+                    <image class="allergen-icon" :src="calorieCheckNewIcon" mode="aspectFit" />
+                    <text style="font-size: 26rpx; font-weight: bold; color: #0b8043;">忌口/过敏原提示：无，请放心食用</text>
+                  </view>
               </view>
           </view>
 
@@ -121,6 +130,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { favoriteCheckAPI, favoriteAddAPI, favoriteRemoveAPI } from '@/api/favorite';
+import calorieCheckNewIcon from '@/assets/images/icons/calorie_check_new.png';
+import ingredientsWheatIcon from '@/assets/images/icons/ingredients_wheat.png';
 
 const props = defineProps<{
   visible: boolean;
@@ -232,7 +243,7 @@ const handleAddToCart = () => {
 /* Colors */
 $mint-teal: #00BA9D;
 $coral-red: #FF6B6B;
-$modal-orange: #FF9900;
+$modal-orange: #FF8C42;
 $text-dark: #1e293b; // slate-800
 $text-gray: #94a3b8; // slate-400
 
@@ -242,8 +253,8 @@ $text-gray: #94a3b8; // slate-400
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); // Darker mask
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
   z-index: 1000; // High z-index
   display: flex;
   align-items: flex-end; /* Bottom sheet on mobile */
@@ -253,14 +264,14 @@ $text-gray: #94a3b8; // slate-400
 .popup-content {
   width: 100%;
   background-color: #fff;
-  border-top-left-radius: 48rpx;
-  border-top-right-radius: 48rpx;
+  border-top-left-radius: 36rpx;
+  border-top-right-radius: 36rpx;
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
   height: 85vh; // Fixed height (85% via viewport)
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 -16rpx 40rpx rgba(0, 0, 0, 0.08);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -275,14 +286,14 @@ $text-gray: #94a3b8; // slate-400
   right: 32rpx;
   width: 64rpx;
   height: 64rpx;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.24);
   backdrop-filter: blur(4px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 20;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: none;
 }
 
 .close-icon {
@@ -298,14 +309,14 @@ $text-gray: #94a3b8; // slate-400
   left: 32rpx;
   width: 64rpx;
   height: 64rpx;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.24);
   backdrop-filter: blur(4px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 20;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: none;
   
   &.loading {
     opacity: 0.5;
@@ -399,13 +410,13 @@ $text-gray: #94a3b8; // slate-400
 }
 
 .nutrition-box {
-  background-color: rgba(255, 153, 0, 0.05); /* modal-orange/5 */
+  background-color: #fff5ef;
   border-radius: 24rpx;
   padding: 32rpx;
   display: flex;
   justify-content: space-between;
   margin-bottom: 48rpx;
-  border: 1px solid rgba(255, 153, 0, 0.1);
+  border: none;
 }
 
 .nutri-item {
@@ -440,9 +451,9 @@ $text-gray: #94a3b8; // slate-400
 }
 
 .nutri-divider {
-  width: 1px;
+  width: 2rpx;
   height: 60%;
-  background-color: rgba(255, 153, 0, 0.1);
+  background-color: #ffe5d6;
   align-self: center;
 }
 
@@ -456,6 +467,37 @@ $text-gray: #94a3b8; // slate-400
   color: $text-dark;
   margin-bottom: 16rpx;
   display: block;
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.detail-title-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+}
+
+.detail-title-text {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.allergen-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.allergen-icon {
+  width: 30rpx;
+  height: 30rpx;
+  flex-shrink: 0;
 }
 
 .description {
@@ -474,15 +516,14 @@ $text-gray: #94a3b8; // slate-400
 .flavor-tag {
   font-size: 26rpx;
   padding: 16rpx 32rpx;
-  background-color: #fff;
-  color: #475569;
+  background-color: #f2f2f2;
+  color: #666666;
   border-radius: 12rpx;
-  border: 1px solid #e2e8f0;
+  border: none;
   transition: all 0.2s;
   
   &.active {
-    background-color: rgba(255, 153, 0, 0.1);
-    border-color: $modal-orange;
+    background-color: rgba(255, 140, 66, 0.14);
     color: $modal-orange;
     font-weight: bold;
   }
@@ -491,7 +532,7 @@ $text-gray: #94a3b8; // slate-400
 .popup-footer {
   padding: 24rpx 40rpx calc(40rpx + env(safe-area-inset-bottom)); // Safe area padding
   background-color: #fff;
-  border-top: 1px solid #f1f5f9;
+  border-top: none;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -511,7 +552,7 @@ $text-gray: #94a3b8; // slate-400
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  box-shadow: 0 8rpx 24rpx rgba(255, 153, 0, 0.3);
+  box-shadow: 0 16rpx 40rpx rgba(255, 140, 66, 0.22);
   
   &:active {
     transform: scale(0.98);

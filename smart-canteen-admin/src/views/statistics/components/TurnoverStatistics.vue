@@ -2,33 +2,30 @@
   <div class="container">
     <h2 class="chartTitle">营业额统计</h2>
     <div class="charBox">
-      <div id="main" style="width: 100%; height: 320px"></div>
+      <div ref="chartDomRef" style="width: 100%; height: 320px"></div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from 'vue';
-import * as echarts from 'echarts';
+import { markRaw, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import * as echarts from 'echarts'
 
-// Define props
 const props = defineProps<{
   turnoverdata: {
-    dateList: string[],
+    dateList: string[]
     turnoverList: number[]
   }
-}>();
+}>()
 
-// setup 函数中的代码在组件实例创建之前就会执行
-// 因此，如果在 setup 函数中调用函数，那么该函数必须在调用之前被定义
+const chartDomRef = shallowRef<HTMLElement | null>(null)
+const chartInstance = shallowRef<echarts.ECharts | null>(null)
 
-// Function to initialize the chart
-const initChart = () => {
-  const chartDom = document.getElementById('main') as HTMLElement;
-  if (!chartDom) return;
-  const myChart = echarts.init(chartDom);
+const createOption = () => {
+  const isSingleDay = props.turnoverdata.dateList.length <= 1
+  const singleValue = props.turnoverdata.turnoverList[0] ?? 0
 
-  const option = {
+  return {
     tooltip: {
       trigger: 'axis',
     },
@@ -67,7 +64,6 @@ const initChart = () => {
       },
     },
     legend: {
-      // 对指定的data线，设置不同的legend格式
       data: ['营业额（元）'],
       bottom: '4%',
       icon: 'rect',
@@ -75,16 +71,20 @@ const initChart = () => {
       itemHeight: 2,
       textStyle: {
         fontSize: 12,
-        color: '#666'
-      }
+        color: '#666',
+      },
     },
     series: [
       {
         name: '营业额（元）',
         type: 'line',
         smooth: false,
-        showSymbol: false,
+        showSymbol: isSingleDay,
+        symbol: 'circle',
         symbolSize: 10,
+        lineStyle: {
+          width: 2,
+        },
         itemStyle: {
           normal: {
             color: '#00ccff',
@@ -99,41 +99,68 @@ const initChart = () => {
           },
         },
         areaStyle: {
-          // opacity: 0.5,
-          // 从上到下渐变，(0,0)是上部，(0,1)是下部
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
-              color: 'rgba(0, 221, 255, 1)'
+              color: 'rgba(0, 221, 255, 1)',
             },
             {
               offset: 1,
-              color: 'rgba(0, 221, 255, 0)'
-            }
-          ])
+              color: 'rgba(0, 221, 255, 0)',
+            },
+          ]),
         },
+        markLine: isSingleDay
+          ? {
+              symbol: 'none',
+              silent: true,
+              label: { show: false },
+              lineStyle: {
+                color: '#00ccff',
+                width: 1.5,
+                type: 'solid',
+                opacity: 0.45,
+              },
+              data: [{ yAxis: singleValue }],
+            }
+          : undefined,
         data: props.turnoverdata.turnoverList,
       },
     ],
-  };
+  }
+}
 
-  myChart.setOption(option);
-};
+const renderChart = async () => {
+  await nextTick()
+  if (!chartDomRef.value) return
 
+  if (!chartInstance.value) {
+    chartInstance.value = markRaw(echarts.init(chartDomRef.value))
+  } else {
+    chartInstance.value.clear()
+  }
 
-// Watch for changes in turnoverdata and re-render the chart
-watch(() => props.turnoverdata, (newVal) => {
-    if (newVal) {
-      initChart();
-    }
+  chartInstance.value.setOption(createOption(), true)
+}
+
+watch(
+  () => props.turnoverdata,
+  () => {
+    void renderChart()
   },
-  { immediate: true }
-);
+  { deep: true }
+)
 
-// Initialize the chart when the component is mounted
 onMounted(() => {
-  initChart();
-});
+  void renderChart()
+})
+
+onBeforeUnmount(() => {
+  if (chartInstance.value) {
+    chartInstance.value.dispose()
+    chartInstance.value = null
+  }
+})
 </script>
 
 <style lang="less" scoped>
@@ -148,25 +175,20 @@ onMounted(() => {
   justify-content: center;
   margin-top: 10px;
 
-    li {
-        position: relative;
-        padding-left: 10px;
-        /* 留出位置给红线 */
-      }
-    
-      li::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        /* 红线垂直居中 */
-        transform: translateY(-50%);
-        /* 红线垂直居中 */
-        width: 5px;
-        /* 红线宽度 */
-        height: 2px;
-        /* 红线高度 */
-        background-color: red;
-      }
+  li {
+    position: relative;
+    padding-left: 10px;
+  }
+
+  li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 2px;
+    background-color: red;
+  }
 }
 </style>

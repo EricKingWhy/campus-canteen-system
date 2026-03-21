@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const common_assets = require("../../common/assets.js");
 const DishDetailPopup = () => "../../components/DishDetailPopup.js";
 const _sfc_main = {
   components: {
@@ -15,6 +16,11 @@ const _sfc_main = {
       activeCategoryIndex: 0,
       searchKeyword: "",
       // 【核心新增】搜索关键词绑定
+      searchPlaceholders: ["低脂鸡胸肉", "黄焖鸡", "水果拼盘", "麻婆豆腐", "酸菜鱼"],
+      currentPlaceholderIndex: 0,
+      searchPlaceholderText: "搜索想吃的菜品 (如：低脂鸡胸肉)",
+      placeholderTimer: null,
+      isSearchFocused: false,
       cartPopupShow: false,
       showNutritionPopup: false,
       currentDish: {}
@@ -42,8 +48,65 @@ const _sfc_main = {
     console.log("Category Page onShow - Initialization");
     this.getCartList();
     this.getCategoryList();
+    this.startSearchPlaceholderTicker();
+  },
+  onHide() {
+    this.stopSearchPlaceholderTicker();
+    this.isSearchFocused = false;
+  },
+  onUnload() {
+    this.stopSearchPlaceholderTicker();
   },
   methods: {
+    handleSearchFocus() {
+      this.isSearchFocused = true;
+    },
+    handleSearchBlur() {
+      this.isSearchFocused = false;
+    },
+    startSearchPlaceholderTicker() {
+      this.stopSearchPlaceholderTicker();
+      this.updateSearchPlaceholder(true);
+      this.placeholderTimer = setInterval(() => {
+        if (this.isSearchFocused)
+          return;
+        this.currentPlaceholderIndex = (this.currentPlaceholderIndex + 1) % this.searchPlaceholders.length;
+        this.updateSearchPlaceholder();
+      }, 5e3);
+    },
+    stopSearchPlaceholderTicker() {
+      if (!this.placeholderTimer)
+        return;
+      clearInterval(this.placeholderTimer);
+      this.placeholderTimer = null;
+    },
+    updateSearchPlaceholder(reset = false) {
+      if (!this.searchPlaceholders.length) {
+        this.searchPlaceholderText = "搜索想吃的菜品";
+        return;
+      }
+      if (reset)
+        this.currentPlaceholderIndex = 0;
+      const current = this.searchPlaceholders[this.currentPlaceholderIndex];
+      this.searchPlaceholderText = `搜索想吃的菜品 (如：${current})`;
+    },
+    getCategoryIcon(categoryName) {
+      if (!categoryName)
+        return common_assets.iconHot;
+      if (categoryName.includes("热销"))
+        return common_assets.iconHot;
+      if (categoryName.includes("早餐"))
+        return common_assets.iconBreakfast;
+      if (categoryName.includes("午餐"))
+        return common_assets.iconLunch;
+      if (categoryName.includes("晚餐"))
+        return common_assets.iconDinner;
+      if (categoryName.includes("甜点") || categoryName.includes("饮品"))
+        return common_assets.iconDrink;
+      if (categoryName.includes("主食") || categoryName.includes("面点"))
+        return common_assets.iconStaple;
+      return common_assets.iconHot;
+    },
     resolveImageUrl(image) {
       if (!image)
         return "/static/default_dish.png";
@@ -278,9 +341,12 @@ if (!Array) {
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.o((...args) => $options.handleSearch && $options.handleSearch(...args)),
-    b: $data.searchKeyword,
-    c: common_vendor.o(($event) => $data.searchKeyword = $event.detail.value),
-    d: common_vendor.f($data.categoryList, (item, index, i0) => {
+    b: common_vendor.o((...args) => $options.handleSearchFocus && $options.handleSearchFocus(...args)),
+    c: common_vendor.o((...args) => $options.handleSearchBlur && $options.handleSearchBlur(...args)),
+    d: $data.isSearchFocused ? "" : $data.searchPlaceholderText,
+    e: $data.searchKeyword,
+    f: common_vendor.o(($event) => $data.searchKeyword = $event.detail.value),
+    g: common_vendor.f($data.categoryList, (item, index, i0) => {
       return common_vendor.e({
         a: $data.activeCategoryIndex === index
       }, $data.activeCategoryIndex === index ? {} : {}, {
@@ -290,14 +356,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         e: common_vendor.o(($event) => $options.onCategoryClick(index), item.id)
       });
     }),
-    e: $options.currentCategory && $data.activeCategoryIndex !== -1
+    h: $options.currentCategory && $data.activeCategoryIndex !== -1
   }, $options.currentCategory && $data.activeCategoryIndex !== -1 ? {
-    f: common_vendor.t($options.currentCategory.name)
+    i: $options.getCategoryIcon($options.currentCategory.name),
+    j: common_vendor.t($options.currentCategory.name)
   } : $data.activeCategoryIndex === -1 && $data.searchKeyword ? {
-    h: common_vendor.t($data.searchKeyword)
+    l: common_vendor.t($data.searchKeyword)
   } : {}, {
-    g: $data.activeCategoryIndex === -1 && $data.searchKeyword,
-    i: common_vendor.f($data.dishList, (item, index, i0) => {
+    k: $data.activeCategoryIndex === -1 && $data.searchKeyword,
+    m: common_vendor.f($data.dishList, (item, index, i0) => {
       return common_vendor.e({
         a: $options.resolveImageUrl(item.image || item.pic),
         b: common_vendor.t(item.name),
@@ -321,23 +388,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         n: common_vendor.o(($event) => $options.openNutrition(item), item.id)
       });
     }),
-    j: $data.dishList.length === 0
+    n: $data.dishList.length === 0
   }, $data.dishList.length === 0 ? {
-    k: common_vendor.o((...args) => $options.fixData && $options.fixData(...args))
+    o: common_vendor.o((...args) => $options.fixData && $options.fixData(...args))
   } : {}, {
-    l: $options.totalNum > 0
+    p: $options.totalNum > 0
   }, $options.totalNum > 0 ? {
-    m: common_vendor.t($options.totalNum)
+    q: common_vendor.t($options.totalNum)
   } : {}, {
-    n: common_vendor.t($options.totalAmount),
-    o: common_vendor.o((...args) => $options.goSubmit && $options.goSubmit(...args)),
-    p: common_vendor.o((...args) => $options.toggleCart && $options.toggleCart(...args)),
-    q: $data.cartPopupShow
+    r: common_vendor.t($options.totalAmount),
+    s: common_vendor.o((...args) => $options.goSubmit && $options.goSubmit(...args)),
+    t: common_vendor.o((...args) => $options.toggleCart && $options.toggleCart(...args)),
+    v: $data.cartPopupShow
   }, $data.cartPopupShow ? {
-    r: common_vendor.o(($event) => $data.cartPopupShow = false)
+    w: common_vendor.o(($event) => $data.cartPopupShow = false)
   } : {}, {
-    s: common_vendor.o((...args) => $options.clearCart && $options.clearCart(...args)),
-    t: common_vendor.f($data.cartList, (item, index, i0) => {
+    x: common_vendor.o((...args) => $options.clearCart && $options.clearCart(...args)),
+    y: common_vendor.f($data.cartList, (item, index, i0) => {
       return common_vendor.e({
         a: common_vendor.t(item.name),
         b: item.dishFlavor
@@ -351,10 +418,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         h: index
       });
     }),
-    v: $data.cartPopupShow ? 1 : "",
-    w: common_vendor.o($options.closeNutrition),
-    x: common_vendor.o($options.addToCartFromPopup),
-    y: common_vendor.p({
+    z: $data.cartPopupShow ? 1 : "",
+    A: common_vendor.o($options.closeNutrition),
+    B: common_vendor.o($options.addToCartFromPopup),
+    C: common_vendor.p({
       visible: $data.showNutritionPopup,
       dish: $data.currentDish
     })

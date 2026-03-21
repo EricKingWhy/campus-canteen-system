@@ -50,6 +50,11 @@
 .header .search-box .search-icon.data-v-4046d630 {
   margin-right: 16rpx;
 }
+.header .search-box .search-icon-img.data-v-4046d630 {
+  width: 34rpx;
+  height: 34rpx;
+  display: block;
+}
 .header .search-box .search-input.data-v-4046d630 {
   flex: 1;
   font-size: 28rpx;
@@ -116,6 +121,16 @@
   background: rgba(255, 255, 255, 0.95);
   z-index: 10;
   padding: 24rpx 0 16rpx 0;
+}
+.content .category-title-sticky .title-row.data-v-4046d630 {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.content .category-title-sticky .title-icon.data-v-4046d630 {
+  width: 34rpx;
+  height: 34rpx;
+  flex: none;
 }
 .content .category-title-sticky .title-text.data-v-4046d630 {
   font-size: 28rpx;

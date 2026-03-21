@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const stores_modules_userProfile = require("../../stores/modules/userProfile.js");
+const common_assets = require("../../common/assets.js");
 require("../../api/user.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
@@ -52,7 +53,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const donutStyle = common_vendor.computed(() => {
       const { proteinPct, carbPct, fatPct } = macros.value;
       return {
-        background: `conic-gradient(#13ec5b 0% ${proteinPct}%, #4A90E2 ${proteinPct}% ${proteinPct + carbPct}%, #FFB347 ${proteinPct + carbPct}% 100%)`
+        background: `conic-gradient(#34c759 0% ${proteinPct}%, #4A90E2 ${proteinPct}% ${proteinPct + carbPct}%, #FFB347 ${proteinPct + carbPct}% 100%)`
       };
     });
     const nutritionSuggestion = common_vendor.ref("");
@@ -68,7 +69,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         return 50;
       return Math.min(100, monthSpent.value / baseline.value * 100);
     });
+    const selectedRange = common_vendor.ref("7days");
     const weeklyCostTrend = common_vendor.ref([]);
+    const monthlyCostTrend = common_vendor.ref([]);
+    const selectedAreaIndex = common_vendor.ref(0);
+    const areaCanvasRect = common_vendor.ref(null);
     const categoryBreakdown = common_vendor.ref([]);
     const topCategory = common_vendor.computed(() => {
       if (!categoryBreakdown.value.length)
@@ -87,6 +92,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return { background: `conic-gradient(${gradientParts.join(", ")})` };
     });
     const costTip = common_vendor.ref("");
+    const areaTooltipText = common_vendor.computed(() => {
+      const point = monthlyCostTrend.value[selectedAreaIndex.value];
+      if (!point)
+        return "";
+      return `${point.date}  ¥${formatMoney(point.value)}`;
+    });
     const hasAnyData = common_vendor.computed(() => monthSpent.value > 0 || todayIntake.value > 0);
     const goToInfoSetting = () => {
       common_vendor.index.navigateTo({ url: "/pages/info-setting/info-setting" });
@@ -167,6 +178,174 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         return false;
       }
     };
+    const formatMonthDay = (dateStr) => {
+      try {
+        const d = new Date(dateStr);
+        const mm = d.getMonth() + 1;
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${mm}-${dd}`;
+      } catch {
+        return dateStr;
+      }
+    };
+    const rpxToPx = (rpx) => {
+      const { windowWidth } = common_vendor.index.getSystemInfoSync();
+      return Math.round(windowWidth / 750 * rpx);
+    };
+    const queryAreaCanvasRect = () => {
+      common_vendor.index.createSelectorQuery().select("#costTrendCanvas").boundingClientRect((rect) => {
+        if (rect && rect.width) {
+          areaCanvasRect.value = { left: rect.left, width: rect.width };
+        }
+      }).exec();
+    };
+    const draw30DayAreaChart = () => {
+      if (selectedRange.value !== "30days" || !monthlyCostTrend.value.length)
+        return;
+      const ctx = common_vendor.index.createCanvasContext("costTrendCanvas");
+      const width = rpxToPx(610);
+      const height = rpxToPx(320);
+      const padding = {
+        top: rpxToPx(24),
+        right: rpxToPx(16),
+        bottom: rpxToPx(22),
+        left: rpxToPx(16)
+      };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+      const baseY = height - padding.bottom;
+      const values = monthlyCostTrend.value.map((item) => item.value);
+      const max = Math.max(...values, 1);
+      const min = Math.min(...values, 0);
+      const range = Math.max(max - min, 1);
+      const points = monthlyCostTrend.value.map((item, index, arr) => {
+        const x = padding.left + (arr.length === 1 ? 0 : index / (arr.length - 1) * chartWidth);
+        const y = padding.top + (1 - (item.value - min) / range) * chartHeight;
+        return { x, y };
+      });
+      ctx.clearRect(0, 0, width, height);
+      if (points.length > 1) {
+        const areaGradient = ctx.createLinearGradient(0, padding.top, 0, baseY);
+        areaGradient.addColorStop(0, "rgba(142, 124, 195, 0.30)");
+        areaGradient.addColorStop(1, "rgba(142, 124, 195, 0.03)");
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, baseY);
+        ctx.lineTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const cx = (prev.x + curr.x) / 2;
+          const cy = (prev.y + curr.y) / 2;
+          ctx.quadraticCurveTo(prev.x, prev.y, cx, cy);
+        }
+        const last = points[points.length - 1];
+        ctx.lineTo(last.x, last.y);
+        ctx.lineTo(last.x, baseY);
+        ctx.closePath();
+        ctx.setFillStyle(areaGradient);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const cx = (prev.x + curr.x) / 2;
+          const cy = (prev.y + curr.y) / 2;
+          ctx.quadraticCurveTo(prev.x, prev.y, cx, cy);
+        }
+        const lineGradient = ctx.createLinearGradient(0, 0, width, 0);
+        lineGradient.addColorStop(0, "#9E8CD6");
+        lineGradient.addColorStop(1, "#8F77D0");
+        ctx.setStrokeStyle(lineGradient);
+        ctx.setLineWidth(rpxToPx(4));
+        ctx.setLineCap("round");
+        ctx.setLineJoin("round");
+        ctx.stroke();
+      }
+      const focusIndex = Math.min(selectedAreaIndex.value, points.length - 1);
+      if (focusIndex >= 0 && points[focusIndex]) {
+        const p = points[focusIndex];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, rpxToPx(7), 0, 2 * Math.PI);
+        ctx.setFillStyle("#8F77D0");
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, rpxToPx(11), 0, 2 * Math.PI);
+        ctx.setStrokeStyle("rgba(143, 119, 208, 0.28)");
+        ctx.setLineWidth(rpxToPx(3));
+        ctx.stroke();
+      }
+      ctx.draw();
+    };
+    const setRange = async (range) => {
+      if (selectedRange.value === range)
+        return;
+      selectedRange.value = range;
+      const dayRange = range === "30days" ? 30 : 7;
+      await fetchCostTrend(dayRange);
+      if (range === "30days") {
+        await common_vendor.nextTick$1();
+        queryAreaCanvasRect();
+        draw30DayAreaChart();
+      }
+    };
+    const onAreaCanvasTouch = (e) => {
+      var _a, _b;
+      if (!monthlyCostTrend.value.length || !areaCanvasRect.value)
+        return;
+      const touchX = (_b = (_a = e == null ? void 0 : e.changedTouches) == null ? void 0 : _a[0]) == null ? void 0 : _b.x;
+      if (typeof touchX !== "number")
+        return;
+      const ratio = Math.min(1, Math.max(0, (touchX - areaCanvasRect.value.left) / areaCanvasRect.value.width));
+      const index = Math.round(ratio * (monthlyCostTrend.value.length - 1));
+      selectedAreaIndex.value = index;
+      draw30DayAreaChart();
+    };
+    const fetchCostTrend = async (range = 7) => {
+      var _a;
+      try {
+        const res = await common_vendor.index.request({
+          url: `http://127.0.0.1:8081/analysis/cost/trend?range=${range}`,
+          method: "GET",
+          header: { "authentication": common_vendor.index.getStorageSync("token") }
+        });
+        const data = (_a = res.data) == null ? void 0 : _a.data;
+        if (!Array.isArray(data) || data.length === 0) {
+          if (range === 7)
+            weeklyCostTrend.value = [];
+          if (range === 30)
+            monthlyCostTrend.value = [];
+          return;
+        }
+        const maxValue = Math.max(...data.map((t) => parseFloat(t.amount || t.value || 0))) || 1;
+        const MAX_BAR_RPX = 380;
+        const MIN_BAR_RPX = 20;
+        const points = data.map((t, index) => {
+          const amount = parseFloat(t.amount || t.value || 0);
+          const ratio = maxValue > 0 ? amount / maxValue : 0;
+          const barHeight = amount > 0 ? Math.max(MIN_BAR_RPX, Math.round(ratio * MAX_BAR_RPX)) : MIN_BAR_RPX;
+          const date = t.date || "";
+          const showTick = index === 0 || index === data.length - 1 || index % 5 === 0;
+          return {
+            day: getDayName(date),
+            date,
+            value: amount,
+            barHeight,
+            isToday: isToday(date),
+            displayLabel: range === 30 ? showTick ? formatMonthDay(date) : "" : getDayName(date)
+          };
+        });
+        if (range === 7) {
+          weeklyCostTrend.value = points;
+        } else {
+          monthlyCostTrend.value = points;
+          const todayIndex = points.findIndex((point) => point.isToday);
+          selectedAreaIndex.value = todayIndex >= 0 ? todayIndex : points.length - 1;
+        }
+      } catch (e) {
+        console.error(`获取${range}天餐费趋势失败:`, e);
+      }
+    };
     const fetchCostSummary = async () => {
       var _a;
       try {
@@ -182,35 +361,6 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           predictedTotal.value = toNum(data.predictedMonthTotal);
           baseline.value = toNum(data.baseline);
           costTip.value = data.tip || "";
-          const trendArr = data.trendData;
-          console.log("===== 趋势原始数据 =====", JSON.stringify(trendArr));
-          if (trendArr && Array.isArray(trendArr) && trendArr.length > 0) {
-            const maxValue = Math.max(...trendArr.map((t) => parseFloat(t.amount || t.value || 0))) || 1;
-            const MAX_BAR_RPX = 380;
-            const MIN_BAR_RPX = 20;
-            weeklyCostTrend.value = JSON.parse(JSON.stringify(
-              trendArr.map((t) => {
-                const amt = parseFloat(t.amount || t.value || 0);
-                const ratio = maxValue > 0 ? amt / maxValue : 0;
-                const barHeight = amt > 0 ? Math.max(MIN_BAR_RPX, Math.round(ratio * MAX_BAR_RPX)) : MIN_BAR_RPX;
-                return {
-                  day: getDayName(t.date || t.day || ""),
-                  value: amt,
-                  barHeight,
-                  isToday: isToday(t.date || "")
-                };
-              })
-            ));
-            console.log("===== 趋势组装结果 =====", JSON.stringify(weeklyCostTrend.value));
-          } else {
-            const defaultDays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-            weeklyCostTrend.value = defaultDays.map((day, i) => ({
-              day,
-              value: 0,
-              barHeight: 20,
-              isToday: i === (/* @__PURE__ */ new Date()).getDay()
-            }));
-          }
           const catArr = data.byCategory;
           console.log("===== 构成原始数据 =====", JSON.stringify(catArr));
           if (catArr && Array.isArray(catArr) && catArr.length > 0) {
@@ -236,9 +386,22 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       await Promise.all([
         fetchHealthSummary(),
         fetchHealthTrend(),
-        fetchCostSummary()
+        fetchCostSummary(),
+        fetchCostTrend(7)
       ]);
     };
+    common_vendor.watch(selectedRange, async (range) => {
+      if (range !== "30days" || !monthlyCostTrend.value.length)
+        return;
+      await common_vendor.nextTick$1();
+      queryAreaCanvasRect();
+      draw30DayAreaChart();
+    });
+    common_vendor.watch(selectedAreaIndex, () => {
+      if (selectedRange.value === "30days") {
+        draw30DayAreaChart();
+      }
+    });
     common_vendor.onShow(() => {
       loadAllData();
     });
@@ -265,50 +428,57 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         n: intakeProgress.value + "%",
         o: common_vendor.t(((_a = common_vendor.unref(profileStore).calculatedBMI) == null ? void 0 : _a.toFixed(1)) || "--"),
         p: bmiPointerPosition.value + "%",
-        q: hasNutritionData.value
+        q: common_vendor.unref(common_assets.healthAnalysisIcon),
+        r: hasNutritionData.value
       }, hasNutritionData.value ? {
-        r: common_vendor.s(donutStyle.value),
-        s: common_vendor.t(todayIntake.value)
+        s: common_vendor.s(donutStyle.value),
+        t: common_vendor.t(todayIntake.value)
       } : {}, {
-        t: common_vendor.t(macros.value.proteinPct),
-        v: common_vendor.t(macros.value.proteinG),
-        w: common_vendor.t(macros.value.carbPct),
-        x: common_vendor.t(macros.value.carbG),
-        y: common_vendor.t(macros.value.fatPct),
-        z: common_vendor.t(macros.value.fatG),
-        A: nutritionSuggestion.value
+        v: common_vendor.t(macros.value.proteinPct),
+        w: common_vendor.t(macros.value.proteinG),
+        x: common_vendor.t(macros.value.carbPct),
+        y: common_vendor.t(macros.value.carbG),
+        z: common_vendor.t(macros.value.fatPct),
+        A: common_vendor.t(macros.value.fatG),
+        B: nutritionSuggestion.value
       }, nutritionSuggestion.value ? {
-        B: common_vendor.t(nutritionSuggestion.value)
+        C: common_vendor.unref(common_assets.promptIcon),
+        D: common_vendor.t(nutritionSuggestion.value)
       } : {}, {
-        C: common_vendor.o(goToRecommend),
-        D: trendChange.value
+        E: common_vendor.o(goToRecommend),
+        F: trendChange.value
       }, trendChange.value ? {
-        E: common_vendor.t(trendChange.value)
+        G: common_vendor.t(trendChange.value),
+        H: common_vendor.unref(common_assets.healthAnalysisIcon)
       } : {}, {
-        F: weeklyHealthTrend.value.length
+        I: weeklyHealthTrend.value.length
       }, weeklyHealthTrend.value.length ? {
-        G: common_vendor.f(weeklyHealthTrend.value, (point, index, i0) => {
+        J: common_vendor.f(weeklyHealthTrend.value, (point, index, i0) => {
           return {
             a: index,
             b: point.heightPct + "%",
             c: index * 14.28 + "%"
           };
         }),
-        H: common_vendor.f(weekDays, (day, k0, i0) => {
+        K: common_vendor.f(weekDays, (day, k0, i0) => {
           return {
             a: common_vendor.t(day),
             b: day
           };
         })
       } : {}) : activeTab.value === "cost" ? common_vendor.e({
-        J: isOverspending.value
+        M: isOverspending.value
       }, isOverspending.value ? {} : {}, {
-        K: common_vendor.t(formatMoney(monthSpent.value)),
-        L: spendingProgress.value + "%",
-        M: common_vendor.t(formatInt(predictedTotal.value)),
-        N: weeklyCostTrend.value && weeklyCostTrend.value.length > 0
-      }, weeklyCostTrend.value && weeklyCostTrend.value.length > 0 ? {
-        O: common_vendor.f(weeklyCostTrend.value, (item, index, i0) => {
+        N: common_vendor.t(formatMoney(monthSpent.value)),
+        O: spendingProgress.value + "%",
+        P: common_vendor.t(formatInt(predictedTotal.value)),
+        Q: selectedRange.value === "7days" ? 1 : "",
+        R: common_vendor.o(($event) => setRange("7days")),
+        S: selectedRange.value === "30days" ? 1 : "",
+        T: common_vendor.o(($event) => setRange("30days")),
+        U: selectedRange.value === "7days" && weeklyCostTrend.value && weeklyCostTrend.value.length > 0
+      }, selectedRange.value === "7days" && weeklyCostTrend.value && weeklyCostTrend.value.length > 0 ? {
+        V: common_vendor.f(weeklyCostTrend.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.value),
             b: item.barHeight + "rpx",
@@ -317,12 +487,23 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: item.isToday ? 1 : ""
           };
         })
+      } : selectedRange.value === "30days" && monthlyCostTrend.value.length > 0 ? {
+        X: common_vendor.t(areaTooltipText.value),
+        Y: common_vendor.o(onAreaCanvasTouch),
+        Z: common_vendor.f(monthlyCostTrend.value, (item, index, i0) => {
+          return {
+            a: common_vendor.t(item.displayLabel),
+            b: `x-${index}`,
+            c: item.isToday ? 1 : ""
+          };
+        })
       } : {}, {
-        P: categoryBreakdown.value && categoryBreakdown.value.length > 0
+        W: selectedRange.value === "30days" && monthlyCostTrend.value.length > 0,
+        aa: categoryBreakdown.value && categoryBreakdown.value.length > 0
       }, categoryBreakdown.value && categoryBreakdown.value.length > 0 ? {
-        Q: common_vendor.s(compositionDonutStyle.value),
-        R: common_vendor.t(topCategory.value),
-        S: common_vendor.f(categoryBreakdown.value, (cat, k0, i0) => {
+        ab: common_vendor.s(compositionDonutStyle.value),
+        ac: common_vendor.t(topCategory.value),
+        ad: common_vendor.f(categoryBreakdown.value, (cat, k0, i0) => {
           return {
             a: cat.color,
             b: common_vendor.t(cat.name),
@@ -331,13 +512,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        T: costTip.value
+        ae: costTip.value
       }, costTip.value ? {
-        U: common_vendor.t(costTip.value)
+        af: common_vendor.t(costTip.value)
       } : {}) : {}, {
         g: pageState.value === "noData",
         i: activeTab.value === "health",
-        I: activeTab.value === "cost"
+        L: activeTab.value === "cost"
       });
     };
   }

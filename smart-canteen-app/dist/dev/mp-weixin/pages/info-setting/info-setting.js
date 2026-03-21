@@ -215,7 +215,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         f: currentStep.value === 1 ? "50%" : "100%",
         g: currentStep.value === 1
       }, currentStep.value === 1 ? common_vendor.e({
-        h: formData.value.avatar || "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop",
+        h: !formData.value.avatar || formData.value.avatar.includes("photo-1599566150163-29194dcaad36") || formData.value.avatar.includes("images.unsplash.com") || formData.value.avatar.startsWith("http") && !formData.value.avatar.includes("127.0.0.1") && !formData.value.avatar.includes("localhost") ? "/static/images/default_avatar.jpg" : formData.value.avatar,
         i: common_vendor.o(chooseAvatar),
         j: formData.value.nickname,
         k: common_vendor.o(($event) => formData.value.nickname = $event.detail.value),

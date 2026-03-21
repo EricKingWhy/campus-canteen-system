@@ -34,10 +34,10 @@
 /* 1. Header Card */
 .user-card.data-v-d3687551 {
   background: white;
-  border-radius: 40rpx;
+  border-radius: 32rpx;
   padding: 40rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
+  margin-bottom: 24rpx;
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 }
 .user-card .info-row.data-v-d3687551 {
   display: flex;
@@ -64,7 +64,7 @@
 .user-card .info-row .text-info .name-row .name.data-v-d3687551 {
   font-size: 36rpx;
   font-weight: 800;
-  color: #1A1A1A;
+  color: #333333;
   margin-right: 12rpx;
 }
 .user-card .info-row .text-info .name-row .gender-icon.data-v-d3687551 {
@@ -98,13 +98,13 @@
 .dashboard-grid .card.data-v-d3687551 {
   flex: 1;
   background: white;
-  border-radius: 40rpx;
+  border-radius: 32rpx;
   padding: 32rpx;
   min-height: 280rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 8rpx 40rpx -4rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 }
 .dashboard-grid .card .card-header.data-v-d3687551 {
   display: flex;
@@ -116,11 +116,10 @@
   align-items: center;
   justify-content: center;
 }
-.dashboard-grid .card .card-header .icon-bg.orange.data-v-d3687551 {
-  color: #FF8A00;
-}
-.dashboard-grid .card .card-header .icon-bg .emoji.data-v-d3687551 {
-  font-size: 32rpx;
+.dashboard-grid .card .card-header .icon-bg .dashboard-icon.data-v-d3687551 {
+  width: 34rpx;
+  height: 34rpx;
+  display: block;
 }
 .dashboard-grid .card .card-header .card-title.data-v-d3687551 {
   font-size: 28rpx;
@@ -134,14 +133,14 @@
 }
 .dashboard-grid .spend-card .spend-main .spend-symbol.data-v-d3687551 {
   font-size: 28rpx;
-  color: #1A1A1A;
+  color: #333333;
   font-weight: 700;
   letter-spacing: -0.025em;
 }
 .dashboard-grid .spend-card .spend-main .spend-amount.data-v-d3687551 {
   font-size: 48rpx;
   font-weight: 700;
-  color: #1A1A1A;
+  color: #333333;
   font-family: "Inter", "DIN", -apple-system, sans-serif;
   line-height: 1;
   margin-left: 8rpx;
@@ -191,7 +190,7 @@
 
 /* 3. Common Functions */
 .logout-section.data-v-d3687551 {
-  margin-top: 40rpx;
+  margin-top: 32rpx;
   padding: 0 20rpx;
 }
 .logout-section .logout-btn.data-v-d3687551 {
@@ -207,14 +206,14 @@
 }
 .functions-section.data-v-d3687551 {
   background: white;
-  border-radius: 40rpx;
+  border-radius: 32rpx;
   padding: 40rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 }
 .functions-section .section-title.data-v-d3687551 {
   font-size: 32rpx;
   font-weight: 800;
-  color: #1A1A1A;
+  color: #333333;
   margin-bottom: 40rpx;
 }
 .functions-section .func-grid.data-v-d3687551 {
@@ -241,19 +240,19 @@
   height: 56rpx;
 }
 .functions-section .func-grid .func-item .func-icon-box.orange-bg.data-v-d3687551 {
-  background: linear-gradient(135deg, #FFF0E6 0%, #FFE0CC 100%);
+  background: #fff3e9;
 }
 .functions-section .func-grid .func-item .func-icon-box.blue-bg.data-v-d3687551 {
-  background: linear-gradient(135deg, #E6F7FF 0%, #CCEEFF 100%);
+  background: #edf4ff;
 }
 .functions-section .func-grid .func-item .func-icon-box.pink-bg.data-v-d3687551 {
-  background: linear-gradient(135deg, #FFF0F5 0%, #FFE0EB 100%);
+  background: #fff1f4;
 }
 .functions-section .func-grid .func-item .func-icon-box.grey-bg.data-v-d3687551 {
-  background: linear-gradient(135deg, #F5F5F5 0%, #EBEBEB 100%);
+  background: #f2f3f5;
 }
 .functions-section .func-grid .func-item .func-name.data-v-d3687551 {
   font-size: 24rpx;
-  color: #1A1A1A;
+  color: #333333;
   font-weight: 500;
 }

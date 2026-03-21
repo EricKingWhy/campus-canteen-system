@@ -76,3 +76,11 @@ export type OrderPaymentDTO = {
   orderNumber: string // 订单号
   payMethod: number // 支付方式 1微信，2支付宝
 }
+
+export type WeeklyAnalysisVO = Partial<{
+  maxAmount: number
+  maxDishName: string
+  topDishName: string
+  topDishCount: number
+  avgIntervalHours: number
+}>

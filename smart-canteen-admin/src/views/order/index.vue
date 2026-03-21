@@ -620,7 +620,8 @@ onMounted(async () => {
   }
 
   .active {
-    background-color: #22ccff;
+    background-color: #1677ff;
+    color: #ffffff;
     font-weight: bold;
   }
 
@@ -690,9 +691,10 @@ onMounted(async () => {
 
       //查询黑色按钮样式
       .normal-btn {
-        background: #333333;
+        background: #1677ff;
         color: white;
         margin-left: 20px;
+        border-color: #1677ff;
       }
     }
 
@@ -828,8 +830,8 @@ onMounted(async () => {
     .user-remark {
       min-height: 43px;
       line-height: 43px;
-      background: #f0fbff;
-      border: 1px solid #88eeff;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
       border-radius: 4px;
       margin-top: 10px;
       padding: 6px;
@@ -840,7 +842,7 @@ onMounted(async () => {
         display: inline-block;
         min-width: 53px;
         height: 32px;
-        background: #88eeff;
+        background: #dbeafe;
         border-radius: 4px;
         text-align: center;
         line-height: 32px;
@@ -850,7 +852,7 @@ onMounted(async () => {
       }
 
       span {
-        color: #22ccff;
+        color: #1677ff;
         line-height: 1.15;
       }
     }

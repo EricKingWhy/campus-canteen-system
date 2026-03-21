@@ -107,6 +107,12 @@
 .icon-search.data-v-88bf5328::before {
   margin-right: 10rpx;
 }
+.search-icon-img.data-v-88bf5328 {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 12rpx;
+  opacity: 0.9;
+}
 /* 分类 */
 .categories.data-v-88bf5328 {
   flex: 1;
@@ -174,6 +180,23 @@
 .secondary .more.data-v-88bf5328::after {
   font-family: 'erabbit' !important;
   content: '\e6c2';
+}
+.secondary .category-title-row.data-v-88bf5328 {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx 0;
+}
+.secondary .category-title-row .category-icon.data-v-88bf5328 {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+.secondary .category-title-row .category-title-text.data-v-88bf5328 {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333;
+  line-height: 1;
 }
 .secondary .section.data-v-88bf5328 {
   width: 100%;
@@ -363,7 +386,7 @@
   text-align: center;
   font-weight: bold;
   margin-top: 8rpx;
-  background: #00aaff;
+  background: #ff8c42;
 }
 .pop_mask.data-v-88bf5328 {
   position: fixed;

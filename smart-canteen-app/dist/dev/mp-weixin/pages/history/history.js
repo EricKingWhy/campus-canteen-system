@@ -1,5 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const common_assets = require("../../common/assets.js");
 const api_order = require("../../api/order.js");
 const api_cart = require("../../api/cart.js");
 require("../../utils/http.js");
@@ -8,7 +9,7 @@ if (!Math) {
   pushMsg();
 }
 const pushMsg = () => "../../components/message/pushMsg.js";
-const baseUrl = "http://127.0.0.1:8081";
+const baseURL = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "history",
   setup(__props) {
@@ -63,14 +64,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     ];
     const activeIndex = common_vendor.ref(0);
     const historyOrders = common_vendor.ref([]);
+    const showPendingEmptyState = common_vendor.computed(() => activeIndex.value === 1 && historyOrders.value.length === 0);
     const resolveImageUrl = (image) => {
       if (!image)
         return "/static/default_dish.png";
       if (image.startsWith("http://") || image.startsWith("https://"))
         return image;
-      if (image.startsWith("/static/dish/"))
-        return baseUrl + image;
-      return image;
+      if (image.startsWith("/"))
+        return baseURL + image;
+      return `${baseURL}/static/dish/${image.replace(/^\/+/, "")}`;
     };
     const orderDTO = common_vendor.ref({
       page: 1,
@@ -138,7 +140,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       childComp.value.openPopup();
     };
     return (_ctx, _cache) => {
-      return {
+      return common_vendor.e({
         a: common_vendor.f(statusOptions, (item, index, i0) => {
           return {
             a: common_vendor.t(item.name),
@@ -147,13 +149,19 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: common_vendor.o(($event) => getOrderPage(index, "更改状态"), index)
           };
         }),
-        b: common_vendor.f(historyOrders.value, (item, index, i0) => {
+        b: showPendingEmptyState.value
+      }, showPendingEmptyState.value ? {
+        c: common_assets._imports_0
+      } : {
+        d: common_vendor.f(historyOrders.value, (item, index, i0) => {
           return common_vendor.e({
             a: common_vendor.t(item.number),
-            b: common_vendor.f(item.orderDetailList, (dish, index2, i1) => {
+            b: common_vendor.f(item.orderDetailList, (dish, dishIndex, i1) => {
               return {
                 a: resolveImageUrl(dish.pic || dish.image),
-                b: index2
+                b: common_vendor.t(dish.name || "菜品"),
+                c: common_vendor.t(dish.number || 1),
+                d: dishIndex
               };
             }),
             c: common_vendor.t(item.orderTime),
@@ -168,11 +176,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             j: index,
             k: common_vendor.o(($event) => toOrderDetail(item.id), index)
           });
-        }),
-        c: common_vendor.sr(childComp, "73685b36-0", {
+        })
+      }, {
+        e: common_vendor.sr(childComp, "73685b36-0", {
           "k": "childComp"
         })
-      };
+      });
     };
   }
 });

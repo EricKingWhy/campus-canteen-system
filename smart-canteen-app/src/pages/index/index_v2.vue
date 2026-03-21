@@ -58,7 +58,10 @@
     <!-- 2. 智选6道菜 (Horizontal Scroll) -->
     <view class="section">
       <view class="section-header">
-        <text class="title">智选6道菜 🎯</text>
+        <view class="title-row">
+          <text class="title">智选6道菜</text>
+          <image class="target-icon" src="/static/icon/jingzhunpipei.png" mode="aspectFit" />
+        </view>
         <text class="subtitle">根据您的健康画像定制</text>
       </view>
       <scroll-view class="recommend-scroll" scroll-x show-scrollbar="false">
@@ -75,7 +78,7 @@
             </view>
             <view class="rec-meta">
               <text class="calories">🔥 {{ item.calories }} kcal</text>
-              <text class="stock">仅剩 5 份</text>
+              <text class="stock">匹配度 98%</text>
             </view>
             <view class="rec-action">
               <text class="price">¥{{ item.price }}</text>
@@ -89,7 +92,10 @@
     <!-- 3. Campus Bestsellers (Flex List) -->
     <view class="section">
       <view class="section-header">
-        <text class="title">全校热销榜 🔥</text>
+        <view class="title-row">
+          <text class="title">全校热销榜</text>
+          <image class="category-icon" :src="customHotIcon" mode="aspectFit" />
+        </view>
       </view>
       <view class="bestseller-list">
         <view class="dish-row" v-for="(dish, index) in dishList" :key="dish.id" @click="openDishDetail(dish)">
@@ -173,6 +179,7 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/modules/user'
 import { useUserProfileStore } from '@/stores/modules/userProfile'
 import DishDetailPopup from '@/components/DishDetailPopup.vue' // Import Popup
+import customHotIcon from '@/static/icons/hot.png'
 // Keep API imports for future real data integration, but use mocks primarily now
 import { getDishListAPI } from '@/api/dish'
 import type { DishItem, CartItem } from '@/types/dish'
@@ -637,6 +644,25 @@ $spacing: 32rpx;
     align-items: baseline;
     gap: 16rpx;
 
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8rpx;
+    }
+
+    .target-icon {
+      width: 42rpx;
+      height: 42rpx;
+      flex-shrink: 0;
+    }
+
+    .category-icon {
+      width: 32rpx;
+      height: 32rpx;
+      flex-shrink: 0;
+      margin-left: 8rpx;
+    }
+
     .title { font-size: 34rpx; font-weight: 800; color: $text-main; }
     .subtitle { font-size: 22rpx; color: #999; }
   }
@@ -681,7 +707,7 @@ $spacing: 32rpx;
         justify-content: space-between;
         margin-bottom: 16rpx;
         .calories { font-size: 20rpx; color: #666; }
-        .stock { font-size: 20rpx; color: #FF4B4B; } // Inventory Warning System
+        .stock { font-size: 20rpx; color: #52C41A; font-weight: 600; }
       }
 
       .rec-action {
@@ -790,7 +816,7 @@ $spacing: 32rpx;
     }
 
     .checkout-btn {
-       background: $primary;
+       background: #FF8C42;
        color: white;
        height: 80rpx;
        padding: 0 48rpx;

@@ -5,9 +5,12 @@
     <!-- 【核心新增】搜索栏 -->
     <view class="search">
       <view class="input">
-        <text class="icon-search iconfont"></text>
+        <image class="search-icon-img" src="/static/icon/sousuo.png" mode="aspectFit"></image>
         <input style="flex: 1;" 
-               placeholder="想吃什么？搜索看看" v-model="searchKeyword" 
+               :placeholder="searchPlaceholderText"
+               v-model="searchKeyword" 
+               @focus="handleSearchFocus"
+               @blur="handleSearchBlur"
                @confirm="handleSearch"
                placeholder-class="input-placeholder-class" />
       </view>
@@ -29,6 +32,10 @@
       </scroll-view>
       <!-- 右侧：菜品/套餐列表 -->
       <scroll-view class="secondary" scroll-y>
+        <view class="category-title-row">
+          <image :src="getCategoryIcon(currentCategoryName)" class="category-icon" mode="aspectFit" />
+          <text class="category-title-text">{{ currentCategoryName || '推荐菜品' }}</text>
+        </view>
         <view class="section">
           <navigator
             v-for="dish in dishList"
@@ -170,8 +177,13 @@ import type {DishItem, FlavorItem, DishToCartItem} from '@/types/dish'
 import type {SetmealItem} from '@/types/setmeal'
 import type {CartDTO, CartItem} from '@/types/cart'
 import {onLoad, onShow} from '@dcloudio/uni-app'
-import {ref} from 'vue'
+import {computed, onMounted, onUnmounted, ref} from 'vue'
 import Navbar from './components/Navbar.vue'
+import iconBreakfast from '@/static/icons/breakfast.png'
+import iconLunch from '@/static/icons/lunch.png'
+import iconDinner from '@/static/icons/dinner.png'
+import iconDrink from '@/static/icons/drink.png'
+import iconStaple from '@/static/icons/staple.png'
 
 // ------ data ------
 // 店铺营业状态
@@ -190,6 +202,14 @@ const setmealList = ref<SetmealItem[]>([])
 const openCartList = ref(false)
 // 搜索关键词
 const searchKeyword = ref('')
+const searchPlaceholders = ['红烧肉', '水果拼盘', '黄焖鸡', '麻婆豆腐', '酸菜鱼']
+const currentPlaceholderIndex = ref(0)
+const isSearchFocused = ref(false)
+let searchPlaceholderTimer: ReturnType<typeof setInterval> | null = null
+const searchPlaceholderText = computed(() => {
+  if (isSearchFocused.value) return ''
+  return `搜索想吃的菜品 (如：${searchPlaceholders[currentPlaceholderIndex.value]})`
+})
 // 购物车列表
 const cartList = ref<CartItem[]>([])
 const CartAllNumber = ref(0)
@@ -202,12 +222,32 @@ const flavors = ref<FlavorItem[]>([])
 // 已选择的口味列表
 const chosedflavors = ref<string[]>([])
 const baseUrl = 'http://127.0.0.1:8081'
+const currentCategoryName = computed(() => {
+  return categoryList.value[activeIndex.value]?.name || ''
+})
+
+const getCategoryIcon = (categoryName: string) => {
+  if (categoryName.includes('早餐')) return iconBreakfast
+  if (categoryName.includes('午餐')) return iconLunch
+  if (categoryName.includes('晚餐')) return iconDinner
+  if (categoryName.includes('饮品') || categoryName.includes('甜点')) return iconDrink
+  if (categoryName.includes('主食') || categoryName.includes('面点')) return iconStaple
+  return iconBreakfast
+}
 
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'
   if (image.startsWith('http://') || image.startsWith('https://')) return image
   if (image.startsWith('/static/dish/')) return baseUrl + image
   return image
+}
+
+const handleSearchFocus = () => {
+  isSearchFocused.value = true
+}
+
+const handleSearchBlur = () => {
+  isSearchFocused.value = false
 }
 
 // ------ method ------
@@ -469,6 +509,19 @@ onShow(async () => {
   await getCategoryData()
   await getCartList()
 })
+
+onMounted(() => {
+  searchPlaceholderTimer = setInterval(() => {
+    currentPlaceholderIndex.value = (currentPlaceholderIndex.value + 1) % searchPlaceholders.length
+  }, 5000)
+})
+
+onUnmounted(() => {
+  if (searchPlaceholderTimer) {
+    clearInterval(searchPlaceholderTimer)
+    searchPlaceholderTimer = null
+  }
+})
 </script>
 
 <style lang="less" scoped>
@@ -595,6 +648,13 @@ onShow(async () => {
   }
 }
 
+.search-icon-img {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 12rpx;
+  opacity: 0.9;
+}
+
 /* 分类 */
 .categories {
   flex: 1;
@@ -669,6 +729,26 @@ onShow(async () => {
     &::after {
       font-family: 'erabbit' !important;
       content: '\e6c2';
+    }
+  }
+
+  .category-title-row {
+    display: flex;
+    align-items: center;
+    padding: 20rpx 24rpx 0;
+
+    .category-icon {
+      width: 32rpx;
+      height: 32rpx;
+      margin-right: 10rpx;
+      flex-shrink: 0;
+    }
+
+    .category-title-text {
+      font-size: 30rpx;
+      font-weight: 700;
+      color: #333;
+      line-height: 1;
     }
   }
 
@@ -888,7 +968,7 @@ onShow(async () => {
     text-align: center;
     font-weight: bold;
     margin-top: 8rpx;
-    background: #00aaff;
+    background: #ff8c42;
   }
 }
 

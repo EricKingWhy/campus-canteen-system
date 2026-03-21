@@ -31,7 +31,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     return (_ctx, _cache) => {
       var _a;
       return {
-        a: common_assets._imports_0,
+        a: common_assets._imports_0$1,
         b: common_vendor.o(back),
         c: common_assets._imports_1,
         d: ((_a = common_vendor.unref(safeAreaInsets)) == null ? void 0 : _a.top) + "px",

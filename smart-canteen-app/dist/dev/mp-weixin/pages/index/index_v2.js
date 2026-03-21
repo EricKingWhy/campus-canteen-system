@@ -2,6 +2,7 @@
 const common_vendor = require("../../common/vendor.js");
 const stores_modules_user = require("../../stores/modules/user.js");
 const stores_modules_userProfile = require("../../stores/modules/userProfile.js");
+const common_assets = require("../../common/assets.js");
 require("../../utils/http.js");
 require("../../api/user.js");
 if (!Math) {
@@ -338,7 +339,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             h: common_vendor.o(($event) => openDishDetail(item), index)
           };
         }),
-        l: common_vendor.f(dishList.value, (dish, index, i0) => {
+        l: common_vendor.unref(common_assets.iconHot),
+        m: common_vendor.f(dishList.value, (dish, index, i0) => {
           return common_vendor.e({
             a: index === 0
           }, index === 0 ? {} : index === 1 ? {} : index === 2 ? {} : {
@@ -356,17 +358,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             l: common_vendor.o(($event) => openDishDetail(dish), dish.id)
           });
         }),
-        m: cartTotalCount.value > 0
+        n: cartTotalCount.value > 0
       }, cartTotalCount.value > 0 ? {
-        n: common_vendor.t(cartTotalCount.value)
+        o: common_vendor.t(cartTotalCount.value)
       } : {}, {
-        o: common_vendor.t(cartTotalPrice.value),
-        p: common_vendor.o(submitOrder),
-        q: common_vendor.o(toggleCart),
-        r: openCartList.value
+        p: common_vendor.t(cartTotalPrice.value),
+        q: common_vendor.o(submitOrder),
+        r: common_vendor.o(toggleCart),
+        s: openCartList.value
       }, openCartList.value ? {
-        s: common_vendor.o(clearCart),
-        t: common_vendor.f(cartList.value, (item, idx, i0) => {
+        t: common_vendor.o(clearCart),
+        v: common_vendor.f(cartList.value, (item, idx, i0) => {
           return {
             a: common_vendor.t(item.name),
             b: common_vendor.o(($event) => subCart(item), idx),
@@ -375,13 +377,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: idx
           };
         }),
-        v: common_vendor.o(() => {
+        w: common_vendor.o(() => {
         }),
-        w: common_vendor.o(($event) => openCartList.value = false)
+        x: common_vendor.o(($event) => openCartList.value = false)
       } : {}, {
-        x: common_vendor.o(($event) => showDishDetail.value = false),
-        y: common_vendor.o(addToCart),
-        z: common_vendor.p({
+        y: common_vendor.o(($event) => showDishDetail.value = false),
+        z: common_vendor.o(addToCart),
+        A: common_vendor.p({
           visible: showDishDetail.value,
           dish: currentDetailDish.value
         })

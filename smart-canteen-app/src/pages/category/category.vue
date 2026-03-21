@@ -4,14 +4,14 @@
     <view class="header">
       <view class="search-box">
         <view class="search-icon">
-          <text class="iconfont icon-search"></text> 
-          <!-- Assuming iconfont exists or using text -->
-          <text style="font-size: 32rpx; color:#9fa6b2;">🔍</text>
+          <image class="search-icon-img" src="/static/icon/sousuo.png" mode="aspectFit"></image>
         </view>
         <input class="search-input" 
                v-model="searchKeyword" 
-               @confirm="handleSearch" 
-               placeholder="搜索想吃的菜品 (如：低脂鸡胸肉)" 
+               @confirm="handleSearch"
+               @focus="handleSearchFocus"
+               @blur="handleSearchBlur"
+               :placeholder="isSearchFocused ? '' : searchPlaceholderText"
                placeholder-style="color:#9ca3af" />
       </view>
     </view>
@@ -38,10 +38,13 @@
         <view class="content-wrapper">
           <!-- Category Title -->
           <view class="category-title-sticky" v-if="currentCategory && activeCategoryIndex !== -1">
-            <text class="title-text">🔥 {{ currentCategory.name }}</text>
+            <view class="title-row">
+              <image :src="getCategoryIcon(currentCategory.name)" class="title-icon" mode="aspectFit" />
+              <text class="title-text">{{ currentCategory.name }}</text>
+            </view>
           </view>
           <view class="category-title-sticky" v-else-if="activeCategoryIndex === -1 && searchKeyword">
-            <text class="title-text">🔍 搜索结果: "{{ searchKeyword }}"</text>
+            <text class="title-text">搜索结果: "{{ searchKeyword }}"</text>
           </view>
 
           <!-- Dish List -->
@@ -118,7 +121,6 @@
             <view class="main-price">
               <text style="font-size: 24rpx;">¥</text> {{ totalAmount }}
             </view>
-            <text class="sub-text">预计取餐时间 12:15</text>
           </view>
         </view>
         <view class="checkout-btn" @click.stop="goSubmit">
@@ -165,6 +167,12 @@
 
 <script>
 import DishDetailPopup from '@/components/DishDetailPopup.vue';
+import iconHot from '@/static/icons/hot.png';
+import iconBreakfast from '@/static/icons/breakfast.png';
+import iconLunch from '@/static/icons/lunch.png';
+import iconDinner from '@/static/icons/dinner.png';
+import iconDrink from '@/static/icons/drink.png';
+import iconStaple from '@/static/icons/staple.png';
 
 export default {
   components: {
@@ -178,6 +186,11 @@ export default {
       cartList: [],
       activeCategoryIndex: 0,
       searchKeyword: '', // 【核心新增】搜索关键词绑定
+      searchPlaceholders: ['低脂鸡胸肉', '黄焖鸡', '水果拼盘', '麻婆豆腐', '酸菜鱼'],
+      currentPlaceholderIndex: 0,
+      searchPlaceholderText: '搜索想吃的菜品 (如：低脂鸡胸肉)',
+      placeholderTimer: null,
+      isSearchFocused: false,
       cartPopupShow: false,
       showNutritionPopup: false,
       currentDish: {} // Will hold full dish data including nutrition and sold
@@ -205,8 +218,56 @@ export default {
     console.log('Category Page onShow - Initialization');
     this.getCartList();
     this.getCategoryList();
+    this.startSearchPlaceholderTicker();
+  },
+  onHide() {
+    this.stopSearchPlaceholderTicker();
+    this.isSearchFocused = false;
+  },
+  onUnload() {
+    this.stopSearchPlaceholderTicker();
   },
   methods: {
+    handleSearchFocus() {
+      this.isSearchFocused = true;
+    },
+    handleSearchBlur() {
+      this.isSearchFocused = false;
+    },
+    startSearchPlaceholderTicker() {
+      this.stopSearchPlaceholderTicker();
+      this.updateSearchPlaceholder(true);
+      this.placeholderTimer = setInterval(() => {
+        if (this.isSearchFocused) return;
+        this.currentPlaceholderIndex =
+          (this.currentPlaceholderIndex + 1) % this.searchPlaceholders.length;
+        this.updateSearchPlaceholder();
+      }, 5000);
+    },
+    stopSearchPlaceholderTicker() {
+      if (!this.placeholderTimer) return;
+      clearInterval(this.placeholderTimer);
+      this.placeholderTimer = null;
+    },
+    updateSearchPlaceholder(reset = false) {
+      if (!this.searchPlaceholders.length) {
+        this.searchPlaceholderText = '搜索想吃的菜品';
+        return;
+      }
+      if (reset) this.currentPlaceholderIndex = 0;
+      const current = this.searchPlaceholders[this.currentPlaceholderIndex];
+      this.searchPlaceholderText = `搜索想吃的菜品 (如：${current})`;
+    },
+    getCategoryIcon(categoryName) {
+      if (!categoryName) return iconHot;
+      if (categoryName.includes('热销')) return iconHot;
+      if (categoryName.includes('早餐')) return iconBreakfast;
+      if (categoryName.includes('午餐')) return iconLunch;
+      if (categoryName.includes('晚餐')) return iconDinner;
+      if (categoryName.includes('甜点') || categoryName.includes('饮品')) return iconDrink;
+      if (categoryName.includes('主食') || categoryName.includes('面点')) return iconStaple;
+      return iconHot;
+    },
     resolveImageUrl(image) {
       if (!image) return '/static/default_dish.png';
       if (image.startsWith('http://') || image.startsWith('https://')) return image;
@@ -496,6 +557,7 @@ $price-red: #ef4444;
       padding: 0 24rpx;
       
       .search-icon { margin-right: 16rpx; }
+      .search-icon-img { width: 34rpx; height: 34rpx; display: block; }
       .search-input { flex: 1; font-size: 28rpx; color: $text-dark; }
    }
 }
@@ -562,6 +624,18 @@ $price-red: #ef4444;
       background: rgba(255,255,255,0.95);
       z-index: 10;
       padding: 24rpx 0 16rpx 0;
+
+      .title-row {
+         display: flex;
+         align-items: center;
+         gap: 10rpx;
+      }
+
+      .title-icon {
+         width: 34rpx;
+         height: 34rpx;
+         flex: none;
+      }
       
       .title-text {
          font-size: 28rpx;

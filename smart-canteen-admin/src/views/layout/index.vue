@@ -205,7 +205,7 @@ const audio2 = ref<HTMLAudioElement | null>(null)
 
 const webSocket = () => {
   const clientId = Math.random().toString(36).slice(2)
-  const socketUrl = 'ws://localhost:8081/ws/' + clientId
+  const socketUrl = 'ws://127.0.0.1:8081/ws/' + clientId
   console.log('socketUrl', socketUrl)
 
   if (typeof WebSocket == 'undefined') {
@@ -341,7 +341,7 @@ onBeforeUnmount(() => {
           </audio>
         </div>
         <el-dropdown style="float: right">
-          <el-button type="primary">
+          <el-button class="account-btn">
             {{ userInfoStore.userInfo ? userInfoStore.userInfo.account : '未登录' }}
             <el-icon class="arrow-down-icon"><arrow-down /></el-icon>
           </el-button>
@@ -357,7 +357,7 @@ onBeforeUnmount(() => {
       <el-container class="box1">
         <!-- 左侧导航菜单区域 -->
         <el-menu :width="isCollapse ? '640px' : '200px'" :default-active="getActiveAside()" :collapse="isCollapse"
-          background-color="#22aaee" text-color="#fff" unique-opened router>
+          background-color="#001529" text-color="#E5EAF3" active-text-color="#FFFFFF" unique-opened router>
           <!-- 加了router模式，就会在激活导航时以 :index 作为path进行路径跳转（nb!不用自己写路由了!） -->
           <!-- 根据不同情况选择menu-item/submenu进行遍历，所以外层套template遍历，里面组件做判断看是否该次遍历到自己 -->
           <template v-for="item in menuList" :key="item.path">
@@ -384,12 +384,13 @@ onBeforeUnmount(() => {
 <style lang="less" scoped>
 .common-layout {
   height: 100%;
-  background-color: #eee;
+  background-color: #f3f4f6;
 }
 
 .el-header {
-  background-color: #00aaff;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #333333;
+  border-bottom: 1px solid #e5e7eb;
   line-height: 60px;
 
   .logo {
@@ -404,7 +405,7 @@ onBeforeUnmount(() => {
     margin: 0 20px;
     font-size: 18px;
     font-weight: bold;
-    color: #fff;
+    color: #333333;
     letter-spacing: 2px;
     vertical-align: middle;
   }
@@ -413,6 +414,7 @@ onBeforeUnmount(() => {
     position: absolute;
     top: 18px;
     margin: 5px 10px 0 0;
+    color: #333333;
   }
 
   .status {
@@ -423,8 +425,9 @@ onBeforeUnmount(() => {
     margin: 15px 50px;
     padding: 0 10px;
     border-radius: 5px;
-    background-color: #eebb00;
-    color: #fff;
+    background-color: #e8f1ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
   }
 }
 
@@ -436,8 +439,8 @@ onBeforeUnmount(() => {
 .status-change {
   float: right;
   margin: 14px 20px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border: none;
+  background-color: #1677ff;
+  border-color: #1677ff;
   color: #fff;
 }
 
@@ -446,16 +449,18 @@ onBeforeUnmount(() => {
   margin-right: 20px;
 }
 
-.el-dropdown .el-button {
+.el-dropdown .el-button,
+.account-btn {
   float: right;
-  width: 80px;
+  width: 108px;
   margin: 14px 20px;
-  background-color: #eebb00;
-  border-color: #eebb00;
-  color: #fff;
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #333333;
 
   .arrow-down-icon {
     margin-left: 5px;
+    color: #333333;
   }
 }
 
@@ -472,7 +477,7 @@ onBeforeUnmount(() => {
 
 .el-main {
   flex: 1;
-  background-color: #e9f5ff;
+  background-color: #f3f4f6;
   color: #333;
   /* text-align: center; */
   /* line-height: 80px; */
@@ -493,7 +498,8 @@ a:hover {
 }
 
 .el-footer {
-  background-color: #eee;
+  background-color: #ffffff;
+  color: #6b7280;
   font-size: 12px;
   display: flex;
   justify-content: center;
@@ -525,7 +531,7 @@ a:hover {
 
   .el-radio__label {
     padding-top: 15px;
-    color: #445588;
+    color: #1f2937;
     font-weight: 700;
 
     span {
@@ -539,7 +545,7 @@ a:hover {
 
   .el-radio-group {
     &>.is-checked {
-      border: 1px solid #00aaff;
+      border: 1px solid #1677ff;
     }
   }
 
@@ -579,17 +585,18 @@ a:hover {
 
 .el-menu {
   padding: 30px 0 0 0;
-  background-color: #445566;
+  background-color: #001529;
 }
 
 .el-menu-item {
   margin: 10px;
   padding-right: 30px;
   border-radius: 10px;
+  color: #e5eaf3;
 }
 
 .el-menu-item.is-active {
-  background-color: #22ccff;
+  background-color: #1677ff;
   color: #fff;
 }
 

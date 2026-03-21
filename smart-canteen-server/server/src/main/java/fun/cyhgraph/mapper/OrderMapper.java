@@ -51,4 +51,19 @@ public interface OrderMapper extends BaseMapper<Orders> {
             @Param("userId") Long userId, 
             @Param("startTime") java.time.LocalDateTime startTime, 
             @Param("endTime") java.time.LocalDateTime endTime);
+
+    Map<String, Object> getWeeklyMaxSingleOrder(
+            @Param("userId") Long userId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
+
+    Map<String, Object> getWeeklyTopDish(
+            @Param("userId") Long userId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
+
+    List<LocalDateTime> getWeeklyOrderTimes(
+            @Param("userId") Long userId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
 }

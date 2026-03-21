@@ -44,4 +44,51 @@
         LIMIT 1
     </select>
 
+    <select id="getWeeklyMaxSingleOrder" resultType="map">
+        SELECT
+            o.amount AS maxAmount,
+            (
+                SELECT od.name
+                FROM order_detail od
+                WHERE od.order_id = o.id
+                ORDER BY od.number DESC, od.id ASC
+                LIMIT 1
+            ) AS maxDishName
+        FROM orders o
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
+        ORDER BY o.amount DESC, o.order_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="getWeeklyTopDish" resultType="map">
+        SELECT
+            od.name AS topDishName,
+            SUM(COALESCE(od.number, 1)) AS topDishCount
+        FROM order_detail od
+        INNER JOIN orders o ON o.id = od.order_id
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
+        GROUP BY od.name
+        ORDER BY topDishCount DESC, od.name ASC
+        LIMIT 1
+    </select>
+
+    <select id="getWeeklyOrderTimes" resultType="java.time.LocalDateTime">
+        SELECT o.order_time
+        FROM orders o
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
+        ORDER BY o.order_time ASC
+    </select>
+
 </mapper>

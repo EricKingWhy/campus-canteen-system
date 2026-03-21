@@ -1,5 +1,8 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
+const api_order = require("../../api/order.js");
+require("../../utils/http.js");
+require("../../stores/modules/user.js");
 const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "weekly-report",
@@ -23,22 +26,45 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const weekDays = common_vendor.ref([
       { label: "一", percent: 40, amount: "15.50", isMax: false },
       { label: "二", percent: 55, amount: "21.00", isMax: false },
-      { label: "三", percent: 90, amount: "28.50", isMax: true },
+      { label: "三", percent: 90, amount: "28.50", isMax: false },
       { label: "四", percent: 45, amount: "17.00", isMax: false },
       { label: "五", percent: 65, amount: "24.00", isMax: false },
       { label: "六", percent: 30, amount: "18.50", isMax: false },
       { label: "日", percent: 25, amount: "14.00", isMax: false }
     ]);
+    const getTodayWeekIndex = () => {
+      const jsDay = (/* @__PURE__ */ new Date()).getDay();
+      return jsDay === 0 ? 6 : jsDay - 1;
+    };
+    const syncTodayHighlight = () => {
+      const todayIndex = getTodayWeekIndex();
+      weekDays.value = weekDays.value.map((day, idx) => ({
+        ...day,
+        isMax: idx === todayIndex
+      }));
+    };
     const mealPeriods = common_vendor.ref([
       { name: "午餐", percent: 45, color: "#f68a2f" },
       { name: "晚餐", percent: 35, color: "#ffdbcd" },
       { name: "早餐", percent: 20, color: "#77574d" }
     ]);
-    const analysisItems = common_vendor.ref([
-      { label: "最高单笔消费", value: "¥18.00 (牛肉板面 - 餐点, 周三)", emoji: "📊", bgColor: "#ffdcc5" },
-      { label: "下单最多菜品", value: "排骨瓦罐汤 (4次)", emoji: "❤️", bgColor: "#ffdbd0" },
-      { label: "平均下单间隔", value: "4.2 小时", emoji: "⏱️", bgColor: "#ffdbcd" }
-    ]);
+    const analysisData = common_vendor.ref({
+      maxAmount: 0,
+      maxDishName: "",
+      topDishName: "",
+      topDishCount: 0,
+      avgIntervalHours: 0
+    });
+    const analysisItems = common_vendor.computed(() => {
+      const maxSpendValue = analysisData.value.maxAmount > 0 ? `¥${analysisData.value.maxAmount.toFixed(2)} (${analysisData.value.maxDishName || "暂无数据"})` : "暂无数据";
+      const topDishValue = analysisData.value.topDishName ? `${analysisData.value.topDishName} (${analysisData.value.topDishCount || 0}次)` : "暂无数据";
+      const avgIntervalValue = analysisData.value.avgIntervalHours > 0 ? `${analysisData.value.avgIntervalHours.toFixed(1)} 小时` : "暂无数据";
+      return [
+        { label: "最高单笔消费", value: maxSpendValue, emoji: "📊", bgColor: "#ffdcc5" },
+        { label: "下单最多菜品", value: topDishValue, emoji: "❤️", bgColor: "#ffdbd0" },
+        { label: "平均下单间隔", value: avgIntervalValue, emoji: "⏱️", bgColor: "#ffdbcd" }
+      ];
+    });
     const fetchWeeklyData = () => {
       const token = common_vendor.index.getStorageSync("token");
       common_vendor.index.request({
@@ -71,11 +97,29 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }
       });
     };
+    const fetchWeeklyAnalysis = async () => {
+      try {
+        const res = await api_order.getWeeklyAnalysisAPI();
+        if (res.code === 0 && res.data) {
+          analysisData.value = {
+            maxAmount: Number(res.data.maxAmount || 0),
+            maxDishName: res.data.maxDishName || "",
+            topDishName: res.data.topDishName || "",
+            topDishCount: Number(res.data.topDishCount || 0),
+            avgIntervalHours: Number(res.data.avgIntervalHours || 0)
+          };
+        }
+      } catch (error) {
+        console.error("获取本周餐点分析失败:", error);
+      }
+    };
     const goBack = () => {
       common_vendor.index.navigateBack();
     };
     common_vendor.onLoad(() => {
+      syncTodayHighlight();
       fetchWeeklyData();
+      fetchWeeklyAnalysis();
     });
     return (_ctx, _cache) => {
       return {

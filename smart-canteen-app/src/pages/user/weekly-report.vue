@@ -97,8 +97,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import { getWeeklyAnalysisAPI } from '@/api/order'
 
 const baseUrl = 'http://127.0.0.1:8081'
 
@@ -126,12 +127,25 @@ const dateRange = computed(() => {
 const weekDays = ref([
    { label: '一', percent: 40, amount: '15.50', isMax: false },
    { label: '二', percent: 55, amount: '21.00', isMax: false },
-   { label: '三', percent: 90, amount: '28.50', isMax: true },
+   { label: '三', percent: 90, amount: '28.50', isMax: false },
    { label: '四', percent: 45, amount: '17.00', isMax: false },
    { label: '五', percent: 65, amount: '24.00', isMax: false },
    { label: '六', percent: 30, amount: '18.50', isMax: false },
    { label: '日', percent: 25, amount: '14.00', isMax: false },
 ])
+
+const getTodayWeekIndex = () => {
+   const jsDay = new Date().getDay() // 0=周日, 1=周一 ... 6=周六
+   return jsDay === 0 ? 6 : jsDay - 1 // 图表从周一到周日 => 0..6
+}
+
+const syncTodayHighlight = () => {
+   const todayIndex = getTodayWeekIndex()
+   weekDays.value = weekDays.value.map((day, idx) => ({
+      ...day,
+      isMax: idx === todayIndex
+   }))
+}
 
 // === Meal Period Distribution ===
 const mealPeriods = ref([
@@ -140,12 +154,32 @@ const mealPeriods = ref([
    { name: '早餐', percent: 20, color: '#77574d' },
 ])
 
+const analysisData = ref({
+   maxAmount: 0,
+   maxDishName: '',
+   topDishName: '',
+   topDishCount: 0,
+   avgIntervalHours: 0,
+})
+
 // === Analysis Items ===
-const analysisItems = ref([
-   { label: '最高单笔消费', value: '¥18.00 (牛肉板面 - 餐点, 周三)', emoji: '📊', bgColor: '#ffdcc5' },
-   { label: '下单最多菜品', value: '排骨瓦罐汤 (4次)', emoji: '❤️', bgColor: '#ffdbd0' },
-   { label: '平均下单间隔', value: '4.2 小时', emoji: '⏱️', bgColor: '#ffdbcd' },
-])
+const analysisItems = computed(() => {
+   const maxSpendValue = analysisData.value.maxAmount > 0
+      ? `¥${analysisData.value.maxAmount.toFixed(2)} (${analysisData.value.maxDishName || '暂无数据'})`
+      : '暂无数据'
+   const topDishValue = analysisData.value.topDishName
+      ? `${analysisData.value.topDishName} (${analysisData.value.topDishCount || 0}次)`
+      : '暂无数据'
+   const avgIntervalValue = analysisData.value.avgIntervalHours > 0
+      ? `${analysisData.value.avgIntervalHours.toFixed(1)} 小时`
+      : '暂无数据'
+
+   return [
+      { label: '最高单笔消费', value: maxSpendValue, emoji: '📊', bgColor: '#ffdcc5' },
+      { label: '下单最多菜品', value: topDishValue, emoji: '❤️', bgColor: '#ffdbd0' },
+      { label: '平均下单间隔', value: avgIntervalValue, emoji: '⏱️', bgColor: '#ffdbcd' },
+   ]
+})
 
 // === Fetch Real Data ===
 const fetchWeeklyData = () => {
@@ -182,12 +216,31 @@ const fetchWeeklyData = () => {
    })
 }
 
+const fetchWeeklyAnalysis = async () => {
+   try {
+      const res = await getWeeklyAnalysisAPI()
+      if (res.code === 0 && res.data) {
+         analysisData.value = {
+            maxAmount: Number(res.data.maxAmount || 0),
+            maxDishName: res.data.maxDishName || '',
+            topDishName: res.data.topDishName || '',
+            topDishCount: Number(res.data.topDishCount || 0),
+            avgIntervalHours: Number(res.data.avgIntervalHours || 0),
+         }
+      }
+   } catch (error) {
+      console.error('获取本周餐点分析失败:', error)
+   }
+}
+
 const goBack = () => {
    uni.navigateBack()
 }
 
 onLoad(() => {
+   syncTodayHighlight()
    fetchWeeklyData()
+   fetchWeeklyAnalysis()
 })
 </script>
 

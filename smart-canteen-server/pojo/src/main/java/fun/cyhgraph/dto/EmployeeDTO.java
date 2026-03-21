@@ -26,4 +26,5 @@ public class EmployeeDTO implements Serializable {
     private Integer age;
     private Integer gender;
     private String pic;
+    private String photoPath;
 }

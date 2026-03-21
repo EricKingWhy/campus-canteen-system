@@ -7,6 +7,7 @@ import { useUserInfoStore } from '@/store'
 
 const userInfoStore = useUserInfoStore()
 const formLabelWidth = '60px'
+const baseURL = 'http://127.0.0.1:8081'
 const id = ref<number | string>(0)
 
 const form = reactive({
@@ -66,6 +67,13 @@ const chooseImg = () => {
   if (inputRef1.value) {
     inputRef1.value.click()
   }
+}
+
+const resolvePhotoPreview = (photoPath?: string) => {
+  if (!photoPath) return '/src/assets/image/user_default.png'
+  if (photoPath.startsWith('data:image') || photoPath.startsWith('http')) return photoPath
+  if (photoPath.startsWith('/static/')) return baseURL + photoPath
+  return baseURL + '/static/upload/employee_photos/' + photoPath.replace(/^\/+/, '')
 }
 
 const onFileChange1 = (e: Event) => {
@@ -142,6 +150,7 @@ const init = async () => {
 
   Object.assign(form, {
     ...empData,
+    pic: empData.photoPath || empData.pic || '',
     age: empData.age === undefined || empData.age === null ? null : Number(empData.age),
     gender: empData.gender === undefined || empData.gender === null ? 0 : Number(empData.gender),
   })
@@ -174,8 +183,7 @@ init()
         </el-radio-group>
       </el-form-item>
       <el-form-item label="头像" :label-width="formLabelWidth" prop="pic">
-        <img class="the_img" v-if="!form.pic" src="/src/assets/image/user_default.png" alt="" />
-        <img class="the_img" v-else :src="form.pic" alt="" />
+        <img class="the_img" :src="resolvePhotoPreview(form.pic)" alt="" />
         <input type="file" accept="image/*" style="display: none" ref="inputRef1" @change="onFileChange1" />
         <el-button type="primary" @click="chooseImg">
           <el-icon style="font-size: 15px; margin-right: 10px;">

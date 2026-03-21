@@ -12,7 +12,16 @@
   </view>
   <view class="blank"></view>
   <view class="history_content">
+    <view v-if="showPendingEmptyState" class="pending_empty_state">
+      <image
+        src="@/assets/images/icons/empty_pending.png"
+        mode="widthFix"
+        class="pending_empty_image"
+      />
+      <text class="pending_empty_text">暂无待付款订单</text>
+    </view>
     <view
+      v-else
       class="history_item"
       v-for="(item, index) in historyOrders"
       :key="index"
@@ -21,11 +30,19 @@
       <view class="item_info_box">
         <view class="history_item_left">
           <view class="history_item_order_id">订单号：{{ item.number }}</view>
-          <scroll-view class="scroll_container" scroll-x>
-            <view v-for="(dish, index) in item.orderDetailList" :key="index" class="image_box">
-              <image :src="resolveImageUrl(dish.pic || dish.image)" />
+          <view class="dish_list">
+            <view
+              v-for="(dish, dishIndex) in item.orderDetailList"
+              :key="dishIndex"
+              class="dish-item"
+            >
+              <image :src="resolveImageUrl(dish.pic || dish.image)" mode="aspectFill" class="dish-img" />
+              <view class="dish-info">
+                <text class="dish-name">{{ dish.name || '菜品' }}</text>
+                <text class="dish-num">x{{ dish.number || 1 }}</text>
+              </view>
             </view>
-          </scroll-view>
+          </view>
           <view class="history_item_order_time">{{ item.orderTime }}</view>
         </view>
         <view class="history_item_right">
@@ -48,7 +65,7 @@
 
 <script lang="ts" setup>
 import pushMsg from '../../components/message/pushMsg.vue'
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import {onLoad, onReachBottom, onShow} from '@dcloudio/uni-app'
 import {getOrderPageAPI, reOrderAPI} from '@/api/order'
 import {cleanCartAPI} from '@/api/cart'
@@ -109,13 +126,14 @@ const statusList = [
 
 const activeIndex = ref(0)
 const historyOrders = ref<OrderVO[]>([])
-const baseUrl = 'http://127.0.0.1:8081'
+const showPendingEmptyState = computed(() => activeIndex.value === 1 && historyOrders.value.length === 0)
+const baseURL = 'http://127.0.0.1:8081'
 
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'
   if (image.startsWith('http://') || image.startsWith('https://')) return image
-  if (image.startsWith('/static/dish/')) return baseUrl + image
-  return image
+  if (image.startsWith('/')) return baseURL + image
+  return `${baseURL}/static/dish/${image.replace(/^\/+/, '')}`
 }
 
 const orderDTO = ref<OrderPageDTO>({
@@ -211,26 +229,50 @@ const pushOrder = (id: number) => {
 .history_top {
   position: fixed;
   width: 100%;
-  height: 80rpx;
+  height: 96rpx;
   display: flex;
   justify-content: space-around;
-  padding-top: 20rpx;
-  background-color: #fff;
+  align-items: center;
+  padding-top: calc(env(safe-area-inset-top) + 8rpx);
+  background-color: rgba(255, 250, 245, 0.96);
+  backdrop-filter: blur(18rpx);
+  border-bottom: 1rpx solid #f3e8dc;
   .history_title {
     width: 25%;
     text-align: center;
     font-size: 30rpx;
-    color: #333;
+    color: #6b5c53;
   }
   .active {
-    color: #00aaff;
+    color: #ff8c42;
+    font-weight: 700;
   }
 }
 .blank {
-  height: 100rpx;
+  height: calc(116rpx + env(safe-area-inset-top));
 }
 .history_content {
-  padding: 0rpx 20rpx 20rpx 20rpx;
+  padding: 0 24rpx 24rpx;
+  .pending_empty_state {
+    min-height: calc(100vh - 220rpx - env(safe-area-inset-top));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80rpx 0 140rpx;
+    box-sizing: border-box;
+  }
+  .pending_empty_image {
+    width: 220rpx;
+    height: auto;
+  }
+  .pending_empty_text {
+    margin-top: 26rpx;
+    font-size: 26rpx;
+    line-height: 36rpx;
+    color: #999999;
+    text-align: center;
+  }
   .title {
     font-size: 28rpx;
     color: #333;
@@ -240,11 +282,13 @@ const pushOrder = (id: number) => {
   .history_item {
     // display: flex;
     // justify-content: space-between;
-    height: 300rpx;
-    padding: 40rpx 20rpx;
+    min-height: 300rpx;
+    height: auto;
+    padding: 36rpx 24rpx;
     background-color: #fff;
-    margin-top: 20rpx;
-    border-radius: 20rpx;
+    margin-top: 24rpx;
+    border-radius: 24rpx;
+    box-shadow: 0 8rpx 24rpx rgba(45, 36, 31, 0.05);
     .item_info_box {
       display: flex;
       justify-content: space-between;
@@ -256,22 +300,39 @@ const pushOrder = (id: number) => {
           color: #333;
           margin-bottom: 20rpx;
         }
-        .scroll_container {
-          width: 400rpx;
-          height: 130rpx;
-          overflow-x: auto;
-          white-space: nowrap;
-          .image_box {
-            width: 100rpx;
-            display: inline-block;
+        .dish_list {
+          width: 440rpx;
+          margin-bottom: 12rpx;
+          .dish-item {
+            display: flex;
             align-items: center;
-            margin-right: 20rpx;
-            text-align: center;
-            image {
-              display: inline-block;
-              border-radius: 10rpx;
-              width: 100rpx;
-              height: 100rpx;
+            margin: 15rpx 0;
+            .dish-img {
+              width: 90rpx;
+              height: 90rpx;
+              border-radius: 16rpx;
+              margin-right: 20rpx;
+              background-color: #f5f5f5;
+            }
+            .dish-info {
+              flex: 1;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              min-width: 0;
+              .dish-name {
+                flex: 1;
+                font-size: 26rpx;
+                color: #2d241f;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-right: 12rpx;
+              }
+              .dish-num {
+                font-size: 24rpx;
+                color: #666;
+              }
             }
           }
         }
@@ -284,7 +345,7 @@ const pushOrder = (id: number) => {
         text-align: right;
         .history_item_status {
           font-size: 30rpx;
-          color: #0af;
+          color: #ff8c42;
           margin-bottom: 40rpx;
         }
         .history_item_price {
@@ -309,10 +370,11 @@ const pushOrder = (id: number) => {
         height: 60rpx;
         text-align: center;
         line-height: 60rpx;
-        border: #0af solid 1rpx;
+        border: 1rpx solid rgba(255, 140, 66, 0.7);
         border-radius: 30rpx;
         font-size: 28rpx;
-        color: #0af;
+        color: #ff8c42;
+        background: #fff9f3;
       }
       .history_item_push_order {
         float: right;
@@ -320,7 +382,7 @@ const pushOrder = (id: number) => {
         height: 62rpx;
         text-align: center;
         line-height: 62rpx;
-        background-color: #0af;
+        background: linear-gradient(90deg, #ffb17a 0%, #ff8c42 100%);
         border-radius: 30rpx;
         font-size: 28rpx;
         color: #fff;
@@ -333,6 +395,6 @@ const pushOrder = (id: number) => {
 <style>
 page {
   /* width: 700rpx; */
-  background-color: #eeeeee;
+  background-color: #fffaf5;
 }
 </style>

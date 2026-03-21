@@ -5,6 +5,7 @@ const api_category = require("../../api/category.js");
 const api_dish = require("../../api/dish.js");
 const api_setmeal = require("../../api/setmeal.js");
 const api_cart = require("../../api/cart.js");
+const common_assets = require("../../common/assets.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
 if (!Math) {
@@ -23,6 +24,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     common_vendor.ref([]);
     const openCartList = common_vendor.ref(false);
     const searchKeyword = common_vendor.ref("");
+    const searchPlaceholders = ["红烧肉", "水果拼盘", "黄焖鸡", "麻婆豆腐", "酸菜鱼"];
+    const currentPlaceholderIndex = common_vendor.ref(0);
+    const isSearchFocused = common_vendor.ref(false);
+    let searchPlaceholderTimer = null;
+    const searchPlaceholderText = common_vendor.computed(() => {
+      if (isSearchFocused.value)
+        return "";
+      return `搜索想吃的菜品 (如：${searchPlaceholders[currentPlaceholderIndex.value]})`;
+    });
     const cartList = common_vendor.ref([]);
     const CartAllNumber = common_vendor.ref(0);
     const CartAllPrice = common_vendor.ref(0);
@@ -30,6 +40,23 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const dialogDish = common_vendor.ref();
     const flavors = common_vendor.ref([]);
     const chosedflavors = common_vendor.ref([]);
+    const currentCategoryName = common_vendor.computed(() => {
+      var _a;
+      return ((_a = categoryList.value[activeIndex.value]) == null ? void 0 : _a.name) || "";
+    });
+    const getCategoryIcon = (categoryName) => {
+      if (categoryName.includes("早餐"))
+        return common_assets.iconBreakfast;
+      if (categoryName.includes("午餐"))
+        return common_assets.iconLunch;
+      if (categoryName.includes("晚餐"))
+        return common_assets.iconDinner;
+      if (categoryName.includes("饮品") || categoryName.includes("甜点"))
+        return common_assets.iconDrink;
+      if (categoryName.includes("主食") || categoryName.includes("面点"))
+        return common_assets.iconStaple;
+      return common_assets.iconBreakfast;
+    };
     const resolveImageUrl = (image) => {
       if (!image)
         return "/static/default_dish.png";
@@ -38,6 +65,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       if (image.startsWith("/static/dish/"))
         return baseUrl + image;
       return image;
+    };
+    const handleSearchFocus = () => {
+      isSearchFocused.value = true;
+    };
+    const handleSearchBlur = () => {
+      isSearchFocused.value = false;
     };
     const getCategoryData = async () => {
       const res = await api_category.getCategoryAPI();
@@ -240,12 +273,26 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       await getCategoryData();
       await getCartList();
     });
+    common_vendor.onMounted(() => {
+      searchPlaceholderTimer = setInterval(() => {
+        currentPlaceholderIndex.value = (currentPlaceholderIndex.value + 1) % searchPlaceholders.length;
+      }, 5e3);
+    });
+    common_vendor.onUnmounted(() => {
+      if (searchPlaceholderTimer) {
+        clearInterval(searchPlaceholderTimer);
+        searchPlaceholderTimer = null;
+      }
+    });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.o(handleSearch),
-        b: searchKeyword.value,
-        c: common_vendor.o(($event) => searchKeyword.value = $event.detail.value),
-        d: common_vendor.f(categoryList.value, (item, index, i0) => {
+        a: searchPlaceholderText.value,
+        b: common_vendor.o(handleSearchFocus),
+        c: common_vendor.o(handleSearchBlur),
+        d: common_vendor.o(handleSearch),
+        e: searchKeyword.value,
+        f: common_vendor.o(($event) => searchKeyword.value = $event.detail.value),
+        g: common_vendor.f(categoryList.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.name),
             b: item.id,
@@ -253,7 +300,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: common_vendor.o(($event) => getDishOrSetmealList(index), item.id)
           };
         }),
-        e: common_vendor.f(dishList.value, (dish, k0, i0) => {
+        h: getCategoryIcon(currentCategoryName.value),
+        i: common_vendor.t(currentCategoryName.value || "推荐菜品"),
+        j: common_vendor.f(dishList.value, (dish, k0, i0) => {
           return common_vendor.e({
             a: resolveImageUrl(dish.pic || dish.image),
             b: common_vendor.t(dish.name),
@@ -277,7 +326,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             m: `/pages/detail/detail?${categoryList.value[activeIndex.value].sort < 20 ? "dishId" : "setmealId"}=${dish.id}`
           });
         }),
-        f: common_vendor.f(flavors.value, (flavor, k0, i0) => {
+        k: common_vendor.f(flavors.value, (flavor, k0, i0) => {
           return {
             a: common_vendor.t(flavor.name),
             b: common_vendor.f(JSON.parse(flavor.list), (item, index, i1) => {
@@ -291,18 +340,18 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             c: flavor.name
           };
         }),
-        g: common_vendor.o(($event) => addToCart(dialogDish.value)),
-        h: common_vendor.o(($event) => visible.value = false),
-        i: visible.value,
-        j: cartList.value.length === 0
+        l: common_vendor.o(($event) => addToCart(dialogDish.value)),
+        m: common_vendor.o(($event) => visible.value = false),
+        n: visible.value,
+        o: cartList.value.length === 0
       }, cartList.value.length === 0 ? {} : {
-        k: common_vendor.t(CartAllNumber.value),
-        l: common_vendor.t(parseFloat((Math.round(CartAllPrice.value * 100) / 100).toFixed(2))),
-        m: common_vendor.o(($event) => submitOrder()),
-        n: common_vendor.o(() => openCartList.value = !openCartList.value)
+        p: common_vendor.t(CartAllNumber.value),
+        q: common_vendor.t(parseFloat((Math.round(CartAllPrice.value * 100) / 100).toFixed(2))),
+        r: common_vendor.o(($event) => submitOrder()),
+        s: common_vendor.o(() => openCartList.value = !openCartList.value)
       }, {
-        o: common_vendor.o(($event) => clearCart()),
-        p: common_vendor.f(cartList.value, (obj, index, i0) => {
+        t: common_vendor.o(($event) => clearCart()),
+        v: common_vendor.f(cartList.value, (obj, index, i0) => {
           return common_vendor.e({
             a: resolveImageUrl(obj.pic || obj.image),
             b: common_vendor.t(obj.name),
@@ -320,11 +369,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             j: index
           });
         }),
-        q: common_vendor.o(($event) => openCartList.value = openCartList.value),
-        r: openCartList.value,
-        s: common_vendor.o(($event) => openCartList.value = !openCartList.value),
-        t: !status.value,
-        v: common_vendor.o(goBack)
+        w: common_vendor.o(($event) => openCartList.value = openCartList.value),
+        x: openCartList.value,
+        y: common_vendor.o(($event) => openCartList.value = !openCartList.value),
+        z: !status.value,
+        A: common_vendor.o(goBack)
       });
     };
   }

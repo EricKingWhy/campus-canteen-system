@@ -30,9 +30,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
   z-index: 1000;
   display: flex;
   align-items: flex-end; /* Bottom sheet on mobile */
@@ -41,14 +41,14 @@
 .popup-content.data-v-121ded9a {
   width: 100%;
   background-color: #fff;
-  border-top-left-radius: 48rpx;
-  border-top-right-radius: 48rpx;
+  border-top-left-radius: 36rpx;
+  border-top-right-radius: 36rpx;
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
   height: 85vh;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -16rpx 40rpx rgba(0, 0, 0, 0.08);
   animation: slideUp-121ded9a 0.3s ease-out;
 }
 @keyframes slideUp-121ded9a {
@@ -65,7 +65,7 @@ to {
   right: 32rpx;
   width: 64rpx;
   height: 64rpx;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.24);
   -webkit-backdrop-filter: blur(4px);
           backdrop-filter: blur(4px);
   border-radius: 50%;
@@ -73,7 +73,7 @@ to {
   align-items: center;
   justify-content: center;
   z-index: 20;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
 }
 .close-icon.data-v-121ded9a {
   color: #fff;
@@ -88,7 +88,7 @@ to {
   left: 32rpx;
   width: 64rpx;
   height: 64rpx;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.24);
   -webkit-backdrop-filter: blur(4px);
           backdrop-filter: blur(4px);
   border-radius: 50%;
@@ -96,7 +96,7 @@ to {
   align-items: center;
   justify-content: center;
   z-index: 20;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
 }
 .favorite-btn.loading.data-v-121ded9a {
   opacity: 0.5;
@@ -175,13 +175,13 @@ to {
   font-weight: bold;
 }
 .nutrition-box.data-v-121ded9a {
-  background-color: rgba(255, 153, 0, 0.05); /* modal-orange/5 */
+  background-color: #fff5ef;
   border-radius: 24rpx;
   padding: 32rpx;
   display: flex;
   justify-content: space-between;
   margin-bottom: 48rpx;
-  border: 1px solid rgba(255, 153, 0, 0.1);
+  border: none;
 }
 .nutri-item.data-v-121ded9a {
   flex: 1;
@@ -210,9 +210,9 @@ to {
   transform: scale(0.8);
 }
 .nutri-divider.data-v-121ded9a {
-  width: 1px;
+  width: 2rpx;
   height: 60%;
-  background-color: rgba(255, 153, 0, 0.1);
+  background-color: #ffe5d6;
   align-self: center;
 }
 .section.data-v-121ded9a {
@@ -224,6 +224,32 @@ to {
   color: #1e293b;
   margin-bottom: 16rpx;
   display: block;
+}
+.detail-title-row.data-v-121ded9a {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+.detail-title-icon.data-v-121ded9a {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+}
+.detail-title-text.data-v-121ded9a {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+.allergen-title-row.data-v-121ded9a {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.allergen-icon.data-v-121ded9a {
+  width: 30rpx;
+  height: 30rpx;
+  flex-shrink: 0;
 }
 .description.data-v-121ded9a {
   font-size: 28rpx;
@@ -239,22 +265,21 @@ to {
 .flavor-tag.data-v-121ded9a {
   font-size: 26rpx;
   padding: 16rpx 32rpx;
-  background-color: #fff;
-  color: #475569;
+  background-color: #f2f2f2;
+  color: #666666;
   border-radius: 12rpx;
-  border: 1px solid #e2e8f0;
+  border: none;
   transition: all 0.2s;
 }
 .flavor-tag.active.data-v-121ded9a {
-  background-color: rgba(255, 153, 0, 0.1);
-  border-color: #FF9900;
-  color: #FF9900;
+  background-color: rgba(255, 140, 66, 0.14);
+  color: #FF8C42;
   font-weight: bold;
 }
 .popup-footer.data-v-121ded9a {
   padding: 24rpx 40rpx calc(40rpx + env(safe-area-inset-bottom));
   background-color: #fff;
-  border-top: 1px solid #f1f5f9;
+  border-top: none;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -265,7 +290,7 @@ to {
   width: 100%;
   height: 96rpx;
   border-radius: 48rpx;
-  background: #FF9900;
+  background: #FF8C42;
   color: white;
   font-size: 32rpx;
   font-weight: bold;
@@ -273,7 +298,7 @@ to {
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  box-shadow: 0 8rpx 24rpx rgba(255, 153, 0, 0.3);
+  box-shadow: 0 16rpx 40rpx rgba(255, 140, 66, 0.22);
 }
 .add-cart-btn.data-v-121ded9a:active {
   transform: scale(0.98);

@@ -168,16 +168,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User register(UserRegisterDTO userRegisterDTO) {
         log.info("用户注册：{}", userRegisterDTO.getUsername());
 
-        User existingUser = userMapper.selectByUsername(userRegisterDTO.getUsername());
+        String username = userRegisterDTO.getUsername() != null ? userRegisterDTO.getUsername().trim() : null;
+        String nickname = (userRegisterDTO.getNickname() != null && !userRegisterDTO.getNickname().trim().isEmpty())
+                ? userRegisterDTO.getNickname().trim()
+                : username;
+        String email = (userRegisterDTO.getEmail() != null && !userRegisterDTO.getEmail().trim().isEmpty())
+                ? userRegisterDTO.getEmail().trim()
+                : null;
+
+        User existingUser = userMapper.selectByUsername(username);
         if (existingUser != null) {
             throw new LoginFailedException("用户名已存在，请更换一个用户名");
         }
 
         User newUser = User.builder()
-                .username(userRegisterDTO.getUsername())
+                .username(username)
                 .password(userRegisterDTO.getPassword())
-                .email(userRegisterDTO.getEmail())
-                .name(userRegisterDTO.getNickname()) // 保存昵称到 name 字段
+                .email(email)
+                .name(nickname) // 兼容旧字段
+                .nickname(nickname) // 新字段同步保存，确保全链路可回读
                 .mealBudget(new BigDecimal("15.00")) // 默认预算
                 .createTime(LocalDateTime.now())
                 .build();

@@ -30,7 +30,7 @@
   background: #ffffff;
   border-radius: 24rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10rpx 28rpx rgba(45, 36, 31, 0.05);
 }
 .profile-header-section .avatar-upload.data-v-84cc0418 {
   position: relative;
@@ -74,18 +74,18 @@
 }
 .profile-header-section .profile-inputs .profile-input-item .input-label.data-v-84cc0418 {
   font-size: 26rpx;
-  color: #666;
+  color: #6e6159;
   width: 100rpx;
   flex-shrink: 0;
 }
 .profile-header-section .profile-inputs .profile-input-item .profile-input.data-v-84cc0418 {
   flex: 1;
   font-size: 28rpx;
-  color: #1a1a1a;
+  color: #2d241f;
 }
 .info-setting.data-v-84cc0418 {
   min-height: 100vh;
-  background: #f6f8f6;
+  background: #fffaf5;
   display: flex;
   flex-direction: column;
 }
@@ -93,27 +93,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx 32rpx;
-  background: #f6f8f6;
+  padding: calc(env(safe-area-inset-top) + 12rpx) 32rpx 18rpx;
+  background: rgba(255, 250, 245, 0.96);
+  -webkit-backdrop-filter: blur(20rpx);
+          backdrop-filter: blur(20rpx);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 .header .back-btn.data-v-84cc0418 {
-  width: 80rpx;
-  height: 80rpx;
+  width: 76rpx;
+  height: 76rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40rpx;
+  border-radius: 38rpx;
+  background: #ffffff;
+  box-shadow: 0 6rpx 18rpx rgba(45, 36, 31, 0.08);
+}
+.header .back-btn .back-arrow.data-v-84cc0418 {
+  color: #5c4f47;
+  font-size: 46rpx;
+  line-height: 1;
+  transform: translateX(-2rpx);
 }
 .header .title.data-v-84cc0418 {
   font-size: 36rpx;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #2d241f;
 }
 .header .save-btn.data-v-84cc0418 {
-  color: #13ec5b;
+  color: #ff8c42;
   font-size: 32rpx;
   font-weight: 600;
 }
@@ -121,7 +131,7 @@
   width: 80rpx;
 }
 .progress-section.data-v-84cc0418 {
-  padding: 0 32rpx 24rpx;
+  padding: 8rpx 32rpx 24rpx;
 }
 .progress-section .progress-info.data-v-84cc0418 {
   display: flex;
@@ -131,26 +141,26 @@
 .progress-section .progress-info .step-text.data-v-84cc0418 {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #2d241f;
 }
 .progress-section .progress-info .step-desc.data-v-84cc0418 {
   font-size: 24rpx;
-  color: #999;
+  color: #a4978f;
 }
 .progress-section .progress-bar.data-v-84cc0418 {
   height: 16rpx;
-  background: #e0e0e0;
+  background: #f1e9df;
   border-radius: 8rpx;
   overflow: hidden;
 }
 .progress-section .progress-bar .progress-fill.data-v-84cc0418 {
   height: 100%;
-  background: #13ec5b;
+  background: linear-gradient(90deg, #ffb17a 0%, #ff8c42 100%);
   transition: width 0.3s;
 }
 .content.data-v-84cc0418 {
   flex: 1;
-  padding: 0 24rpx 200rpx;
+  padding: 0 28rpx 200rpx;
 }
 .section.data-v-84cc0418 {
   margin-bottom: 32rpx;
@@ -158,13 +168,13 @@
 .section .section-title.data-v-84cc0418 {
   font-size: 32rpx;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #2d241f;
   margin-bottom: 8rpx;
   display: block;
 }
 .section .section-desc.data-v-84cc0418 {
   font-size: 26rpx;
-  color: #999;
+  color: #a4978f;
   margin-bottom: 20rpx;
   display: block;
 }
@@ -182,12 +192,12 @@
   gap: 12rpx;
   padding: 24rpx;
   border-radius: 12rpx;
-  color: #666;
+  color: #6e6159;
   transition: all 0.2s;
 }
 .gender-selector .gender-option.active.data-v-84cc0418 {
   background: #ffffff;
-  color: #1a1a1a;
+  color: #2d241f;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 .gender-selector .gender-option .gender-icon.data-v-84cc0418 {
@@ -198,7 +208,7 @@
   border-radius: 24rpx;
   padding: 28rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 }
 .card .card-header.data-v-84cc0418 {
   display: flex;
@@ -209,7 +219,7 @@
 .card .card-label.data-v-84cc0418 {
   font-size: 30rpx;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #2d241f;
 }
 .card .input-group.data-v-84cc0418 {
   display: flex;
@@ -226,7 +236,7 @@
 }
 .card .input-group .unit.data-v-84cc0418 {
   font-size: 24rpx;
-  color: #999;
+  color: #a4978f;
 }
 .stepper.data-v-84cc0418 {
   display: flex;
@@ -242,12 +252,12 @@
   align-items: center;
   justify-content: center;
   font-size: 40rpx;
-  color: #666;
+  color: #6e6159;
 }
 .stepper .stepper-btn.data-v-84cc0418:active {
-  background: rgba(19, 236, 91, 0.1);
-  border-color: #13ec5b;
-  color: #13ec5b;
+  background: rgba(255, 140, 66, 0.1);
+  border-color: #ff8c42;
+  color: #ff8c42;
 }
 .stepper .stepper-value.data-v-84cc0418 {
   font-size: 44rpx;
@@ -262,14 +272,14 @@
 }
 .activity-grid .activity-card.data-v-84cc0418 {
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 28rpx;
-  border: 4rpx solid transparent;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  border: 2rpx solid transparent;
   transition: all 0.2s;
 }
 .activity-grid .activity-card.active.data-v-84cc0418 {
-  border-color: #13ec5b;
-  background: rgba(19, 236, 91, 0.05);
+  border-color: rgba(255, 140, 66, 0.55);
+  background: rgba(255, 140, 66, 0.07);
 }
 .activity-grid .activity-card.active .activity-icon.data-v-84cc0418 {
   background: #ffffff;
@@ -277,7 +287,7 @@
 .activity-grid .activity-card .activity-icon.data-v-84cc0418 {
   width: 80rpx;
   height: 80rpx;
-  background: #f0f0f0;
+  background: #f8f2ea;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -293,7 +303,7 @@
 }
 .activity-grid .activity-card .activity-desc.data-v-84cc0418 {
   font-size: 22rpx;
-  color: #999;
+  color: #a4978f;
 }
 .goal-grid.data-v-84cc0418 {
   display: grid;
@@ -302,10 +312,10 @@
 }
 .goal-grid .goal-card.data-v-84cc0418 {
   background: #ffffff;
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   padding: 24rpx;
   text-align: center;
-  border: 4rpx solid transparent;
+  border: 2rpx solid transparent;
   height: 160rpx;
   display: flex;
   flex-direction: column;
@@ -313,8 +323,8 @@
   justify-content: center;
 }
 .goal-grid .goal-card.active.data-v-84cc0418 {
-  border-color: #13ec5b;
-  background: rgba(19, 236, 91, 0.05);
+  border-color: rgba(255, 140, 66, 0.55);
+  background: rgba(255, 140, 66, 0.07);
 }
 .goal-grid .goal-card .goal-icon.data-v-84cc0418 {
   font-size: 40rpx;
@@ -340,7 +350,7 @@
   right: -80rpx;
   width: 280rpx;
   height: 280rpx;
-  background: rgba(19, 236, 91, 0.2);
+  background: rgba(255, 140, 66, 0.2);
   border-radius: 50%;
   filter: blur(60rpx);
 }
@@ -359,9 +369,9 @@
   font-size: 20rpx;
   padding: 8rpx 16rpx;
   background: rgba(255, 255, 255, 0.1);
-  border: 1rpx solid rgba(19, 236, 91, 0.3);
+  border: 1rpx solid rgba(255, 140, 66, 0.3);
   border-radius: 8rpx;
-  color: #13ec5b;
+  color: #ff8c42;
 }
 .health-preview .bmi-section.data-v-84cc0418 {
   margin-bottom: 28rpx;
@@ -380,7 +390,7 @@
   font-weight: 700;
 }
 .health-preview .bmi-section .bmi-header .bmi-category.data-v-84cc0418 {
-  color: #13ec5b;
+  color: #ff8c42;
   margin-left: 8rpx;
 }
 .health-preview .bmi-section .bmi-bar.data-v-84cc0418 {
@@ -396,7 +406,7 @@
 }
 .health-preview .bmi-section .bmi-bar .bmi-segment.normal.data-v-84cc0418 {
   flex: 40;
-  background: #13ec5b;
+  background: #ff8c42;
 }
 .health-preview .bmi-section .bmi-bar .bmi-segment.overweight.data-v-84cc0418 {
   flex: 25;
@@ -441,7 +451,7 @@
   color: #666;
 }
 .health-preview .metrics-grid .metric.highlight .metric-label.data-v-84cc0418, .health-preview .metrics-grid .metric.highlight .metric-value.data-v-84cc0418 {
-  color: #13ec5b;
+  color: #ff8c42;
 }
 .tags-wrap.data-v-84cc0418 {
   display: flex;
@@ -459,8 +469,8 @@
   transition: all 0.2s;
 }
 .tags-wrap .tag.active.data-v-84cc0418 {
-  background: #13ec5b;
-  color: #1a1a1a;
+  background: #ff8c42;
+  color: #2d241f;
   font-weight: 600;
 }
 .tags-wrap .tag .check.data-v-84cc0418, .tags-wrap .tag .close.data-v-84cc0418 {
@@ -469,8 +479,8 @@
 .custom-input.data-v-84cc0418 {
   display: flex;
   align-items: center;
-  background: #f5f5f5;
-  border-radius: 20rpx;
+  background: #f8f2ea;
+  border-radius: 24rpx;
   padding: 0 24rpx;
   margin-top: 20rpx;
   height: 88rpx;
@@ -493,9 +503,9 @@
 .budget-section .budget-value.data-v-84cc0418 {
   display: flex;
   align-items: baseline;
-  background: #f5f5f5;
+  background: #f8f2ea;
   padding: 12rpx 24rpx;
-  border-radius: 12rpx;
+  border-radius: 16rpx;
 }
 .budget-section .budget-value .budget-num.data-v-84cc0418 {
   font-size: 44rpx;
@@ -503,14 +513,14 @@
 }
 .budget-section .budget-value .budget-unit.data-v-84cc0418 {
   font-size: 28rpx;
-  color: #999;
+  color: #a4978f;
   margin-left: 8rpx;
 }
 .budget-section .slider-labels.data-v-84cc0418 {
   display: flex;
   justify-content: space-between;
   font-size: 24rpx;
-  color: #999;
+  color: #a4978f;
   margin-top: 12rpx;
 }
 .footer.data-v-84cc0418 {
@@ -523,16 +533,16 @@
   background: rgba(255, 255, 255, 0.95);
   -webkit-backdrop-filter: blur(20rpx);
           backdrop-filter: blur(20rpx);
-  border-top: 1rpx solid #eee;
+  border-top: 1rpx solid #f3e9de;
 }
 .footer .primary-btn.data-v-84cc0418 {
   width: 100%;
   height: 100rpx;
-  background: #13ec5b;
-  border-radius: 20rpx;
+  background: #ff8c42;
+  border-radius: 24rpx;
   font-size: 34rpx;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #2d241f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -545,6 +555,6 @@
 .footer .skip-btn.data-v-84cc0418 {
   text-align: center;
   padding: 20rpx;
-  color: #999;
+  color: #a4978f;
   font-size: 28rpx;
 }

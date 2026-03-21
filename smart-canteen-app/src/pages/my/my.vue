@@ -30,7 +30,7 @@
        <!-- 本月消费卡片 -->
        <view class="card spend-card">
           <view class="card-header">
-             <view class="icon-bg orange"><text class="emoji">💳</text></view>
+             <view class="icon-bg orange"><image class="dashboard-icon" :src="spendingIcon" mode="aspectFit" /></view>
              <text class="card-title">本月消费</text>
           </view>
           <view class="spend-main">
@@ -43,7 +43,7 @@
        <!-- 今日饮食卡片 -->
        <view class="card diet-card">
           <view class="card-header">
-             <view class="icon-bg orange"><text class="emoji">📊</text></view>
+             <view class="icon-bg orange"><image class="dashboard-icon" :src="dietIcon" mode="aspectFit" /></view>
              <text class="card-title">今日饮食</text>
           </view>
           <view class="diet-list">
@@ -117,6 +117,8 @@ import {getUserInfoAPI} from '@/api/user'
 import {getOrderPageAPI, reOrderAPI, urgeOrderAPI} from '@/api/order'
 import {cleanCartAPI} from '@/api/cart'
 import type {OrderPageDTO, OrderVO} from '@/types/order'
+import spendingIcon from '@/assets/images/icons/icon_spending_new.png'
+import dietIcon from '@/assets/images/icons/icon_diet_new.png'
 
 const userStore = useUserStore()
 const profileStore = useUserProfileStore()
@@ -269,7 +271,7 @@ const handleLogout = () => {
 /* Tokens */
 $primary: #FF6B00;
 $bg-page: #F7F8FA;
-$text-main: #1A1A1A;
+$text-main: #333333;
 
 .page-container {
   min-height: 100vh;
@@ -281,10 +283,10 @@ $text-main: #1A1A1A;
 /* 1. Header Card */
 .user-card {
   background: white;
-  border-radius: 40rpx;
+  border-radius: 32rpx;
   padding: 40rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.03);
+  margin-bottom: 24rpx;
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
 
   .info-row {
      display: flex;
@@ -342,13 +344,13 @@ $text-main: #1A1A1A;
    .card {
       flex: 1;
       background: white;
-      border-radius: 40rpx;
+      border-radius: 32rpx;
       padding: 32rpx;
       min-height: 280rpx;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 8rpx 40rpx -4rpx rgba(0,0,0,0.05);
+      box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
       
       .card-header {
          display: flex;
@@ -356,9 +358,15 @@ $text-main: #1A1A1A;
          gap: 12rpx;
          
          .icon-bg {
-            display: flex; align-items: center; justify-content: center;
-            &.orange { color: #FF8A00; }
-            .emoji { font-size: 32rpx; }
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .dashboard-icon {
+              width: 34rpx;
+              height: 34rpx;
+              display: block;
+            }
          }
          .card-title { font-size: 28rpx; font-weight: 500; color: #666; }
       }
@@ -410,7 +418,7 @@ $text-main: #1A1A1A;
 
 /* 3. Common Functions */
 .logout-section {
-   margin-top: 40rpx;
+   margin-top: 32rpx;
    padding: 0 20rpx;
    
    .logout-btn {
@@ -428,9 +436,9 @@ $text-main: #1A1A1A;
 
 .functions-section {
    background: white;
-   border-radius: 40rpx;
+   border-radius: 32rpx;
    padding: 40rpx;
-   box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.03);
+   box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
    
    .section-title {
       font-size: 32rpx;
@@ -460,10 +468,10 @@ $text-main: #1A1A1A;
             
             .icon-img { width: 56rpx; height: 56rpx; }
             
-            &.orange-bg { background: linear-gradient(135deg, #FFF0E6 0%, #FFE0CC 100%); }
-            &.blue-bg { background: linear-gradient(135deg, #E6F7FF 0%, #CCEEFF 100%); }
-            &.pink-bg { background: linear-gradient(135deg, #FFF0F5 0%, #FFE0EB 100%); }
-            &.grey-bg { background: linear-gradient(135deg, #F5F5F5 0%, #EBEBEB 100%); }
+            &.orange-bg { background: #fff3e9; }
+            &.blue-bg { background: #edf4ff; }
+            &.pink-bg { background: #fff1f4; }
+            &.grey-bg { background: #f2f3f5; }
          }
          
          .func-name {

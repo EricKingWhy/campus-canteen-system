@@ -13,11 +13,13 @@ interface EmployeeItem {
   age: number | null
   gender: number | null
   pic: string
+  photoPath?: string
   status: number
   updateTime: string
 }
 
 const employeeList = ref<EmployeeItem[]>([])
+const baseURL = 'http://127.0.0.1:8081'
 const pageData = reactive({
   name: '',
   page: 1,
@@ -34,6 +36,7 @@ const genderText = (gender: number | string | null | undefined) => {
 
 const normalizeRecord = (record: any): EmployeeItem => {
   const account = record.account || record.username || ''
+  const photoPath = record.photoPath || record.pic || ''
   let gender = record.gender
   if ((gender === undefined || gender === null) && record.sex !== undefined) {
     gender = Number(record.sex)
@@ -41,9 +44,17 @@ const normalizeRecord = (record: any): EmployeeItem => {
   return {
     ...record,
     account,
+    pic: photoPath,
     gender: gender === undefined || gender === null ? 0 : Number(gender),
     age: record.age === undefined || record.age === null ? null : Number(record.age),
   }
+}
+
+const resolvePhoto = (photoPath?: string) => {
+  if (!photoPath) return '/src/assets/image/user_default.png'
+  if (photoPath.startsWith('data:image') || photoPath.startsWith('http')) return photoPath
+  if (photoPath.startsWith('/static/')) return baseURL + photoPath
+  return baseURL + '/static/upload/employee_photos/' + photoPath.replace(/^\/+/, '')
 }
 
 const init = async () => {
@@ -125,8 +136,7 @@ const deleteBtn = (row: EmployeeItem) => {
       </el-table-column>
       <el-table-column prop="pic" label="头像" align="center">
         <template #default="scope">
-          <img v-if="scope.row.pic" :src="scope.row.pic" alt="" />
-          <img v-else src="/src/assets/image/user_default.png" alt="" />
+          <img :src="resolvePhoto(scope.row.photoPath || scope.row.pic)" alt="" />
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态" align="center">

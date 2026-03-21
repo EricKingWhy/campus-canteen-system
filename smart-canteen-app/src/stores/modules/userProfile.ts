@@ -13,6 +13,16 @@ export const useUserProfileStore = defineStore('userProfile', () => {
     const profile = ref<UserProfileVO>({})
     const loading = ref(false)
     const isLoaded = ref(false)
+    const defaultAvatarPath = '/static/images/default_avatar.jpg'
+    const legacyDefaultAvatarKeys = ['photo-1599566150163-29194dcaad36', 'images.unsplash.com']
+
+    const normalizeAvatar = (avatar?: string) => {
+        const avatarValue = (avatar || '').trim()
+        if (!avatarValue) return defaultAvatarPath
+        if (legacyDefaultAvatarKeys.some((key) => avatarValue.includes(key))) return defaultAvatarPath
+        if (avatarValue.startsWith('http') && !avatarValue.includes('127.0.0.1') && !avatarValue.includes('localhost')) return defaultAvatarPath
+        return avatarValue
+    }
 
     // ====================== Getters (前端实时计算) ======================
 
@@ -100,7 +110,7 @@ export const useUserProfileStore = defineStore('userProfile', () => {
      * 展示用头像 (供我的页/首页使用)
      */
     const displayAvatar = computed(() => {
-        return profile.value.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop'
+        return normalizeAvatar(profile.value.avatar)
     })
 
     /**

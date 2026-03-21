@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Duration;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -290,6 +292,85 @@ public class AnalysisServiceImpl implements AnalysisService {
         result.put("trendData", trendData);
 
         return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getCostTrend(Long userId, int range) {
+        int safeRange = range <= 0 ? 7 : Math.min(range, 30);
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(safeRange - 1L);
+
+        List<Map<String, Object>> trendData = new ArrayList<>();
+        LocalDate loopDate = startDate;
+        while (!loopDate.isAfter(today)) {
+            BigDecimal daySpent = sumOrderAmount(userId, loopDate.atStartOfDay(), loopDate.atTime(LocalTime.MAX));
+
+            Map<String, Object> point = new HashMap<>();
+            point.put("date", loopDate.toString());
+            point.put("day", getDayName(loopDate.getDayOfWeek()));
+            point.put("amount", daySpent.doubleValue());
+            trendData.add(point);
+            loopDate = loopDate.plusDays(1);
+        }
+        return trendData;
+    }
+
+    @Override
+    public fun.cyhgraph.vo.WeeklyAnalysisVO getWeeklyAnalysis(Long userId) {
+        LocalDate today = LocalDate.now();
+        LocalDate weekStart = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate weekEnd = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        LocalDateTime startTime = weekStart.atStartOfDay();
+        LocalDateTime endTime = weekEnd.atTime(LocalTime.MAX);
+
+        Map<String, Object> maxSingleOrder = orderMapper.getWeeklyMaxSingleOrder(userId, startTime, endTime);
+        Map<String, Object> topDish = orderMapper.getWeeklyTopDish(userId, startTime, endTime);
+        List<LocalDateTime> orderTimes = orderMapper.getWeeklyOrderTimes(userId, startTime, endTime);
+
+        BigDecimal maxAmount = BigDecimal.ZERO;
+        String maxDishName = "暂无数据";
+        if (maxSingleOrder != null && !maxSingleOrder.isEmpty()) {
+            Object amount = maxSingleOrder.get("maxAmount");
+            Object dishName = maxSingleOrder.get("maxDishName");
+            if (amount != null) {
+                maxAmount = new BigDecimal(amount.toString()).setScale(2, RoundingMode.HALF_UP);
+            }
+            if (dishName != null && !dishName.toString().isBlank()) {
+                maxDishName = dishName.toString();
+            }
+        }
+
+        String topDishName = "暂无数据";
+        Integer topDishCount = 0;
+        if (topDish != null && !topDish.isEmpty()) {
+            Object dishName = topDish.get("topDishName");
+            Object dishCount = topDish.get("topDishCount");
+            if (dishName != null && !dishName.toString().isBlank()) {
+                topDishName = dishName.toString();
+            }
+            if (dishCount != null) {
+                topDishCount = Integer.parseInt(dishCount.toString());
+            }
+        }
+
+        double avgIntervalHours = 0.0;
+        if (orderTimes != null && orderTimes.size() > 1) {
+            long totalMinutes = 0L;
+            for (int i = 1; i < orderTimes.size(); i++) {
+                totalMinutes += Duration.between(orderTimes.get(i - 1), orderTimes.get(i)).toMinutes();
+            }
+            double avgMinutes = (double) totalMinutes / (orderTimes.size() - 1);
+            avgIntervalHours = BigDecimal.valueOf(avgMinutes / 60.0).setScale(1, RoundingMode.HALF_UP).doubleValue();
+        }
+
+        return fun.cyhgraph.vo.WeeklyAnalysisVO.builder()
+                .maxAmount(maxAmount)
+                .maxDishName(maxDishName)
+                .topDishName(topDishName)
+                .topDishCount(topDishCount)
+                .avgIntervalHours(avgIntervalHours)
+                .build();
     }
 
     private NutritionData calculateNutritionForDate(Long userId, LocalDate date) {
