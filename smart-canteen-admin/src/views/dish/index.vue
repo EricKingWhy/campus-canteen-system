@@ -5,6 +5,13 @@ import { getDishPageListAPI, updateDishStatusAPI, deleteDishesAPI, fixDishImages
 import { getCategoryPageListAPI } from '@/api/category'
 import { ElMessage, ElMessageBox, ElTable } from 'element-plus'
 import { useRouter } from 'vue-router'
+const baseUrl = 'http://127.0.0.1:8081'
+const resolveDishImage = (image?: string) => {
+  if (!image) return ''
+  if (image.startsWith('http')) return image
+  if (image.startsWith('/static/dish/')) return baseUrl + image
+  return `${baseUrl}/static/dish/${image.replace(/^\/+/, '')}`
+}
 
 // ------ .d.ts 属性类型接口 ------
 // 接收到不在接口中定义的属性的数据，ts会报错，但是类型推断错误不会妨碍接收，控制台还是能打印的
@@ -239,7 +246,7 @@ const fixImages = async () => {
       <el-table-column prop="image" label="图片" align="center">
         <template #default="scope">
           <!-- 【核心修复】支持相对路径图片显示 -->
-          <img v-if="scope.row.image" :src="scope.row.image.startsWith('http') ? scope.row.image : 'http://localhost:8081' + scope.row.image" alt="" style="width:50px;height:50px;border-radius:5px;object-fit:cover;" />
+          <img v-if="scope.row.image" :src="resolveDishImage(scope.row.image)" alt="" style="width:50px;height:50px;border-radius:5px;object-fit:cover;" />
           <img v-else src="/src/assets/image/user_default.png" alt="" style="width:50px;height:50px;border-radius:5px;" />
         </template>
       </el-table-column>

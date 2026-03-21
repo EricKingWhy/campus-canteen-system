@@ -6,6 +6,7 @@ const api_dish = require("../../api/dish.js");
 const api_setmeal = require("../../api/setmeal.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "detail",
   setup(__props) {
@@ -20,6 +21,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const dialogDish = common_vendor.ref();
     const flavors = common_vendor.ref([]);
     const chosedflavors = common_vendor.ref([]);
+    const resolveImageUrl = (image) => {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl + image;
+      return image;
+    };
     common_vendor.onLoad(async (options) => {
       await getCartList();
       await getCategoryData();
@@ -182,7 +192,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return common_vendor.e({
         a: dish.value
       }, dish.value ? common_vendor.e({
-        b: dish.value.pic,
+        b: resolveImageUrl(dish.value.pic || dish.value.image),
         c: common_vendor.t(dish.value.name),
         d: common_vendor.t(dish.value.description),
         e: dish.value.mainIngredients
@@ -232,7 +242,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, setmeal.value ? common_vendor.e({
         C: common_vendor.f(setmeal.value.setmealDishes, (item, k0, i0) => {
           return {
-            a: item.pic,
+            a: resolveImageUrl(item.pic || item.image),
             b: common_vendor.t(item.name),
             c: common_vendor.t(item.description),
             d: item.name
@@ -276,7 +286,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         S: common_vendor.o(($event) => clearCart()),
         T: common_vendor.f(cartList.value, (obj, index, i0) => {
           return common_vendor.e({
-            a: obj.pic,
+            a: resolveImageUrl(obj.pic || obj.image),
             b: common_vendor.t(obj.name),
             c: common_vendor.t(obj.amount),
             d: common_vendor.t(obj.dishFlavor),

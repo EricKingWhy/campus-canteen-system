@@ -39,6 +39,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     public void addDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
+        dish.setImage(normalizeImagePath(dish.getImage()));
         dishMapper.insert(dish);
         Long dishId = dish.getId();
         saveFlavors(dishDTO, dishId);
@@ -50,6 +51,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             return null;
         DishDTO dto = new DishDTO();
         BeanUtils.copyProperties(dish, dto);
+        dto.setImage(normalizeImagePath(dto.getImage()));
 
         // 查询口味
         LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
@@ -63,13 +65,16 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Dish::getStatus, 1);
         wrapper.last("limit 5");
-        return dishMapper.selectList(wrapper);
+        List<Dish> dishes = dishMapper.selectList(wrapper);
+        normalizeDishList(dishes);
+        return dishes;
     }
 
     @Transactional
     public void updateDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
+        dish.setImage(normalizeImagePath(dish.getImage()));
         dishMapper.updateById(dish);
 
         LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
@@ -100,6 +105,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         wrapper.orderByDesc(Dish::getUpdateTime);
 
         dishMapper.selectPage(page, wrapper);
+        normalizeDishList(page.getRecords());
         return new PageResult(page.getTotal(), page.getRecords());
     }
 
@@ -139,7 +145,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         }
         wrapper.eq(Dish::getStatus, 1); // 只查起售的
         wrapper.orderByAsc(Dish::getSort);
-        return dishMapper.selectList(wrapper);
+        List<Dish> dishes = dishMapper.selectList(wrapper);
+        normalizeDishList(dishes);
+        return dishes;
     }
 
     @Override
@@ -174,7 +182,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             applyAvoidTags(cold, dto.getAvoidTags());
             cold.orderByDesc(Dish::getSold);
             cold.last("LIMIT 6");
-            return dishMapper.selectList(cold);
+            List<Dish> dishes = dishMapper.selectList(cold);
+            normalizeDishList(dishes);
+            return dishes;
         }
 
         // ────── 第2层：时间与场景过滤 ──────
@@ -203,6 +213,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             log.info("[容错] 全量查询命中{}条", result.size());
         }
 
+        normalizeDishList(result);
         return result;
     }
 
@@ -431,5 +442,35 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 dishFlavorMapper.insert(flavor);
             });
         }
+    }
+
+    private void normalizeDishList(List<Dish> dishes) {
+        if (dishes == null || dishes.isEmpty()) {
+            return;
+        }
+        for (Dish dish : dishes) {
+            dish.setImage(normalizeImagePath(dish.getImage()));
+        }
+    }
+
+    private String normalizeImagePath(String image) {
+        if (image == null) {
+            return null;
+        }
+        String trimmed = image.trim();
+        if (trimmed.isEmpty()) {
+            return trimmed;
+        }
+        if (trimmed.startsWith("/static/dish/")) {
+            return trimmed;
+        }
+        int staticIdx = trimmed.indexOf("/static/dish/");
+        if (staticIdx >= 0) {
+            return trimmed.substring(staticIdx);
+        }
+        String normalized = trimmed.replace("\\", "/");
+        int slash = normalized.lastIndexOf('/');
+        String fileName = slash >= 0 ? normalized.substring(slash + 1) : normalized;
+        return "/static/dish/" + fileName;
     }
 }

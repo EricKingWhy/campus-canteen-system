@@ -47,7 +47,7 @@
           <!-- Dish List -->
           <view class="dish-item" v-for="(item, index) in dishList" :key="item.id" @click="openNutrition(item)">
             <!-- Dish Image -->
-            <image class="dish-img" :src="item.image" mode="aspectFill"></image>
+            <image class="dish-img" :src="resolveImageUrl(item.image || item.pic)" mode="aspectFill"></image>
             
             <view class="dish-info-col">
               <view>
@@ -207,6 +207,12 @@ export default {
     this.getCategoryList();
   },
   methods: {
+    resolveImageUrl(image) {
+      if (!image) return '/static/default_dish.png';
+      if (image.startsWith('http://') || image.startsWith('https://')) return image;
+      if (image.startsWith('/static/dish/')) return this.baseUrl + image;
+      return image;
+    },
     // 1. 获取分类
     getCategoryList() {
       console.log('Fetching Categories from:', this.baseUrl + '/user/category/list');

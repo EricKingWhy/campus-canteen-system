@@ -3,6 +3,7 @@ const common_vendor = require("../common/vendor.js");
 const api_favorite = require("../api/favorite.js");
 require("../utils/http.js");
 require("../stores/modules/user.js");
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "DishDetailPopup",
   props: {
@@ -13,6 +14,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   setup(__props, { emit: __emit }) {
     const props = __props;
     const emit = __emit;
+    const resolveImageUrl = (image) => {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl + image;
+      return image;
+    };
     const selectedFlavor = common_vendor.ref("");
     const isFavorite = common_vendor.ref(false);
     const favoriteLoading = common_vendor.ref(false);
@@ -97,7 +107,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         d: isFavorite.value ? 1 : "",
         e: common_vendor.o(toggleFavorite),
         f: favoriteLoading.value ? 1 : "",
-        g: _ctx.dish.image || _ctx.dish.pic,
+        g: resolveImageUrl(_ctx.dish.image || _ctx.dish.pic),
         h: common_vendor.t(_ctx.dish.name),
         i: common_vendor.t(_ctx.dish.price),
         j: common_vendor.t(_ctx.dish.calories || 350),

@@ -84,8 +84,7 @@ export const deleteDishesAPI = (ids: string) => {
  */
 export const fixDishImagesAPI = () => {
   return request({
-    url: '/dish/fix-images',
+    url: '/admin/dish/fix-images',
     method: 'get'
   })
 }
-

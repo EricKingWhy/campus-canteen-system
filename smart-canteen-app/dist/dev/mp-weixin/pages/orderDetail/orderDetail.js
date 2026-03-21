@@ -12,6 +12,15 @@ const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "orderDetail",
   setup(__props) {
+    const resolveImageUrl = (image) => {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl + image;
+      return image;
+    };
     const safeAreaTop = common_vendor.ref(44);
     const loading = common_vendor.ref(true);
     const orderId = common_vendor.ref("");
@@ -242,7 +251,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, orderDetailList.value.length > 0 ? {
         y: common_vendor.f(orderDetailList.value, (item, index, i0) => {
           return {
-            a: item.pic || item.image || "/static/default_dish.png",
+            a: resolveImageUrl(item.pic || item.image),
             b: common_vendor.t(item.name),
             c: common_vendor.t(item.dishFlavor || "正常"),
             d: common_vendor.t(item.amount),

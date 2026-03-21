@@ -23,7 +23,7 @@
           <view class="history_item_order_id">订单号：{{ item.number }}</view>
           <scroll-view class="scroll_container" scroll-x>
             <view v-for="(dish, index) in item.orderDetailList" :key="index" class="image_box">
-              <image :src="dish.pic" />
+              <image :src="resolveImageUrl(dish.pic || dish.image)" />
             </view>
           </scroll-view>
           <view class="history_item_order_time">{{ item.orderTime }}</view>
@@ -109,6 +109,15 @@ const statusList = [
 
 const activeIndex = ref(0)
 const historyOrders = ref<OrderVO[]>([])
+const baseUrl = 'http://127.0.0.1:8081'
+
+const resolveImageUrl = (image?: string) => {
+  if (!image) return '/static/default_dish.png'
+  if (image.startsWith('http://') || image.startsWith('https://')) return image
+  if (image.startsWith('/static/dish/')) return baseUrl + image
+  return image
+}
+
 const orderDTO = ref<OrderPageDTO>({
   page: 1,
   pageSize: 6,

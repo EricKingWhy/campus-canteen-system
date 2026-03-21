@@ -95,7 +95,7 @@
             </view>
             <view class="item-list" v-if="orderDetailList.length > 0">
               <view class="order-item" v-for="(item, index) in orderDetailList" :key="index">
-                <image class="item-img" :src="item.pic || item.image || '/static/default_dish.png'" mode="aspectFill"></image>
+                <image class="item-img" :src="resolveImageUrl(item.pic || item.image)" mode="aspectFill"></image>
                 <view class="item-info">
                   <text class="item-name">{{ item.name }}</text>
                   <text class="item-flavor">{{ item.dishFlavor || '正常' }}</text>
@@ -184,6 +184,12 @@ import { ref, computed } from 'vue'
 import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
 
 const baseUrl = 'http://127.0.0.1:8081'
+const resolveImageUrl = (image?: string) => {
+  if (!image) return '/static/default_dish.png'
+  if (image.startsWith('http://') || image.startsWith('https://')) return image
+  if (image.startsWith('/static/dish/')) return baseUrl + image
+  return image
+}
 const safeAreaTop = ref(44)
 const loading = ref(true)
 const orderId = ref('')

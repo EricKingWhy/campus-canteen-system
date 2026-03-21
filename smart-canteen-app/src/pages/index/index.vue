@@ -21,7 +21,7 @@
       <view class="section-title">????</view>
       <scroll-view class="recommend-scroll" scroll-x show-scrollbar="false">
         <view class="recommend-card" v-for="dish in recommendList" :key="dish.id" @tap="toDetail(dish)">
-          <image class="recommend-image" :src="dish.pic" mode="aspectFill" />
+          <image class="recommend-image" :src="resolveImageUrl(dish.pic || dish.image)" mode="aspectFill" />
           <view class="recommend-info">
             <view class="recommend-name ellipsis">{{ dish.name }}</view>
             <view class="recommend-stall">{{ dish.stallName || '????' }}</view>
@@ -58,7 +58,7 @@
                 hover-class="none"
                 :url="`/pages/detail/detail?${categoryList[activeIndex].sort < 20 ? 'dishId' : 'setmealId'}=${dish.id}`"
               >
-                <image class="image" :src="dish.pic"></image>
+                <image class="image" :src="resolveImageUrl(dish.pic || dish.image)"></image>
                 <view class="dishinfo">
                   <view class="name ellipsis">{{ dish.name }}</view>
                   <view class="detail">{{ dish.detail }}</view>
@@ -153,7 +153,7 @@
       <scroll-view class="card_order_list" scroll-y scroll-top="40rpx">
         <view class="type_item" v-for="(obj, index) in cartList" :key="index">
           <view class="dish_img">
-            <image mode="aspectFill" :src="obj.pic" class="dish_img_url"></image>
+            <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url"></image>
           </view>
           <view class="dish_info">
             <view class="dish_name"> {{ obj.name }} </view>
@@ -219,6 +219,14 @@ const chosedflavors = ref<string[]>([])
 const healthStats = ref<HealthStats | null>(null)
 const recommendList = ref<DishItem[]>([])
 const userName = ref('')
+const baseUrl = 'http://127.0.0.1:8081'
+
+const resolveImageUrl = (image?: string) => {
+  if (!image) return '/static/default_dish.png'
+  if (image.startsWith('http://') || image.startsWith('https://')) return image
+  if (image.startsWith('/static/dish/')) return baseUrl + image
+  return image
+}
 
 // ------ method ------
 const getCategoryData = async () => {

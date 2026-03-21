@@ -8,6 +8,7 @@ if (!Math) {
   DishDetailPopup();
 }
 const DishDetailPopup = () => "../../components/DishDetailPopup.js";
+const defaultDishImage = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "index_v2",
   setup(__props) {
@@ -64,6 +65,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const dishList = common_vendor.ref([]);
     const cartList = common_vendor.ref([]);
     const baseUrl = common_vendor.ref("http://127.0.0.1:8081");
+    const resolveDishImage = (image) => {
+      if (!image)
+        return defaultDishImage;
+      if (image.startsWith("http"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl.value + image;
+      return baseUrl.value + "/static/dish/" + image.replace(/^\/+/, "");
+    };
     const fetchTodayNutrition = () => {
       return new Promise((resolve) => {
         common_vendor.index.request({
@@ -267,24 +277,23 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     const getRealTimeWeather = () => {
       common_vendor.index.request({
-        url: "https://pw5u9wqmtr.re.qweatherapi.com/v7/weather/now?location=101180101&key=你的KEY填在这里",
+        url: "https://pw5u9wqmtr.re.qweatherapi.com/v7/weather/now?location=101180101&key=5af48e8eef184bd2b780c7e570b06426",
         method: "GET",
         success: (res) => {
-          console.log("天气API返回:", res);
           if (res.data && res.data.code === "200" && res.data.now) {
             temperature.value = res.data.now.temp;
             weatherText.value = res.data.now.text;
-          } else {
-            console.error("天气API返回非预期格式:", res.data);
           }
         },
         fail: (err) => {
-          console.error("天气API失败:", err);
+          console.error("天气API请求失败", err);
         }
       });
     };
-    common_vendor.onLoad(async () => {
+    common_vendor.onMounted(() => {
       getRealTimeWeather();
+    });
+    common_vendor.onLoad(async () => {
       await profileStore.fetchProfile();
       await fetchTodayNutrition();
       getRecommendData();
@@ -314,7 +323,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         j: common_vendor.t(((_b = common_vendor.unref(profileStore).suggestIntake) == null ? void 0 : _b.toFixed(0)) || "--"),
         k: common_vendor.f(recommendList.value, (item, index, i0) => {
           return {
-            a: item.image,
+            a: resolveDishImage(item.image),
             b: common_vendor.t(item.name),
             c: common_vendor.f(item.tags, (tag, k1, i1) => {
               return {
@@ -337,7 +346,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           }, {
             b: index === 1,
             c: index === 2,
-            e: dish.image && dish.image.startsWith("http") ? dish.image : baseUrl.value + dish.image,
+            e: resolveDishImage(dish.image),
             f: common_vendor.t(dish.name),
             g: common_vendor.t(dish.detail || "暂无描述"),
             h: common_vendor.t(dish.sold || 0),

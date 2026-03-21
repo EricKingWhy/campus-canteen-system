@@ -8,6 +8,7 @@ if (!Math) {
   pushMsg();
 }
 const pushMsg = () => "../../components/message/pushMsg.js";
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "history",
   setup(__props) {
@@ -62,6 +63,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     ];
     const activeIndex = common_vendor.ref(0);
     const historyOrders = common_vendor.ref([]);
+    const resolveImageUrl = (image) => {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl + image;
+      return image;
+    };
     const orderDTO = common_vendor.ref({
       page: 1,
       pageSize: 6
@@ -142,7 +152,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             a: common_vendor.t(item.number),
             b: common_vendor.f(item.orderDetailList, (dish, index2, i1) => {
               return {
-                a: dish.pic,
+                a: resolveImageUrl(dish.pic || dish.image),
                 b: index2
               };
             }),

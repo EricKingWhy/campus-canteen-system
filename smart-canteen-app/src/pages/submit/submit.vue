@@ -69,7 +69,7 @@
       <view class="section-padding">
         <view class="glass-card list-card">
           <view class="cart-item" v-for="(item, index) in cartList" :key="index">
-            <image class="item-img" :src="item.image || item.pic" mode="aspectFill"></image>
+            <image class="item-img" :src="resolveImageUrl(item.image || item.pic)" mode="aspectFill"></image>
             <view class="item-info">
               <view class="info-top">
                 <text class="item-name">{{ item.name }}</text>
@@ -140,6 +140,12 @@ const tablewareNumber = ref(1)
 const selectedTimeStr = ref('立即取餐')
 const timeSlots = ref<string[]>([])
 const baseUrl = 'http://127.0.0.1:8081'
+const resolveImageUrl = (image?: string) => {
+  if (!image) return '/static/default_dish.png'
+  if (image.startsWith('http://') || image.startsWith('https://')) return image
+  if (image.startsWith('/static/dish/')) return baseUrl + image
+  return image
+}
 const safeAreaTop = ref(40)
 
 const pickupLocation = computed(() => {

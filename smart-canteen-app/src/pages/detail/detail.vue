@@ -2,7 +2,7 @@
   <!-- 菜品详情，包括口味 -->
   <view class="dish" v-if="dish">
     <view class="title">菜品详情</view>
-    <image class="image" :src="dish.pic" mode="aspectFill" />
+    <image class="image" :src="resolveImageUrl(dish.pic || dish.image)" mode="aspectFill" />
     <view class="dishinfo">
       <view class="name ellipsis">{{ dish.name }}</view>
       <view class="detail ellipsis">{{ dish.description }}</view>
@@ -62,7 +62,7 @@
     <view class="title">套餐详情</view>
     <!-- 菜品列表 -->
     <view v-for="item in setmeal.setmealDishes" :key="item.name" class="setmeal_item">
-      <image :src="item.pic" />
+      <image :src="resolveImageUrl(item.pic || item.image)" />
       <view class="dishinfo">
         <view class="name ellipsis">{{ item.name }}</view>
         <view class="detail ellipsis">{{ item.description }}</view>
@@ -146,7 +146,7 @@
       <scroll-view class="card_order_list" scroll-y scroll-top="40rpx">
         <view class="type_item" v-for="(obj, index) in cartList" :key="index">
           <view class="dish_img">
-            <image mode="aspectFill" :src="obj.pic" class="dish_img_url"></image>
+            <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url"></image>
           </view>
           <view class="dish_info">
             <view class="dish_name"> {{ obj.name }} </view>
@@ -204,6 +204,14 @@ const dialogDish = ref<DishToCartItem>()
 const flavors = ref<FlavorItem[]>([])
 // 已选择的口味列表
 const chosedflavors = ref<string[]>([])
+const baseUrl = 'http://127.0.0.1:8081'
+
+const resolveImageUrl = (image?: string) => {
+  if (!image) return '/static/default_dish.png'
+  if (image.startsWith('http://') || image.startsWith('https://')) return image
+  if (image.startsWith('/static/dish/')) return baseUrl + image
+  return image
+}
 
 // ------ method ------
 onLoad(async (options) => {

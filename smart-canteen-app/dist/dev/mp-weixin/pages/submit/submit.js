@@ -18,6 +18,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const tablewareNumber = common_vendor.ref(1);
     const selectedTimeStr = common_vendor.ref("立即取餐");
     const timeSlots = common_vendor.ref([]);
+    const resolveImageUrl = (image) => {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl + image;
+      return image;
+    };
     const safeAreaTop = common_vendor.ref(40);
     const pickupLocation = common_vendor.computed(() => {
       return diningType.value === 1 ? "智能食堂一楼取餐口" : "智能食堂二楼取餐口(打包)";
@@ -167,7 +176,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         r: common_vendor.o(onTimeChange),
         s: common_vendor.f(cartList.value, (item, index, i0) => {
           return {
-            a: item.image || item.pic,
+            a: resolveImageUrl(item.image || item.pic),
             b: common_vendor.t(item.name),
             c: common_vendor.t(item.amount),
             d: common_vendor.t(item.dishFlavor || "正常"),

@@ -13,7 +13,7 @@
 
       <!-- Image Header -->
       <view class="image-header">
-        <image class="dish-image" :src="dish.image || dish.pic" mode="aspectFill"></image>
+        <image class="dish-image" :src="resolveImageUrl(dish.image || dish.pic)" mode="aspectFill"></image>
         <view class="image-overlay"></view>
       </view>
 
@@ -128,6 +128,14 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['close', 'addToCart']);
+const baseUrl = 'http://127.0.0.1:8081';
+
+const resolveImageUrl = (image?: string) => {
+  if (!image) return '/static/default_dish.png';
+  if (image.startsWith('http://') || image.startsWith('https://')) return image;
+  if (image.startsWith('/static/dish/')) return baseUrl + image;
+  return image;
+};
 
 const selectedFlavor = ref('');
 

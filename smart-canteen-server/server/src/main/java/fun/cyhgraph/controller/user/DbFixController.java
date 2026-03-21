@@ -63,7 +63,7 @@ public class DbFixController {
             dish.setName("招牌红烧肉");
             dish.setCategoryId(catId);
             dish.setPrice(new BigDecimal("38.00"));
-            dish.setImage("https://replicate.delivery/pbxt/J1Yq5X8Xj5X8Xj5X8Xj5X8Xj5X8Xj5X8/out-0.png");
+            dish.setImage("/static/dish/braised_pork.jpg");
             dish.setDescription("肥而不腻，入口即化，食堂一绝");
             dish.setStatus(1);
             dish.setCreateTime(LocalDateTime.now());

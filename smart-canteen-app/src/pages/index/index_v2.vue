@@ -65,7 +65,7 @@
         <view class="rec-card" v-for="(item, index) in recommendList" :key="index" @click="openDishDetail(item)">
           <image
             class="rec-img"
-            :src="item.image && item.image.startsWith('http') ? item.image : (item.image ? (baseUrl + item.image) : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c')"
+            :src="resolveDishImage(item.image)"
             mode="aspectFill"
           />
           <view class="rec-info">
@@ -102,7 +102,7 @@
            </view>
            
            <!-- 【核心修复】图片路径处理: 以前端传入的 baseUrl 为前缀 (如果不是http开头) -->
-           <image class="dish-img" :src="dish.image && dish.image.startsWith('http') ? dish.image : (baseUrl + dish.image)" mode="aspectFill"/>
+           <image class="dish-img" :src="resolveDishImage(dish.image)" mode="aspectFill"/>
            <view class="dish-content">
               <text class="dish-name">{{ dish.name }}</text>
               <text class="dish-desc">{{ dish.detail || '暂无描述' }}</text>
@@ -239,6 +239,14 @@ const dishList = ref<DishItem[]>([])
 // Simple Cart Logic - 改为从后端同步
 const cartList = ref<any[]>([])
 const baseUrl = ref('http://127.0.0.1:8081') // 后端地点点址 (Ref for template binding)
+const defaultDishImage = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
+
+const resolveDishImage = (image?: string) => {
+   if (!image) return defaultDishImage
+   if (image.startsWith('http')) return image
+   if (image.startsWith('/static/dish/')) return baseUrl.value + image
+   return baseUrl.value + '/static/dish/' + image.replace(/^\/+/, '')
+}
 
 const fetchTodayNutrition = () => {
    return new Promise<void>((resolve) => {

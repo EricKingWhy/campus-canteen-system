@@ -11,6 +11,7 @@ if (!Math) {
   Navbar();
 }
 const Navbar = () => "./components/Navbar.js";
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "order",
   setup(__props) {
@@ -29,6 +30,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const dialogDish = common_vendor.ref();
     const flavors = common_vendor.ref([]);
     const chosedflavors = common_vendor.ref([]);
+    const resolveImageUrl = (image) => {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return baseUrl + image;
+      return image;
+    };
     const getCategoryData = async () => {
       const res = await api_category.getCategoryAPI();
       console.log(res);
@@ -245,7 +255,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         e: common_vendor.f(dishList.value, (dish, k0, i0) => {
           return common_vendor.e({
-            a: dish.pic,
+            a: resolveImageUrl(dish.pic || dish.image),
             b: common_vendor.t(dish.name),
             c: common_vendor.t(dish.detail),
             d: common_vendor.t(dish.price),
@@ -294,7 +304,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         o: common_vendor.o(($event) => clearCart()),
         p: common_vendor.f(cartList.value, (obj, index, i0) => {
           return common_vendor.e({
-            a: obj.pic,
+            a: resolveImageUrl(obj.pic || obj.image),
             b: common_vendor.t(obj.name),
             c: common_vendor.t(obj.amount),
             d: common_vendor.t(obj.dishFlavor),

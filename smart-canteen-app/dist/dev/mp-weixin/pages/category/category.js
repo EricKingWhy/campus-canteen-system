@@ -44,6 +44,15 @@ const _sfc_main = {
     this.getCategoryList();
   },
   methods: {
+    resolveImageUrl(image) {
+      if (!image)
+        return "/static/default_dish.png";
+      if (image.startsWith("http://") || image.startsWith("https://"))
+        return image;
+      if (image.startsWith("/static/dish/"))
+        return this.baseUrl + image;
+      return image;
+    },
     // 1. 获取分类
     getCategoryList() {
       console.log("Fetching Categories from:", this.baseUrl + "/user/category/list");
@@ -290,7 +299,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     g: $data.activeCategoryIndex === -1 && $data.searchKeyword,
     i: common_vendor.f($data.dishList, (item, index, i0) => {
       return common_vendor.e({
-        a: item.image,
+        a: $options.resolveImageUrl(item.image || item.pic),
         b: common_vendor.t(item.name),
         c: common_vendor.t(item.description || "暂无描述"),
         d: item.calories
