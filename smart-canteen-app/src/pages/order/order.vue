@@ -44,7 +44,7 @@
             hover-class="none"
             :url="`/pages/detail/detail?${categoryList[activeIndex].sort < 20 ? 'dishId' : 'setmealId'}=${dish.id}`"
           >
-            <image class="image" :src="resolveImageUrl(dish.pic || dish.image)"></image>
+            <image class="image" :src="resolveImageUrl(dish.pic || dish.image)" :lazy-load="true"></image>
             <view class="dishinfo">
               <view class="name ellipsis">{{ dish.name }}</view>
               <view class="detail">{{ dish.detail }}</view>
@@ -91,8 +91,8 @@
           <view>{{ flavor.name }}</view>
           <view
             :class="{flavorItem: true, active: chosedflavors.findIndex((it) => item === it) !== -1}"
-            v-for="(item, index) in JSON.parse(flavor.list)"
-            :key="index"
+            v-for="item in JSON.parse(flavor.list)"
+            :key="`${flavor.name}-${item}`"
             @tap="chooseFlavor(JSON.parse(flavor.list), item)"
           >
             {{ item }}
@@ -135,9 +135,9 @@
         </view>
       </view>
       <scroll-view class="card_order_list" scroll-y scroll-top="40rpx">
-        <view class="type_item" v-for="(obj, index) in cartList" :key="index">
+        <view class="type_item" v-for="obj in cartList" :key="`${obj.dishId || obj.setmealId || obj.id || obj.name}-${obj.dishFlavor || ''}`">
           <view class="dish_img">
-            <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url"></image>
+            <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url" :lazy-load="true"></image>
           </view>
           <view class="dish_info">
             <view class="dish_name"> {{ obj.name }} </view>
@@ -210,6 +210,7 @@ const searchPlaceholderText = computed(() => {
   if (isSearchFocused.value) return ''
   return `搜索想吃的菜品 (如：${searchPlaceholders[currentPlaceholderIndex.value]})`
 })
+const hasLoadedOnce = ref(false)
 // 购物车列表
 const cartList = ref<CartItem[]>([])
 const CartAllNumber = ref(0)
@@ -498,16 +499,18 @@ const goBack = () => {
 
 // 页面加载
 onLoad(async () => {
-  const res = await getStatusAPI()
-  console.log('店铺状态---------', res)
-  status.value = res.data === 1 ? true : false
-  await getCategoryData()
-  await getDishOrSetmealList(0) // 默认加载第一个分类下的菜品列表
-  await getCartList() // 获取购物车列表(一开始为)
+  const [statusRes] = await Promise.all([getStatusAPI(), getCategoryData()])
+  console.log('店铺状态---------', statusRes)
+  status.value = statusRes.data === 1
+  await Promise.all([
+    getDishOrSetmealList(0), // 默认加载第一个分类下的菜品列表
+    getCartList(), // 获取购物车列表(一开始为)
+  ])
+  hasLoadedOnce.value = true
 })
 onShow(async () => {
-  await getCategoryData()
-  await getCartList()
+  if (!hasLoadedOnce.value) return
+  await Promise.all([getCategoryData(), getCartList()])
 })
 
 onMounted(() => {

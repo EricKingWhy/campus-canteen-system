@@ -94,8 +94,8 @@
               <text class="item-count">共 {{ orderDetailList.length }} 件</text>
             </view>
             <view class="item-list" v-if="orderDetailList.length > 0">
-              <view class="order-item" v-for="(item, index) in orderDetailList" :key="index">
-                <image class="item-img" :src="resolveImageUrl(item.pic || item.image)" mode="aspectFill"></image>
+              <view class="order-item" v-for="item in orderDetailList" :key="item.id || `${item.name}-${item.number}`">
+                <image class="item-img" :src="resolveImageUrl(item.pic || item.image)" mode="aspectFill" :lazy-load="true"></image>
                 <view class="item-info">
                   <text class="item-name">{{ item.name }}</text>
                   <text class="item-flavor">{{ item.dishFlavor || '正常' }}</text>

@@ -100,9 +100,9 @@
           <view class="section" v-if="smartFlavors.length > 0">
              <text class="section-title">选择口味</text>
              <view class="flavor-list">
-               <view 
-                 v-for="(flavor, index) in smartFlavors" 
-                 :key="index" 
+               <view
+                 v-for="flavor in smartFlavors"
+                 :key="flavor"
                  class="flavor-tag"
                  :class="{ active: selectedFlavor === flavor }"
                  @click="selectedFlavor = flavor"
@@ -188,11 +188,11 @@ const toggleFavorite = async () => {
 };
 
 // 弹窗打开或菜品变化时检查收藏状态
-watch(() => [props.visible, props.dish], ([newVisible, newDish]) => {
-  if (newVisible && newDish?.id) {
+watch(() => [props.visible, props.dish?.id], ([newVisible, dishId]) => {
+  if (newVisible && dishId) {
     checkFavorite();
   }
-}, { deep: true });
+});
 
 // Smart Flavor Logic
 const smartFlavors = computed(() => {

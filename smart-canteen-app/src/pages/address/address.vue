@@ -3,7 +3,7 @@
     <view class="address" :style="{height: `calc(100% - 136rpx - ${statusBarHeight} - 44px - 20rpx)`}">
       <view v-if="addressList && addressList.length > 0" class="address_content">
         <!-- address列表 -->
-        <view class="address_liests" v-for="(item, index) in addressList" :key="index">
+        <view class="address_liests" v-for="(item, index) in addressList" :key="item.id || `${item.phone}-${index}`">
           <!-- 上部 -->
           <view class="list_item_top" @click="choseAddress(index, item)">
             <!-- 左边 -->

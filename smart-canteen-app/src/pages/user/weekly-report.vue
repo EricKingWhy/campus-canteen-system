@@ -45,7 +45,7 @@
           <text class="trend-icon">📅</text>
         </view>
         <view class="bar-chart">
-          <view class="bar-col" v-for="(day, idx) in weekDays" :key="idx">
+          <view class="bar-col" v-for="day in weekDays" :key="day.label">
             <view class="bar-fill" :style="{ height: day.percent + '%' }" :class="{ highlight: day.isMax }">
               <text v-if="day.isMax" class="bar-tooltip">¥{{ day.amount }}</text>
             </view>

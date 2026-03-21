@@ -68,8 +68,8 @@
       <!-- 4. Order List -->
       <view class="section-padding">
         <view class="glass-card list-card">
-          <view class="cart-item" v-for="(item, index) in cartList" :key="index">
-            <image class="item-img" :src="resolveImageUrl(item.image || item.pic)" mode="aspectFill"></image>
+          <view class="cart-item" v-for="item in cartList" :key="`${item.dishId || item.setmealId || item.id || item.name}-${item.dishFlavor || ''}`">
+            <image class="item-img" :src="resolveImageUrl(item.image || item.pic)" mode="aspectFill" :lazy-load="true"></image>
             <view class="item-info">
               <view class="info-top">
                 <text class="item-name">{{ item.name }}</text>

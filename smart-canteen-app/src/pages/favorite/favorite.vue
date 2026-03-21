@@ -33,6 +33,7 @@
           class="dish-img" 
           :src="resolveImageUrl(dish.image)" 
           mode="aspectFill"
+          :lazy-load="true"
         />
         <view class="dish-info">
           <text class="dish-name">{{ dish.name }}</text>

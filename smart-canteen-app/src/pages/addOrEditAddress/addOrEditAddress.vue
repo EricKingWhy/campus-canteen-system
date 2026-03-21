@@ -12,7 +12,7 @@
             :maxlength="5"
           />
           <view class="radio">
-            <view class="radio-item" v-for="(item, index) in items" :key="index" @click="sexChangeHandle(item.value)">
+            <view class="radio-item" v-for="item in items" :key="item.value" @click="sexChangeHandle(item.value)">
               <image v-if="item.value != form.gender" class="radio-img" src="../../static/icon/icon-radio.png"></image>
               <image v-else class="radio-img" src="../../static/icon/icon-radio-selected.png"></image>
               <text class="radio-label">{{ item.name }}</text>

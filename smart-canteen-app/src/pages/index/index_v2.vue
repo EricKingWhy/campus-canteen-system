@@ -65,11 +65,12 @@
         <text class="subtitle">根据您的健康画像定制</text>
       </view>
       <scroll-view class="recommend-scroll" scroll-x show-scrollbar="false">
-        <view class="rec-card" v-for="(item, index) in recommendList" :key="index" @click="openDishDetail(item)">
+        <view class="rec-card" v-for="item in recommendList" :key="item.id || item.name" @click="openDishDetail(item)">
           <image
             class="rec-img"
             :src="resolveDishImage(item.image)"
             mode="aspectFill"
+            :lazy-load="true"
           />
           <view class="rec-info">
             <view class="rec-name">{{ item.name }}</view>
@@ -108,7 +109,7 @@
            </view>
            
            <!-- 【核心修复】图片路径处理: 以前端传入的 baseUrl 为前缀 (如果不是http开头) -->
-           <image class="dish-img" :src="resolveDishImage(dish.image)" mode="aspectFill"/>
+           <image class="dish-img" :src="resolveDishImage(dish.image)" mode="aspectFill" :lazy-load="true"/>
            <view class="dish-content">
               <text class="dish-name">{{ dish.name }}</text>
               <text class="dish-desc">{{ dish.detail || '暂无描述' }}</text>
@@ -150,7 +151,7 @@
              <text class="clear-btn" @click="clearCart">清</text>
           </view>
           <scroll-view scroll-y class="popup-list">
-             <view class="cart-item" v-for="(item, idx) in cartList" :key="idx">
+             <view class="cart-item" v-for="item in cartList" :key="`${item.dishId || item.setmealId || item.id || item.name}-${item.dishFlavor || ''}`">
                 <text class="name">{{ item.name }}</text>
                 <view class="ops">
                    <text class="btn" @click="subCart(item)">-</text>
@@ -187,6 +188,7 @@ import type { DishItem, CartItem } from '@/types/dish'
 const userStore = useUserStore()
 const profileStore = useUserProfileStore()
 const openCartList = ref(false)
+const hasLoadedOnce = ref(false)
 
 const temperature = ref('--')
 const weatherText = ref('--')
@@ -508,9 +510,11 @@ onLoad(async () => {
    getRecommendData()                   // 然后调智选6道菜
    getDishData()                        // 获取热销榜
    getCartList()                        // 页面加载时获取购物车
+   hasLoadedOnce.value = true
 })
 
 onShow(async () => {
+   if (!hasLoadedOnce.value) return
    console.log('=== Index_v2 PAGE onShow ===')
    await profileStore.fetchProfile()    // 同步用户画像数据
    await fetchTodayNutrition()          // 刷新营养数据

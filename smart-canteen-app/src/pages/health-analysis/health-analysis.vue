@@ -158,7 +158,7 @@
             <view class="chart-area">
               <view 
                 v-for="(point, index) in weeklyHealthTrend" 
-                :key="index"
+                :key="point.day || index"
                 class="chart-point"
                 :style="{ height: point.heightPct + '%', left: (index * 14.28) + '%' }"
               ></view>
@@ -214,7 +214,7 @@
           <view class="bar-chart" v-if="selectedRange === '7days' && weeklyCostTrend && weeklyCostTrend.length > 0">
             <view 
               v-for="(item, index) in weeklyCostTrend" 
-              :key="index"
+              :key="item.date || `${item.day}-${index}`"
               class="bar-item"
               :class="{ highlight: item.isToday }"
             >
@@ -237,7 +237,7 @@
             <view class="area-x-axis">
               <text
                 v-for="(item, index) in monthlyCostTrend"
-                :key="`x-${index}`"
+                :key="item.date"
                 class="area-x-label"
                 :class="{ today: item.isToday }"
               >
@@ -289,7 +289,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserProfileStore } from '@/stores/modules/userProfile'
 import promptIcon from '@/assets/images/icons/prompt.png'
@@ -357,7 +357,7 @@ const donutStyle = computed(() => {
 const nutritionSuggestion = ref('')
 
 // Health trend
-const weeklyHealthTrend = ref<{ value: number; heightPct: number }[]>([])
+const weeklyHealthTrend = ref<{ value: number; heightPct: number; day?: string }[]>([])
 const trendChange = ref('')
 const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 
@@ -386,6 +386,7 @@ const monthlyCostTrend = ref<TrendPoint[]>([])
 const selectedAreaIndex = ref(0)
 const areaCanvasRect = ref<{ left: number; width: number } | null>(null)
 const categoryBreakdown = ref<{ name: string; amount: number; color: string }[]>([])
+const categoryColorPalette = ['#4A90E2', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#5AC8FA']
 const topCategory = computed(() => {
   if (!categoryBreakdown.value.length) return '--'
   return categoryBreakdown.value.reduce((a, b) => a.amount > b.amount ? a : b).name
@@ -703,14 +704,12 @@ const fetchCostSummary = async () => {
       const catArr = data.byCategory
       console.log('===== 构成原始数据 =====', JSON.stringify(catArr))
       if (catArr && Array.isArray(catArr) && catArr.length > 0) {
-        const colorPalette = ['#4A90E2', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#5AC8FA']
-        categoryBreakdown.value = JSON.parse(JSON.stringify(
+        categoryBreakdown.value =
           catArr.map((c: any, index: number) => ({
             name: c.name || c.categoryName || '其他',
             amount: parseFloat(c.amount || c.value || 0),
-            color: c.color || colorPalette[index % colorPalette.length]
+            color: c.color || categoryColorPalette[index % categoryColorPalette.length]
           }))
-        ))
         console.log('===== 构成组装结果 =====', JSON.stringify(categoryBreakdown.value))
       } else {
         categoryBreakdown.value = []
@@ -748,10 +747,6 @@ watch(selectedAreaIndex, () => {
 
 // ============ Lifecycle ============
 onShow(() => {
-  loadAllData()
-})
-
-onMounted(() => {
   loadAllData()
 })
 </script>

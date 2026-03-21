@@ -2,7 +2,7 @@
   <view class="history_top">
     <view
       v-for="(item, index) in statusOptions"
-      :key="index"
+      :key="item.status"
       class="history_title"
       :class="{active: index === activeIndex}"
       @tap="getOrderPage(index, '更改状态')"
@@ -23,8 +23,8 @@
     <view
       v-else
       class="history_item"
-      v-for="(item, index) in historyOrders"
-      :key="index"
+      v-for="item in historyOrders"
+      :key="item.id || item.number"
       @click="toOrderDetail(item.id as number)"
     >
       <view class="item_info_box">
@@ -32,11 +32,11 @@
           <view class="history_item_order_id">订单号：{{ item.number }}</view>
           <view class="dish_list">
             <view
-              v-for="(dish, dishIndex) in item.orderDetailList"
-              :key="dishIndex"
+              v-for="dish in item.orderDetailList"
+              :key="dish.id || `${dish.name}-${dish.number}`"
               class="dish-item"
             >
-              <image :src="resolveImageUrl(dish.pic || dish.image)" mode="aspectFill" class="dish-img" />
+              <image :src="resolveImageUrl(dish.pic || dish.image)" mode="aspectFill" class="dish-img" :lazy-load="true" />
               <view class="dish-info">
                 <text class="dish-name">{{ dish.name || '菜品' }}</text>
                 <text class="dish-num">x{{ dish.number || 1 }}</text>

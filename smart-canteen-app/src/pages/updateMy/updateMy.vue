@@ -8,7 +8,7 @@
         <view class="text">点击上传头像</view>
       </view>
       <view class="radio">
-        <view class="radio-item" v-for="(item, index) in items" :key="index" @click="genderChange(item.value)">
+        <view class="radio-item" v-for="item in items" :key="item.value" @click="genderChange(item.value)">
           <image v-if="item.value != user.gender" class="radio-img" src="../../static/icon/icon-radio.png"></image>
           <image v-else class="radio-img" src="../../static/icon/icon-radio-selected.png"></image>
           <text class="radio-label">{{ item.name }}</text>

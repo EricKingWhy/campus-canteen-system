@@ -107,8 +107,8 @@
           <view>{{ flavor.name }}</view>
           <view
             :class="{flavorItem: true, active: chosedflavors.findIndex((it) => item === it) !== -1}"
-            v-for="(item, index) in JSON.parse(flavor.list)"
-            :key="index"
+            v-for="item in JSON.parse(flavor.list)"
+            :key="`${flavor.name}-${item}`"
             @tap="chooseFlavor(JSON.parse(flavor.list), item)"
           >
             {{ item }}
@@ -151,7 +151,7 @@
         </view>
       </view>
       <scroll-view class="card_order_list" scroll-y scroll-top="40rpx">
-        <view class="type_item" v-for="(obj, index) in cartList" :key="index">
+        <view class="type_item" v-for="obj in cartList" :key="`${obj.dishId || obj.setmealId || obj.id || obj.name}-${obj.dishFlavor || ''}`">
           <view class="dish_img">
             <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url"></image>
           </view>

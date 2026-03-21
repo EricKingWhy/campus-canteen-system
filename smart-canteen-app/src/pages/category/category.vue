@@ -50,7 +50,7 @@
           <!-- Dish List -->
           <view class="dish-item" v-for="(item, index) in dishList" :key="item.id" @click="openNutrition(item)">
             <!-- Dish Image -->
-            <image class="dish-img" :src="resolveImageUrl(item.image || item.pic)" mode="aspectFill"></image>
+            <image class="dish-img" :src="resolveImageUrl(item.image || item.pic)" mode="aspectFill" :lazy-load="true"></image>
             
             <view class="dish-info-col">
               <view>
@@ -139,7 +139,7 @@
         </view>
       </view>
       <scroll-view scroll-y class="popup-list">
-        <view class="popup-item" v-for="(item, index) in cartList" :key="index">
+        <view class="popup-item" v-for="item in cartList" :key="`${item.dishId || item.setmealId || item.id || item.name}-${item.dishFlavor || ''}`">
           <view class="info">
              <text class="name">{{ item.name }}</text>
              <text class="spec" v-if="item.dishFlavor">{{ item.dishFlavor }}</text>

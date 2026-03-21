@@ -62,7 +62,7 @@
     <view class="title">套餐详情</view>
     <!-- 菜品列表 -->
     <view v-for="item in setmeal.setmealDishes" :key="item.name" class="setmeal_item">
-      <image :src="resolveImageUrl(item.pic || item.image)" />
+      <image :src="resolveImageUrl(item.pic || item.image)" :lazy-load="true" />
       <view class="dishinfo">
         <view class="name ellipsis">{{ item.name }}</view>
         <view class="detail ellipsis">{{ item.description }}</view>
@@ -101,8 +101,8 @@
           <view>{{ flavor.name }}</view>
           <view
             :class="{flavorItem: true, active: chosedflavors.findIndex((it) => item === it) !== -1}"
-            v-for="(item, index) in JSON.parse(flavor.list)"
-            :key="index"
+            v-for="item in JSON.parse(flavor.list)"
+            :key="`${flavor.name}-${item}`"
             @tap="chooseFlavor(JSON.parse(flavor.list), item)"
           >
             {{ item }}
@@ -144,9 +144,9 @@
         </view>
       </view>
       <scroll-view class="card_order_list" scroll-y scroll-top="40rpx">
-        <view class="type_item" v-for="(obj, index) in cartList" :key="index">
+        <view class="type_item" v-for="obj in cartList" :key="`${obj.dishId || obj.setmealId || obj.id || obj.name}-${obj.dishFlavor || ''}`">
           <view class="dish_img">
-            <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url"></image>
+            <image mode="aspectFill" :src="resolveImageUrl(obj.pic || obj.image)" class="dish_img_url" :lazy-load="true"></image>
           </view>
           <view class="dish_info">
             <view class="dish_name"> {{ obj.name }} </view>

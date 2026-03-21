@@ -43,105 +43,185 @@
 			}
 		},
 		{
-			"path": "pages/detail/detail",
-			"style": {
-				"navigationBarTitleText": "详情"
-			}
-		},
-		{
-			"path": "pages/submit/submit",
-			"style": {
-				"navigationBarTitleText": "提交订单"
-			}
-		},
-		{
-			"path": "pages/submit/success",
-			"style": {
-				"navigationBarTitleText": "提交成功"
-			}
-		},
-		{
-			"path": "pages/address/address",
-			"style": {
-				"navigationBarTitleText": "地址管理"
-			}
-		},
-		{
-			"path": "pages/favorite/favorite",
-			"style": {
-				"navigationBarTitleText": "我的收藏",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/addOrEditAddress/addOrEditAddress",
-			"style": {
-				"navigationBarTitleText": "新增/修改地址"
-			}
-		},
-		{
-			"path": "pages/remark/remark",
-			"style": {
-				"navigationBarTitleText": "备注"
-			}
-		},
-		{
-			"path": "pages/pay/pay",
-			"style": {
-				"navigationBarTitleText": "支付订单",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/pay/success",
-			"style": {
-				"navigationBarTitleText": "支付成功",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/orderDetail/orderDetail",
-			"style": {
-				"navigationBarTitleText": "订单详情",
-				"navigationStyle": "custom",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
-			"path": "pages/history/history",
-			"style": {
-				"navigationBarTitleText": "历史订单"
-			}
-		},
-		{
-			"path": "pages/updateMy/updateMy",
-			"style": {
-				"navigationBarTitleText": "信息设置"
-			}
-		},
-		{
-			"path": "pages/info-setting/info-setting",
-			"style": {
-				"navigationBarTitleText": "健康画像设置",
-				"navigationStyle": "custom"
-			}
-		},
-		{
 			"path": "pages/health-analysis/health-analysis",
 			"style": {
 				"navigationBarTitleText": "健康分析",
 				"navigationStyle": "custom"
 			}
-		},
-		{
-			"path": "pages/user/weekly-report",
-			"style": {
-				"navigationBarTitleText": "消费周报",
-				"navigationBarBackgroundColor": "#FF8C42",
-				"navigationBarTextStyle": "white"
-			}
 		}
 	],
+	"subPackages": [
+		{
+			"root": "pages/detail",
+			"pages": [
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "详情"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/submit",
+			"pages": [
+				{
+					"path": "submit",
+					"style": {
+						"navigationBarTitleText": "提交订单"
+					}
+				},
+				{
+					"path": "success",
+					"style": {
+						"navigationBarTitleText": "提交成功"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/address",
+			"pages": [
+				{
+					"path": "address",
+					"style": {
+						"navigationBarTitleText": "地址管理"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/favorite",
+			"pages": [
+				{
+					"path": "favorite",
+					"style": {
+						"navigationBarTitleText": "我的收藏",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/addOrEditAddress",
+			"pages": [
+				{
+					"path": "addOrEditAddress",
+					"style": {
+						"navigationBarTitleText": "新增/修改地址"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/remark",
+			"pages": [
+				{
+					"path": "remark",
+					"style": {
+						"navigationBarTitleText": "备注"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/pay",
+			"pages": [
+				{
+					"path": "pay",
+					"style": {
+						"navigationBarTitleText": "支付订单",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "success",
+					"style": {
+						"navigationBarTitleText": "支付成功",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/orderDetail",
+			"pages": [
+				{
+					"path": "orderDetail",
+					"style": {
+						"navigationBarTitleText": "订单详情",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": true
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/history",
+			"pages": [
+				{
+					"path": "history",
+					"style": {
+						"navigationBarTitleText": "历史订单"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/updateMy",
+			"pages": [
+				{
+					"path": "updateMy",
+					"style": {
+						"navigationBarTitleText": "信息设置"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/info-setting",
+			"pages": [
+				{
+					"path": "info-setting",
+					"style": {
+						"navigationBarTitleText": "健康画像设置",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/user",
+			"pages": [
+				{
+					"path": "weekly-report",
+					"style": {
+						"navigationBarTitleText": "消费周报",
+						"navigationBarBackgroundColor": "#FF8C42",
+						"navigationBarTextStyle": "white"
+					}
+				}
+			]
+		}
+	],
+	"preloadRule": {
+		"pages/category/category": {
+			"network": "all",
+			"packages": [
+				"pages/detail",
+				"pages/submit"
+			]
+		},
+		"pages/my/my": {
+			"network": "all",
+			"packages": [
+				"pages/history",
+				"pages/favorite",
+				"pages/updateMy"
+			]
+		}
+	},
+	"lazyCodeLoading": "requiredComponents",
 	"tabBar": {
 		"color": "#999",
 		"selectedColor": "#FF8C42",
