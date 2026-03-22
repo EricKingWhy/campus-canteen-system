@@ -13,7 +13,7 @@
 
       <!-- Image Header -->
       <view class="image-header">
-        <image class="dish-image" :src="resolveImageUrl(dish.image || dish.pic)" mode="aspectFill"></image>
+        <image class="dish-image" :src="resolveImageUrl(displayDish.image || displayDish.pic)" mode="aspectFill"></image>
         <view class="image-overlay"></view>
       </view>
 
@@ -22,12 +22,12 @@
         <view class="content-body">
           <!-- Title & Price -->
           <view class="header-section">
-            <text class="dish-name">{{ dish.name }}</text>
+            <text class="dish-name">{{ displayDish.name }}</text>
             <view class="meta-row">
               <text class="sold-count">月销 500+</text> <!-- Fixed mock for better UI, or use dish.sold -->
               <view class="price-box">
                 <text class="currency">¥</text>
-                <text class="price">{{ dish.price }}</text>
+                <text class="price">{{ displayDish.price }}</text>
               </view>
             </view>
           </view>
@@ -37,7 +37,7 @@
             <view class="nutri-item">
               <text class="nutri-label">热量</text>
               <view class="nutri-value-box">
-                <text class="nutri-value">{{ dish.calories || 350 }}</text>
+                <text class="nutri-value">{{ displayDish.calories || 350 }}</text>
                 <text class="nutri-unit">kcal</text>
               </view>
             </view>
@@ -45,7 +45,7 @@
             <view class="nutri-item">
               <text class="nutri-label">蛋白质</text>
               <view class="nutri-value-box">
-                <text class="nutri-value">{{ dish.protein || 25 }}</text>
+                <text class="nutri-value">{{ displayDish.protein || 25 }}</text>
                 <text class="nutri-unit">g</text>
               </view>
             </view>
@@ -53,7 +53,7 @@
             <view class="nutri-item">
               <text class="nutri-label">碳水</text>
               <view class="nutri-value-box">
-                <text class="nutri-value">{{ dish.carbohydrates || 40 }}</text>
+                <text class="nutri-value">{{ displayDish.carbohydrates || 40 }}</text>
                 <text class="nutri-unit">g</text>
               </view>
             </view>
@@ -61,7 +61,7 @@
             <view class="nutri-item">
               <text class="nutri-label">脂肪</text>
               <view class="nutri-value-box">
-                <text class="nutri-value">{{ dish.fat || 5 }}</text>
+                <text class="nutri-value">{{ displayDish.fat || 5 }}</text>
                 <text class="nutri-unit">g</text>
               </view>
             </view>
@@ -70,29 +70,29 @@
           <!-- Description -->
           <view class="section">
             <text class="section-title">商品详情</text>
-            <text class="description">{{ dish.description || '精选优质食材，由专业营养师搭配，采用健康烹饪方式，锁住食材本味。口感鲜美，营养均衡。' }}</text>
+            <text class="description">{{ displayDish.description || '精选优质食材，由专业营养师搭配，采用健康烹饪方式，锁住食材本味。口感鲜美，营养均衡。' }}</text>
           </view>
 
-          <view class="detail-section ingredients-box" v-if="dish.mainIngredients" style="margin-top: 30rpx; padding-top: 20rpx; margin-bottom: 48rpx;">
+          <view class="detail-section ingredients-box" v-if="displayDish.mainIngredients" style="margin-top: 30rpx; padding-top: 20rpx; margin-bottom: 48rpx;">
               <view class="detail-title-row">
                 <image class="detail-title-icon" :src="ingredientsWheatIcon" mode="aspectFit" />
                 <text class="detail-title-text">主要成分</text>
               </view>
-              <view style="font-size: 26rpx; color: #666; line-height: 1.5;">{{ dish.mainIngredients }}</view>
+              <view style="font-size: 26rpx; color: #666; line-height: 1.5;">{{ displayDish.mainIngredients }}</view>
           </view>
 
-          <view class="detail-section allergen-box" v-if="dish.allergenTags" style="margin-bottom: 48rpx;">
-              <view v-if="dish.allergenTags !== '无'" style="background-color: #fff1f0; padding: 16rpx; border-radius: 12rpx;">
+          <view class="detail-section allergen-box" v-if="displayDish.allergenTags" style="margin-bottom: 48rpx;">
+              <view v-if="displayDish.allergenTags !== '无'" style="background-color: #fff1f0; padding: 16rpx; border-radius: 12rpx;">
                   <view class="allergen-title-row">
                     <image class="allergen-icon" :src="calorieCheckNewIcon" mode="aspectFit" />
-                    <text style="font-size: 26rpx; font-weight: bold; color: #d93025;">忌口/过敏原提示：{{ dish.allergenTags }}</text>
+                    <text style="font-size: 26rpx; font-weight: bold; color: #d93025;">忌口/过敏原提示：{{ displayDish.allergenTags }}</text>
                   </view>
               </view>
               <view v-else style="background-color: #edf9f0; padding: 16rpx; border-radius: 12rpx;">
                   <view class="allergen-title-row">
                     <image class="allergen-icon" :src="calorieCheckNewIcon" mode="aspectFit" />
                     <text style="font-size: 26rpx; font-weight: bold; color: #0b8043;">忌口/过敏原提示：无，请放心食用</text>
-                  </view>
+                </view>
               </view>
           </view>
 
@@ -149,6 +149,9 @@ const resolveImageUrl = (image?: string) => {
 };
 
 const selectedFlavor = ref('');
+const detailDish = ref<any>(null);
+
+const displayDish = computed(() => detailDish.value || props.dish || {});
 
 // 【核心功能】收藏状态
 const isFavorite = ref(false);
@@ -190,31 +193,96 @@ const toggleFavorite = async () => {
 // 弹窗打开或菜品变化时检查收藏状态
 watch(() => [props.visible, props.dish], ([newVisible, newDish]) => {
   if (newVisible && newDish?.id) {
+    fetchDishDetail(newDish.id);
     checkFavorite();
   }
 }, { deep: true });
 
-// Smart Flavor Logic
-const smartFlavors = computed(() => {
-  if (!props.dish || !props.dish.name) return [];
-  
-  const name = props.dish.name;
-  
-  if (name.includes('面') || name.includes('粉') || name.includes('辣') || name.includes('麻婆') || name.includes('鸡') || name.includes('肉')) {
-     if (!name.includes('蛋糕') && !name.includes('甜') && !name.includes('奶')) {
-        return ['微辣', '中辣', '特辣', '免辣'];
-     }
-  }
-  
-  if (name.includes('饮') || name.includes('茶') || name.includes('奶') || name.includes('拿铁') || name.includes('美式') || name.includes('可乐')) {
-     return ['常规冰', '少冰', '去冰', '常温', '热饮'];
-  }
-  
-  if (name.includes('粥')) {
-      return ['不加葱', '加葱'];
+const fetchDishDetail = (dishId: number) => {
+  uni.request({
+    url: `${baseUrl}/user/dish/dish/${dishId}`,
+    method: 'GET',
+    header: { 'authentication': uni.getStorageSync('token') },
+    success: (res: any) => {
+      if ((res.data.code === 0 || res.data.code === 1) && res.data.data) {
+        detailDish.value = res.data.data;
+      } else {
+        detailDish.value = null;
+      }
+    },
+    fail: () => {
+      detailDish.value = null;
+    }
+  });
+};
+
+const containsAny = (source: string, tokens: string[]) => {
+  return tokens.some((token) => source.includes(token));
+};
+
+const getSafeFallbackFlavors = (dish: any): string[] => {
+  const name = String(dish?.name || '');
+  const categoryName = String(dish?.categoryName || '');
+  const text = `${name}${categoryName}`;
+
+  // 精准修复：茶叶蛋不显示任何口味
+  if (name.includes('茶叶蛋')) {
+    return [];
   }
 
+  const dessertTokens = ['大福', '麻薯', '布丁', '糍粑', '汤圆', '蛋糕', '甜点', '甜品', '芋泥'];
+  const drinkTokens = ['饮品', '奶茶', '咖啡', '拿铁', '可乐', '豆浆', '果汁', '茶', '美式'];
+  const spicyMainTokens = ['面', '粉', '米线', '盖饭', '拌饭', '炒饭', '牛肉', '鸡肉', '猪肉', '鱼片', '麻辣', '香辣'];
+
+  const isDessert = containsAny(text, dessertTokens);
+  const isDrink = containsAny(text, drinkTokens);
+  const isSavoryMain = containsAny(text, spicyMainTokens) && !isDessert && !isDrink;
+  const isCongee = name.includes('粥') && !isDessert;
+
+  // 甜品类不再兜底生成任何温度/辣度规格，避免再次错配
+  if (isDessert) {
+    return [];
+  }
+  if (isDrink) {
+    return ['常规冰', '少冰', '去冰', '常温', '热饮'];
+  }
+  if (isSavoryMain) {
+    return ['微辣', '中辣', '特辣', '免辣'];
+  }
+  if (isCongee) {
+    return ['不加葱', '加葱'];
+  }
   return [];
+};
+
+// 只渲染后端返回的真实 flavors，杜绝前端“按菜名猜口味”
+const smartFlavors = computed(() => {
+  const flavorRows = displayDish.value?.flavors;
+  if (!Array.isArray(flavorRows) || flavorRows.length === 0) {
+    // 兜底策略：先保证主食/面类可选辣度，但甜品绝不再出现辣度/温度错配
+    return getSafeFallbackFlavors(displayDish.value);
+  }
+
+  const options: string[] = [];
+  flavorRows.forEach((row: any) => {
+    try {
+      const rawList = row?.list ?? row?.value ?? '[]';
+      const list = JSON.parse(rawList);
+      if (Array.isArray(list)) {
+        list.forEach((item) => {
+          if (typeof item === 'string' && item.trim() && !options.includes(item)) {
+            options.push(item.trim());
+          }
+        });
+      }
+    } catch (e) {
+      // 忽略非法 flavor.list，保证弹窗不报错
+    }
+  });
+  if (options.length > 0) {
+    return options;
+  }
+  return getSafeFallbackFlavors(displayDish.value);
 });
 
 watch(smartFlavors, (newVal) => {
@@ -226,6 +294,7 @@ watch(smartFlavors, (newVal) => {
 });
 
 const close = () => {
+  detailDish.value = null;
   emit('close');
 };
 

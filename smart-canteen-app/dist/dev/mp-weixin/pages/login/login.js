@@ -122,45 +122,39 @@ const _sfc_main = {
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
-    a: $data.authBrandIcon,
-    b: common_vendor.t($data.isLoginMode ? "SMART CANTEEN SAAS" : "开启您的智能膳食新体验"),
-    c: $data.isLoginMode
-  }, $data.isLoginMode ? {} : {}, {
-    d: $data.isLoginMode ? 1 : "",
-    e: common_vendor.o(($event) => $data.isLoginMode = true),
-    f: !$data.isLoginMode
-  }, !$data.isLoginMode ? {} : {}, {
-    g: !$data.isLoginMode ? 1 : "",
-    h: common_vendor.o(($event) => $data.isLoginMode = false),
-    i: $data.isLoginMode
+    a: $data.isLoginMode ? 1 : "",
+    b: common_vendor.o(($event) => $data.isLoginMode = true),
+    c: !$data.isLoginMode ? 1 : "",
+    d: common_vendor.o(($event) => $data.isLoginMode = false),
+    e: $data.isLoginMode
   }, $data.isLoginMode ? {
-    j: $data.loginForm.username,
-    k: common_vendor.o(($event) => $data.loginForm.username = $event.detail.value),
-    l: !$data.showLoginPassword,
-    m: $data.loginForm.password,
-    n: common_vendor.o(($event) => $data.loginForm.password = $event.detail.value),
-    o: $data.showLoginPassword ? $data.eyeOpenIcon : $data.eyeClosedIcon,
-    p: common_vendor.o(($event) => $data.showLoginPassword = !$data.showLoginPassword),
-    q: common_vendor.t($data.isLoading ? "登录中..." : "立即登录"),
-    r: common_vendor.o((...args) => $options.handleLogin && $options.handleLogin(...args)),
-    s: $data.isLoading
+    f: $data.loginForm.username,
+    g: common_vendor.o(($event) => $data.loginForm.username = $event.detail.value),
+    h: !$data.showLoginPassword,
+    i: $data.loginForm.password,
+    j: common_vendor.o(($event) => $data.loginForm.password = $event.detail.value),
+    k: $data.showLoginPassword ? $data.eyeOpenIcon : $data.eyeClosedIcon,
+    l: common_vendor.o(($event) => $data.showLoginPassword = !$data.showLoginPassword),
+    m: common_vendor.t($data.isLoading ? "登录中..." : "立即登录"),
+    n: common_vendor.o((...args) => $options.handleLogin && $options.handleLogin(...args)),
+    o: $data.isLoading
   } : {
-    t: $data.registerForm.username,
-    v: common_vendor.o(($event) => $data.registerForm.username = $event.detail.value),
-    w: !$data.showRegisterPassword,
-    x: $data.registerForm.password,
-    y: common_vendor.o(($event) => $data.registerForm.password = $event.detail.value),
-    z: $data.showRegisterPassword ? $data.eyeOpenIcon : $data.eyeClosedIcon,
-    A: common_vendor.o(($event) => $data.showRegisterPassword = !$data.showRegisterPassword),
-    B: $data.registerForm.nickname,
-    C: common_vendor.o(($event) => $data.registerForm.nickname = $event.detail.value),
-    D: $data.registerForm.email,
-    E: common_vendor.o(($event) => $data.registerForm.email = $event.detail.value),
-    F: common_vendor.t($data.isLoading ? "注册中..." : "注册并登录"),
-    G: common_vendor.o((...args) => $options.handleRegister && $options.handleRegister(...args)),
-    H: $data.isLoading
+    p: $data.registerForm.username,
+    q: common_vendor.o(($event) => $data.registerForm.username = $event.detail.value),
+    r: !$data.showRegisterPassword,
+    s: $data.registerForm.password,
+    t: common_vendor.o(($event) => $data.registerForm.password = $event.detail.value),
+    v: $data.showRegisterPassword ? $data.eyeOpenIcon : $data.eyeClosedIcon,
+    w: common_vendor.o(($event) => $data.showRegisterPassword = !$data.showRegisterPassword),
+    x: $data.registerForm.nickname,
+    y: common_vendor.o(($event) => $data.registerForm.nickname = $event.detail.value),
+    z: $data.registerForm.email,
+    A: common_vendor.o(($event) => $data.registerForm.email = $event.detail.value),
+    B: common_vendor.t($data.isLoading ? "注册中..." : "注册并登录"),
+    C: common_vendor.o((...args) => $options.handleRegister && $options.handleRegister(...args)),
+    D: $data.isLoading
   }, {
-    I: !$data.isLoginMode ? 1 : ""
+    E: !$data.isLoginMode ? 1 : ""
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-cdfe2409"], ["__file", "C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/login/login.vue"]]);

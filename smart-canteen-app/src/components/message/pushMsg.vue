@@ -4,7 +4,7 @@
     <view class="pop">
       <view class="title"> 温馨提示 </view>
       <view class="tip-img">
-        <image src="../../static/images/success.png"></image>
+        <image src="../../static/images/undraw_time_change.png" mode="aspectFit"></image>
       </view>
       <view class="tip-info"> 37已成功帮你催单~ </view>
       <view class="sure" @click="confirm"> 确定 </view>
@@ -67,14 +67,14 @@ defineExpose({
 }
 .tip-img {
   margin: 0 auto;
-  width: 200rpx;
-  height: 200rpx;
+  width: 260rpx;
+  height: 180rpx;
   margin-top: 64rpx;
 }
 .tip-img image {
   width: 100%;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 12rpx;
 }
 .tip-info {
   padding: 0 30rpx;

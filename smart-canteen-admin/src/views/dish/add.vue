@@ -32,7 +32,7 @@ interface LeftDishFlavors {
 // 菜品id对应的分类列表，即categoryId字段不能只展示id值，应该根据id查询到对应的分类名进行回显
 const categoryList = ref<Category[]>([])
 const leftDishFlavors = ref<LeftDishFlavors[]>([])
-const formLabelWidth = '70px'
+const formLabelWidth = '110px'
 
 const form = reactive({
   id: 0,

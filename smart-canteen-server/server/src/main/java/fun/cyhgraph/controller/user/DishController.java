@@ -2,6 +2,7 @@ package fun.cyhgraph.controller.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import fun.cyhgraph.constant.StatusConstant;
+import fun.cyhgraph.dto.DishDTO;
 import fun.cyhgraph.dto.SmartRecommendDTO;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.result.Result;
@@ -52,6 +53,16 @@ public class DishController {
         }).collect(Collectors.toList());
 
         return Result.success(dishVOList);
+    }
+
+    /**
+     * C端-根据菜品ID获取详情(包含真实口味flavors)
+     */
+    @GetMapping("/dish/{id}")
+    public Result<DishDTO> getDishDetail(@PathVariable Integer id) {
+        log.info("C端-根据菜品ID查询详情(含口味): {}", id);
+        DishDTO dishDTO = dishService.getByIdWithFlavor(id);
+        return Result.success(dishDTO);
     }
 
     /**

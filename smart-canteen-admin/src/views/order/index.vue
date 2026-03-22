@@ -379,7 +379,7 @@ onMounted(async () => {
             scope.row.tablewareNumber }}
           </template>
         </el-table-column>
-        <el-table-column prop="btn" label="操作" align="center" width="190px"
+        <el-table-column prop="btn" label="操作" align="center" width="240px"
           :class-name="orderStatus === 0 ? 'operate' : 'otherOperate'" :min-width="[2, 3, 4].includes(orderStatus)
             ? 130 : [0].includes(orderStatus) ? 140 : 'auto'">
           <template #default="scope">
@@ -672,13 +672,23 @@ onMounted(async () => {
         .btn_box {
           display: flex;
           align-items: center;
+          justify-content: center;
           height: 100%;
+          white-space: nowrap;
 
           .before,
           .middle,
           .after {
-            width: 40px;
-            margin: 2px;
+            width: auto;
+            margin: 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+          }
+
+          :deep(.el-button) {
+            margin: 0;
           }
         }
       }

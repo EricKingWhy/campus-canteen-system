@@ -92,6 +92,20 @@
   height: 160rpx;
   opacity: 0.5;
 }
+.no-data-icon-wrap.data-v-85d0b700 {
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  background: #eef1f4;
+  margin-bottom: 60rpx;
+  overflow: hidden;
+}
+.no-data-icon.data-v-85d0b700 {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  border-radius: 50%;
+}
 .edit-badge.data-v-85d0b700, .receipt-badge.data-v-85d0b700 {
   position: absolute;
   bottom: 40rpx;

@@ -1,32 +1,33 @@
 <template>
   <view class="login-container">
+    <view class="bg-glow bg-glow-a"></view>
+    <view class="bg-glow bg-glow-b"></view>
+
     <view class="login-header">
       <view class="brand-badge">
-        <image class="brand-icon" :src="authBrandIcon" mode="aspectFit" />
+        <image class="brand-icon" src="/static/icons/shanzhu.png" mode="aspectFit" />
       </view>
       <text class="app-title">智能食堂</text>
-      <text class="app-subtitle">{{ isLoginMode ? 'SMART CANTEEN SAAS' : '开启您的智能膳食新体验' }}</text>
+      <text class="app-subtitle">开启你的智慧健康饮食</text>
     </view>
 
     <view class="login-card" :class="{ 'register-mode': !isLoginMode }">
       <view class="tabs">
         <view class="tab-item" :class="{ active: isLoginMode }" @click="isLoginMode = true">
           登录
-          <view class="tab-line" v-if="isLoginMode"></view>
         </view>
         <view class="tab-item" :class="{ active: !isLoginMode }" @click="isLoginMode = false">
           注册
-           <view class="tab-line" v-if="!isLoginMode"></view>
         </view>
       </view>
 
       <view v-if="isLoginMode" class="form-box animate-fade-in">
         <view class="input-item">
-          <text class="input-icon">👤</text>
+          <image class="input-icon" src="/static/icons/zhanghao.png" mode="aspectFit" />
           <input class="uni-input" type="text" v-model="loginForm.username" placeholder="请输入账号" placeholder-class="placeholder-style"/>
         </view>
         <view class="input-item">
-          <text class="input-icon">🔒</text>
+          <image class="input-icon" src="/static/icons/mima.png" mode="aspectFit" />
           <input
             class="uni-input"
             type="text"
@@ -49,11 +50,11 @@
 
       <view v-else class="form-box animate-fade-in">
         <view class="input-item">
-          <text class="input-icon">👤</text>
+          <image class="input-icon" src="/static/icons/zhanghao.png" mode="aspectFit" />
           <input class="uni-input" type="text" v-model="registerForm.username" placeholder="设置账号" placeholder-class="placeholder-style"/>
         </view>
         <view class="input-item">
-          <text class="input-icon">🔒</text>
+          <image class="input-icon" src="/static/icons/mima.png" mode="aspectFit" />
           <input
             class="uni-input"
             type="text"
@@ -70,11 +71,11 @@
           />
         </view>
         <view class="input-item">
-          <text class="input-icon">😊</text>
+          <image class="input-icon" src="/static/icons/nicheng.png" mode="aspectFit" />
           <input class="uni-input" type="text" v-model="registerForm.nickname" placeholder="昵称" placeholder-class="placeholder-style"/>
         </view>
          <view class="input-item">
-          <text class="input-icon">📧</text>
+          <image class="input-icon" src="/static/icons/youxiang.png" mode="aspectFit" />
           <input class="uni-input" type="text" v-model="registerForm.email" placeholder="电子邮箱" placeholder-class="placeholder-style"/>
         </view>
         <button class="submit-btn register-btn" hover-class="btn-hover" @click="handleRegister" :disabled="isLoading">
@@ -248,10 +249,9 @@ export default {
 <style lang="scss" scoped>
 .login-container {
   min-height: 100vh;
-  background-color: #f7f8fa;
-  background-image:
-    radial-gradient(at 8% 10%, rgba(255, 140, 66, 0.09) 0rpx, transparent 46%),
-    radial-gradient(at 92% 88%, rgba(255, 140, 66, 0.05) 0rpx, transparent 44%);
+  background-color: #fafafb;
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -259,7 +259,34 @@ export default {
   box-sizing: border-box;
 }
 
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-glow-a {
+  width: 500rpx;
+  height: 500rpx;
+  background: rgba(255, 140, 66, 0.15);
+  filter: blur(80px);
+  top: -100rpx;
+  left: -100rpx;
+}
+
+.bg-glow-b {
+  width: 600rpx;
+  height: 600rpx;
+  background: rgba(255, 192, 105, 0.1);
+  filter: blur(100px);
+  bottom: 20%;
+  right: -150rpx;
+}
+
 .login-header {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -270,12 +297,12 @@ export default {
     width: 136rpx;
     height: 136rpx;
     border-radius: 34rpx;
-    background: #ffffff;
-    box-shadow: 0 20rpx 44rpx rgba(0, 0, 0, 0.03);
+    background: transparent;
+    box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 22rpx;
+    margin-bottom: 12rpx;
   }
 
   .brand-symbol {
@@ -284,8 +311,8 @@ export default {
   }
 
   .brand-icon {
-    width: 100rpx;
-    height: 100rpx;
+    width: 150rpx;
+    height: 150rpx;
     display: block;
   }
 
@@ -298,19 +325,24 @@ export default {
 
   .app-subtitle {
     margin-top: 10rpx;
-    font-size: 24rpx;
-    font-weight: 500;
+    font-size: 22rpx;
+    font-weight: 400;
     color: #999999;
-    letter-spacing: 3rpx;
+    letter-spacing: 1rpx;
   }
 }
 
 .login-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  background-color: #fff;
-  border-radius: 40rpx;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 2rpx solid rgba(255, 255, 255, 0.8);
+  border-radius: 32rpx;
   padding: 40rpx 34rpx 42rpx;
-  box-shadow: 0 24rpx 60rpx rgba(0, 0, 0, 0.03);
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.04);
   transition: all 0.25s ease;
 
   &.register-mode {
@@ -321,9 +353,9 @@ export default {
     display: flex;
     justify-content: space-between;
     margin-bottom: 42rpx;
-    background: #f3f4f6;
-    border-radius: 26rpx;
-    padding: 8rpx;
+    background: #f0f2f5;
+    border-radius: 40rpx;
+    padding: 6rpx;
 
     .tab-item {
       flex: 1;
@@ -331,27 +363,16 @@ export default {
       font-size: 30rpx;
       color: #9ca3af;
       font-weight: 500;
-      padding: 18rpx 0;
+      padding: 20rpx 0;
       position: relative;
       transition: all 0.3s;
-      border-radius: 20rpx;
+      border-radius: 34rpx;
 
       &.active {
         color: #1a1c1e;
         font-weight: 700;
         background: #ffffff;
-        box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.04);
-      }
-
-      .tab-line {
-        position: absolute;
-        bottom: 6rpx;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 54rpx;
-        height: 6rpx;
-        background-color: #ff8c42;
-        border-radius: 999rpx;
+        box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.06);
       }
     }
   }
@@ -360,7 +381,7 @@ export default {
     .input-item {
       display: flex;
       align-items: center;
-      background-color: #f5f5f7;
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 24rpx;
       height: 96rpx;
       padding: 0 30rpx;
@@ -369,15 +390,17 @@ export default {
       transition: all 0.22s ease;
 
       &:focus-within {
-        background-color: #ffffff;
-        border-color: rgba(255, 140, 66, 0.36);
-        box-shadow: 0 0 0 8rpx rgba(255, 140, 66, 0.11);
+        background: #ffffff;
+        border: 2rpx solid #ff8c42;
+        box-shadow: 0 0 0 8rpx rgba(255, 140, 66, 0.12);
       }
 
       .input-icon {
-        font-size: 34rpx;
+        width: 40rpx;
+        height: 40rpx;
         margin-right: 18rpx;
-        color: #b0b0b0;
+        display: block;
+        flex-shrink: 0;
       }
 
       .uni-input {
@@ -400,18 +423,18 @@ export default {
       width: 100%;
       height: 100rpx;
       line-height: 100rpx;
-      background: #ff8c42;
+      background: linear-gradient(135deg, #ff9d5c 0%, #ff7a18 100%);
       color: #fff;
       font-size: 36rpx;
       font-weight: 700;
       border-radius: 999rpx;
       margin-top: 40rpx;
-      box-shadow: 0 16rpx 32rpx rgba(255, 140, 66, 0.25);
+      box-shadow: 0 12rpx 32rpx rgba(255, 122, 24, 0.3);
       transition: all 0.2s ease;
 
       &.register-btn {
-        background: #ff8c42;
-        box-shadow: 0 16rpx 32rpx rgba(255, 140, 66, 0.25);
+        background: linear-gradient(135deg, #ff9d5c 0%, #ff7a18 100%);
+        box-shadow: 0 12rpx 32rpx rgba(255, 122, 24, 0.3);
       }
 
       &.btn-hover {

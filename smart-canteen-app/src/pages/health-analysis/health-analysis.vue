@@ -24,11 +24,8 @@
     <scroll-view class="content" scroll-y>
       <!-- Variant 1: Incomplete Profile -->
       <view v-if="pageState === 'incomplete'" class="empty-state">
-        <view class="empty-icon-wrap">
-          <image class="empty-icon" src="/static/icons/profile-incomplete.png" mode="aspectFit" />
-          <view class="edit-badge">
-            <text class="iconfont icon-edit">✎</text>
-          </view>
+        <view class="empty-icon-wrap no-data-icon-wrap">
+          <image class="empty-icon no-data-icon" src="/static/icons/no-analysis-hero.png" mode="aspectFill" />
         </view>
         <text class="empty-title">请先完善健康画像</text>
         <text class="empty-desc">填写身高、体重等信息后即可解锁详细的健康看板。</text>
@@ -37,11 +34,8 @@
 
       <!-- Variant 2: No Order Data -->
       <view v-else-if="pageState === 'noData'" class="empty-state">
-        <view class="empty-icon-wrap">
-          <image class="empty-icon" src="/static/icons/no-order.png" mode="aspectFit" />
-          <view class="receipt-badge">
-            <text class="iconfont">📄</text>
-          </view>
+        <view class="empty-icon-wrap no-data-icon-wrap">
+          <image class="empty-icon no-data-icon" src="/static/icons/no-analysis-hero.png" mode="aspectFill" />
         </view>
         <text class="empty-title">暂无分析数据</text>
         <text class="empty-desc">在食堂点餐后，我们将为您自动生成健康与消费报告。</text>
@@ -839,6 +833,22 @@ onMounted(() => {
   width: 160rpx;
   height: 160rpx;
   opacity: 0.5;
+}
+
+.no-data-icon-wrap {
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  background: #eef1f4;
+  margin-bottom: 60rpx;
+  overflow: hidden;
+}
+
+.no-data-icon {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  border-radius: 50%;
 }
 
 .edit-badge, .receipt-badge {

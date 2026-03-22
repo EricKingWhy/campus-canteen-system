@@ -487,12 +487,15 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             keywords.add("午餐");
             keywords.add("饮品");
             keywords.add("小吃");
+            keywords.add("轻食");
+            keywords.add("轻饮食");
         } else if (now.isAfter(LocalTime.of(16, 30)) && now.isBefore(LocalTime.of(21, 0))) {
             // 晚餐时段
             keywords.add("晚餐");
             keywords.add("饮品");
             keywords.add("小吃");
             keywords.add("轻食");
+            keywords.add("轻饮食");
         } else {
             // 其他时段(深夜/凌晨) -> 不限制分类
             return Collections.emptyList();
@@ -535,11 +538,78 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     private void saveFlavors(DishDTO dishDTO, Long dishId) {
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && !flavors.isEmpty()) {
+            String categoryName = resolveCategoryName(dishDTO.getCategoryId());
+            String dishName = dishDTO.getName() == null ? "" : dishDTO.getName();
             flavors.forEach(flavor -> {
+                if (!isFlavorCompatible(dishName, categoryName, flavor)) {
+                    log.warn("[规格治理] 已拦截不匹配口味: dishId={}, dishName={}, category={}, flavorName={}, flavorList={}",
+                            dishId, dishName, categoryName, flavor.getName(), flavor.getValue());
+                    return;
+                }
                 flavor.setDishId(dishId);
                 dishFlavorMapper.insert(flavor);
             });
         }
+    }
+
+    private String resolveCategoryName(Long categoryId) {
+        if (categoryId == null) {
+            return "";
+        }
+        Category category = categoryMapper.selectById(categoryId);
+        return category == null || category.getName() == null ? "" : category.getName();
+    }
+
+    /**
+     * 轻量分类约束：拦截明显不合理的口味组合，避免“甜品出现辣度/温度错配”。
+     * 仅做高置信规则，不做激进拦截，降低误杀风险。
+     */
+    private boolean isFlavorCompatible(String dishName, String categoryName, DishFlavor flavor) {
+        if (flavor == null) {
+            return false;
+        }
+        String flavorName = flavor.getName() == null ? "" : flavor.getName();
+        String flavorList = flavor.getValue() == null ? "" : flavor.getValue();
+        if (flavorName.trim().isEmpty() || flavorList.trim().isEmpty()) {
+            return false;
+        }
+
+        boolean hasTempOption = containsAny(flavorName + flavorList, "常规冰", "少冰", "去冰", "常温", "热饮");
+        boolean hasSpicyOption = containsAny(flavorName + flavorList, "微辣", "中辣", "特辣", "免辣");
+
+        boolean isDessertDish = containsAny(dishName, "大福", "麻薯", "布丁", "汤圆", "糍粑", "蛋糕", "甜品");
+        boolean isDrinkDish = containsAny(dishName, "奶茶", "咖啡", "拿铁", "可乐", "豆浆", "果汁", "美式", "饮");
+
+        boolean isDessertCategory = containsAny(categoryName, "甜点", "糕点");
+        boolean isDrinkCategory = containsAny(categoryName, "饮品");
+        boolean isMealCategory = containsAny(categoryName, "早餐", "午餐", "晚餐", "轻食", "热销", "主食");
+
+        // 甜品(尤其大福/麻薯类)不允许温度规格，避免“甜点 -> 冰热饮”
+        if (hasTempOption && isDessertDish) {
+            return false;
+        }
+        // 非饮品主餐类不允许温度规格
+        if (hasTempOption && isMealCategory && !isDrinkDish) {
+            return false;
+        }
+        // 甜品/饮品不允许辣度规格
+        if (hasSpicyOption && (isDessertDish || isDessertCategory || (isDrinkCategory && !isMealCategory))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean containsAny(String source, String... tokens) {
+        if (source == null || source.isEmpty() || tokens == null || tokens.length == 0) {
+            return false;
+        }
+        for (String token : tokens) {
+            if (token != null && !token.isEmpty() && source.contains(token)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void normalizeDishList(List<Dish> dishes) {
