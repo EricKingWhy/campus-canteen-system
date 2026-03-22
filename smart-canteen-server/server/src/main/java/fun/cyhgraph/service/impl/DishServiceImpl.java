@@ -14,6 +14,8 @@ import fun.cyhgraph.mapper.DishFlavorMapper;
 import fun.cyhgraph.mapper.DishMapper;
 import fun.cyhgraph.result.PageResult;
 import fun.cyhgraph.service.DishService;
+import fun.cyhgraph.vo.DishVO;
+import fun.cyhgraph.vo.SmartRecommendVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,14 +169,17 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     // 【智选6道菜】4层漏斗推荐引擎
     // ============================================================
     @Override
-    public List<Dish> getSmartPick6(SmartRecommendDTO dto) {
+    public SmartRecommendVO getSmartPick6(SmartRecommendDTO dto) {
         log.info("===== 智选6道菜漏斗引擎启动 =====");
+        if (dto == null) {
+            dto = new SmartRecommendDTO();
+        }
         log.info("入参: hasProfile={}, tdee={}, todayCalories={}, todayProtein={}, healthGoal={}, avoidTags={}",
                 dto.getHasProfile(), dto.getTdee(), dto.getTodayCalories(),
                 dto.getTodayProtein(), dto.getHealthGoal(), dto.getAvoidTags());
 
         // ────── 第1层：冷启动兜底 ──────
-        if (dto.getHasProfile() == null || !dto.getHasProfile()) {
+        if (!Boolean.TRUE.equals(dto.getHasProfile())) {
             log.info("[漏斗L1] 无画像 -> 冷启动: 按销量Top6");
             LambdaQueryWrapper<Dish> cold = new LambdaQueryWrapper<>();
             cold.eq(Dish::getStatus, 1);
@@ -183,19 +188,31 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             cold.orderByDesc(Dish::getSold);
             cold.last("LIMIT 6");
             List<Dish> dishes = dishMapper.selectList(cold);
-            normalizeDishList(dishes);
-            return dishes;
+            return buildSmartRecommendVO("COLD_START", false, dishes);
         }
 
-        // ────── 第2层：时间与场景过滤 ──────
         LocalTime now = LocalTime.now();
         List<Long> sceneCategoryIds = getSceneCategoryIds(now);
-        log.info("[漏斗L2] 当前时间={}, 场景分类IDs={}", now, sceneCategoryIds);
 
-        // ────── 第3层：健康与忌口红线 ──────
         double gap = safeDouble(dto.getTdee()) - safeDouble(dto.getTodayCalories());
-        log.info("[漏斗L3] 热量缺口={}kcal", gap);
+        boolean isDietMode = gap <= 0;
+        log.info("[模式判断] 当前时间={}, 场景分类IDs={}, 热量缺口={}kcal, isDietMode={}",
+                now, sceneCategoryIds, gap, isDietMode);
 
+        if (isDietMode) {
+            List<Dish> dietDishes = buildDietModeRecommend(sceneCategoryIds, dto);
+            return buildSmartRecommendVO("DIET", true, dietDishes);
+        }
+
+        List<Dish> normalDishes = buildNormalRecommend(sceneCategoryIds, dto, gap);
+        return buildSmartRecommendVO("NORMAL", false, normalDishes);
+    }
+
+    /**
+     * 常规模式：保持原4层漏斗能力
+     */
+    private List<Dish> buildNormalRecommend(List<Long> sceneCategoryIds, SmartRecommendDTO dto, double gap) {
+        log.info("[常规模式] 进入4层漏斗推荐");
         // ────── 第4层：动态排序策略 ──────
         // 先尝试完整过滤
         List<Dish> result = executeQuery(sceneCategoryIds, dto, gap, true, true);
@@ -215,6 +232,87 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
         normalizeDishList(result);
         return result;
+    }
+
+    /**
+     * 控卡模式：时间段优先 + 低卡低脂强约束
+     */
+    private List<Dish> buildDietModeRecommend(List<Long> sceneCategoryIds, SmartRecommendDTO dto) {
+        log.info("[控卡模式] 启动低负担推荐，优先低卡低脂并稳定返回6道菜");
+        LinkedHashMap<Long, Dish> picked = new LinkedHashMap<>();
+
+        if (sceneCategoryIds != null && !sceneCategoryIds.isEmpty()) {
+            List<Dish> sceneCandidates = queryDietCandidates(sceneCategoryIds, dto, 12);
+            appendUniqueDishes(picked, sceneCandidates, 6);
+            log.info("[控卡模式] 场景分类命中{}条，已选{}条", sceneCandidates.size(), picked.size());
+        }
+
+        if (picked.size() < 6) {
+            List<Dish> globalCandidates = queryDietCandidates(null, dto, 24);
+            appendUniqueDishes(picked, globalCandidates, 6);
+            log.info("[控卡模式] 全局补齐命中{}条，已选{}条", globalCandidates.size(), picked.size());
+        }
+
+        List<Dish> result = new ArrayList<>(picked.values());
+        normalizeDishList(result);
+        return result;
+    }
+
+    /**
+     * 控卡模式候选查询：排序规则固定为 calories ASC, fat ASC
+     */
+    private List<Dish> queryDietCandidates(List<Long> categoryIds, SmartRecommendDTO dto, int limit) {
+        LambdaQueryWrapper<Dish> w = new LambdaQueryWrapper<>();
+        w.eq(Dish::getStatus, 1);
+
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            w.in(Dish::getCategoryId, categoryIds);
+        }
+
+        // 忌口红线始终生效
+        applyAvoidTags(w, dto.getAvoidTags());
+
+        // 控卡模式下固定排序，不再退化为销量主导
+        int safeLimit = Math.max(limit, 6);
+        w.last("ORDER BY " +
+                "CASE WHEN calories IS NULL THEN 1 ELSE 0 END ASC, calories ASC, " +
+                "CASE WHEN fat IS NULL THEN 1 ELSE 0 END ASC, fat ASC, sold DESC LIMIT " + safeLimit);
+
+        return dishMapper.selectList(w);
+    }
+
+    private void appendUniqueDishes(Map<Long, Dish> picked, List<Dish> candidates, int targetSize) {
+        if (candidates == null || candidates.isEmpty() || picked.size() >= targetSize) {
+            return;
+        }
+        for (Dish dish : candidates) {
+            if (dish == null || dish.getId() == null) {
+                continue;
+            }
+            picked.putIfAbsent(dish.getId(), dish);
+            if (picked.size() >= targetSize) {
+                break;
+            }
+        }
+    }
+
+    private SmartRecommendVO buildSmartRecommendVO(String mode, boolean isDietMode, List<Dish> dishes) {
+        List<Dish> safeDishes = dishes == null ? Collections.emptyList() : dishes;
+        normalizeDishList(safeDishes);
+        List<DishVO> dishVOList = safeDishes.stream()
+                .limit(6)
+                .map(dish -> {
+                    DishVO vo = new DishVO();
+                    BeanUtils.copyProperties(dish, vo);
+                    return vo;
+                })
+                .collect(Collectors.toList());
+
+        return SmartRecommendVO.builder()
+                .recommendMode(mode)
+                .isDietMode(isDietMode)
+                .dishes(dishVOList)
+                .build();
     }
 
     /**

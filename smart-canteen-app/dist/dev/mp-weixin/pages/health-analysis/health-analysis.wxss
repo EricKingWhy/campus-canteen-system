@@ -437,7 +437,9 @@
   margin-top: 16rpx;
 }
 .prediction-icon.data-v-85d0b700 {
-  font-size: 28rpx;
+  width: 34rpx;
+  height: 34rpx;
+  flex-shrink: 0;
 }
 .prediction-text.data-v-85d0b700 {
   font-size: 28rpx;

@@ -10,6 +10,7 @@ export type DishItem = {
   calories?: number
   protein?: number
   fat?: number
+  fiber?: number
   carbohydrates?: number
   mainIngredients?: string
   allergenTags?: string
@@ -53,4 +54,10 @@ export type HealthStats = {
   bmiStatus: string
   targetCalories: number | null
   suggestion: string
+}
+
+export type SmartRecommendResult = {
+  recommendMode?: 'NORMAL' | 'DIET' | 'COLD_START'
+  isDietMode?: boolean
+  dishes?: DishItem[]
 }

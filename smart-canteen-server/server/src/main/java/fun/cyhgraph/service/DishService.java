@@ -6,6 +6,7 @@ import fun.cyhgraph.dto.DishPageDTO;
 import fun.cyhgraph.dto.SmartRecommendDTO;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.result.PageResult;
+import fun.cyhgraph.vo.SmartRecommendVO;
 import java.util.List;
 
 public interface DishService extends IService<Dish> {
@@ -33,5 +34,5 @@ public interface DishService extends IService<Dish> {
     void fixImages();
 
     // 【智选6道菜】4层漏斗推荐引擎
-    List<Dish> getSmartPick6(SmartRecommendDTO dto);
+    SmartRecommendVO getSmartPick6(SmartRecommendDTO dto);
 }

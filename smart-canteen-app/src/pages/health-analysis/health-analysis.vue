@@ -196,7 +196,11 @@
           </view>
           
           <view class="prediction-row">
-            <text class="prediction-icon">📈</text>
+            <image
+              class="prediction-icon"
+              src="@/assets/images/icons/icon_cost_prediction.png"
+              mode="aspectFit"
+            />
             <text class="prediction-text">预计月末消费 ¥{{ formatInt(predictedTotal) }}</text>
           </view>
         </view>
@@ -1239,7 +1243,9 @@ onMounted(() => {
 }
 
 .prediction-icon {
-  font-size: 28rpx;
+  width: 34rpx;
+  height: 34rpx;
+  flex-shrink: 0;
 }
 
 .prediction-text {

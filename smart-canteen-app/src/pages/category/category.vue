@@ -119,7 +119,7 @@
           </view>
           <view class="price-info">
             <view class="main-price">
-              <text style="font-size: 24rpx;">¥</text> {{ totalAmount }}
+              <text>¥{{ totalAmount }}</text>
             </view>
           </view>
         </view>
@@ -761,53 +761,52 @@ $price-red: #ef4444;
 /* Floating Cart Bar */
 .cart-floater {
    position: fixed;
-   bottom: 48rpx;
+   bottom: calc(var(--window-bottom) + 40rpx);
    left: 32rpx;
    right: 32rpx;
-   z-index: 50;
+   z-index: 100;
    
    .cart-bar {
-      height: 112rpx; /* h-14 * 2 approx */
+      height: 100rpx;
       background: #1A1A1A;
-      border-radius: 999px;
+      border-radius: 50rpx;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16rpx 0 24rpx;
-      box-shadow: 0 20rpx 50rpx rgba(0,0,0,0.25);
+      padding: 0 10rpx 0 20rpx;
+      box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.25);
       
       .cart-left {
          display: flex; align-items: center;
          
          .icon-circle {
-            width: 80rpx; height: 80rpx;
+            width: 72rpx; height: 72rpx;
             background: #333;
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             position: relative;
-            margin-right: 24rpx;
+            margin-right: 20rpx;
             
             .badge {
-               position: absolute; top: -8rpx; right: -8rpx;
-               background: $price-red; color: white;
-               font-size: 20rpx; font-weight: bold;
-               padding: 4rpx 10rpx; border-radius: 999px;
-               border: 4rpx solid #1A1A1A;
+               position: absolute; top: -10rpx; right: -10rpx;
+               background: #ff4d4f; color: white; font-size: 20rpx;
+               width: 36rpx; height: 36rpx; border-radius: 50%;
+               text-align: center; line-height: 36rpx; border: 2rpx solid #1A1A1A;
             }
          }
          
          .price-info {
             display: flex; flex-direction: column;
-            .main-price { color: white; font-weight: bold; font-size: 36rpx; }
+            .main-price { color: white; font-weight: bold; font-size: 44rpx; letter-spacing: 1rpx; }
             .sub-text { color: #9ca3af; font-size: 20rpx; }
          }
       }
       
       .checkout-btn {
-         background: $primary;
+         background: #ffa000;
          color: white;
          font-size: 28rpx; font-weight: bold;
          height: 80rpx;
          padding: 0 48rpx;
-         border-radius: 999px;
+         border-radius: 999rpx;
          display: flex; align-items: center;
       }
    }

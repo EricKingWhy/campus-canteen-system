@@ -202,7 +202,8 @@
 .recommend-scroll.data-v-464d1350 {
   white-space: nowrap;
   padding-left: 32rpx;
-  height: 420rpx;
+  height: 456rpx;
+  padding-bottom: 12rpx;
 }
 .recommend-scroll .rec-card.data-v-464d1350 {
   display: inline-block;
@@ -219,7 +220,7 @@
   height: 220rpx;
 }
 .recommend-scroll .rec-card .rec-info.data-v-464d1350 {
-  padding: 20rpx;
+  padding: 20rpx 20rpx 28rpx;
 }
 .recommend-scroll .rec-card .rec-info .rec-name.data-v-464d1350 {
   font-size: 28rpx;
@@ -240,6 +241,11 @@
   border: 1px solid #FF6B00;
   padding: 2rpx 8rpx;
   border-radius: 8rpx;
+}
+.recommend-scroll .rec-card .rec-info .rec-tags .diet-tag.data-v-464d1350 {
+  color: #21A366;
+  border-color: #21A366;
+  background: rgba(33, 163, 102, 0.08);
 }
 .recommend-scroll .rec-card .rec-info .rec-meta.data-v-464d1350 {
   display: flex;
@@ -275,6 +281,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
   box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.3);
 }
 
@@ -375,7 +382,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10rpx 0 32rpx;
+  padding: 0 10rpx 0 20rpx;
   box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.25);
 }
 .cart-floater .cart-content .price-section.data-v-464d1350 {
@@ -384,16 +391,24 @@
 }
 .cart-floater .cart-content .price-section .cart-icon-wrap.data-v-464d1350 {
   position: relative;
-  margin-right: 24rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .cart-floater .cart-content .price-section .cart-icon-wrap .cart-emoji.data-v-464d1350 {
-  font-size: 48rpx;
+  font-size: 40rpx;
+  line-height: 1;
 }
 .cart-floater .cart-content .price-section .cart-icon-wrap .badge.data-v-464d1350 {
   position: absolute;
   top: -10rpx;
   right: -10rpx;
-  background: #FF6B00;
+  background: #ff4d4f;
   color: white;
   font-size: 20rpx;
   width: 36rpx;
@@ -405,16 +420,17 @@
 }
 .cart-floater .cart-content .price-section .total-price.data-v-464d1350 {
   color: white;
-  font-size: 36rpx;
+  font-size: 44rpx;
   font-weight: bold;
   font-family: "DIN", sans-serif;
+  letter-spacing: 1rpx;
 }
 .cart-floater .cart-content .checkout-btn.data-v-464d1350 {
-  background: #FF8C42;
+  background: #ffa000;
   color: white;
   height: 80rpx;
   padding: 0 48rpx;
-  border-radius: 40rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
   font-weight: bold;

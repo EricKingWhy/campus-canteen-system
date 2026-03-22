@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const stores_modules_userProfile = require("../../stores/modules/userProfile.js");
+const common_assets = require("../../common/assets.js");
 require("../../api/user.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
@@ -11,6 +12,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const currentStep = common_vendor.ref(1);
     const loading = common_vendor.ref(false);
     const customAvoid = common_vendor.ref("");
+    const goalIconMap = {
+      1: common_assets.goalIconJianzhi,
+      2: common_assets.goalIconZengji,
+      3: common_assets.goalIconWeichi
+    };
     const formData = common_vendor.ref({
       nickname: "",
       phone: "",
@@ -248,7 +254,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         E: common_vendor.f(goalOptions, (item, k0, i0) => {
           return {
-            a: common_vendor.t(item.icon),
+            a: goalIconMap[item.value],
             b: common_vendor.t(item.name),
             c: item.value,
             d: formData.value.healthGoal === item.value ? 1 : "",

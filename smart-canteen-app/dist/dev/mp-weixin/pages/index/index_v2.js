@@ -29,6 +29,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       showDishDetail.value = true;
     };
     const recommendList = common_vendor.ref([]);
+    const recommendMode = common_vendor.ref("NORMAL");
+    const isDietMode = common_vendor.computed(() => recommendMode.value === "DIET");
+    const recommendTitle = common_vendor.computed(() => isDietMode.value ? "轻负控卡推荐" : "智选6道菜");
+    const recommendSubtitle = common_vendor.computed(
+      () => isDietMode.value ? "今日热量已达标，为您优先推荐低负担菜品" : "根据您的健康画像定制"
+    );
     const todayCalories = common_vendor.ref(0);
     const todayProtein = common_vendor.ref(0);
     (/* @__PURE__ */ new Date()).getHours();
@@ -74,6 +80,23 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       if (image.startsWith("/static/dish/"))
         return baseUrl.value + image;
       return baseUrl.value + "/static/dish/" + image.replace(/^\/+/, "");
+    };
+    const toNumber = (value) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    };
+    const resolveRecommendMode = (payload) => {
+      if (!payload || Array.isArray(payload)) {
+        return "NORMAL";
+      }
+      const mode = String(payload.recommendMode || "").toUpperCase();
+      if (mode === "DIET" || mode === "COLD_START" || mode === "NORMAL") {
+        return mode;
+      }
+      if (payload.isDietMode === true) {
+        return "DIET";
+      }
+      return "NORMAL";
     };
     const fetchTodayNutrition = () => {
       return new Promise((resolve) => {
@@ -122,36 +145,74 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         success: (res) => {
           console.log("智选6道菜响应:", res.data);
           if (res.data.code === 0 || res.data.code === 1) {
-            const dishes = res.data.data || [];
+            const payload = res.data.data;
+            const mode = resolveRecommendMode(payload);
+            const dishes = Array.isArray(payload) ? payload : (payload == null ? void 0 : payload.dishes) || [];
+            recommendMode.value = mode;
             recommendList.value = dishes.map((dish) => ({
               ...dish,
-              tags: buildSmartTags(dish, dto),
+              tags: buildSmartTags(dish, dto, mode),
+              dietHint: buildDietHint(dish, mode),
               image: dish.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
             }));
-            console.log("智选6道菜渲染:", recommendList.value.length, "道");
+            console.log("智选6道菜渲染:", recommendList.value.length, "道", "mode=", mode);
+          } else {
+            recommendMode.value = "NORMAL";
+            fallbackRecommend();
           }
         },
         fail: (err) => {
           console.error("智选6道菜请求失败，降级到普通列表:", err);
+          recommendMode.value = "NORMAL";
           fallbackRecommend();
         }
       });
     };
-    const buildSmartTags = (dish, dto) => {
+    const buildSmartTags = (dish, dto, mode = "NORMAL") => {
       const tags = [];
-      if (dish.calories && dish.calories < 400)
+      const calories = toNumber(dish.calories);
+      const protein = toNumber(dish.protein);
+      const fat = toNumber(dish.fat);
+      const fiber = toNumber(dish.fiber);
+      if (mode === "DIET") {
+        if (fiber !== null && fiber >= 5)
+          tags.push("高纤维");
+        if (calories !== null && calories <= 280)
+          tags.push("超低卡");
+        if (fat !== null && fat <= 10)
+          tags.push("低脂");
+        if (tags.length === 0)
+          tags.push("轻负担");
+        return tags;
+      }
+      if (calories !== null && calories < 400)
         tags.push("低卡");
-      if (dish.protein && dish.protein > 20)
+      if (protein !== null && protein > 20)
         tags.push("高蛋白");
-      if (dto.healthGoal === 1 && dish.fat && dish.fat < 10)
+      if (dto.healthGoal === 1 && fat !== null && fat < 10)
         tags.push("减脂友好");
-      if (dto.healthGoal === 2 && dish.protein && dish.protein > 25)
+      if (dto.healthGoal === 2 && protein !== null && protein > 25)
         tags.push("增肌之选");
       if (tags.length === 0)
         tags.push("推荐");
       return tags;
     };
+    const buildDietHint = (dish, mode) => {
+      if (mode !== "DIET")
+        return "匹配度 98%";
+      const calories = toNumber(dish.calories);
+      const fat = toNumber(dish.fat);
+      const fiber = toNumber(dish.fiber);
+      if (calories !== null && calories <= 280)
+        return "超低卡优先";
+      if (fat !== null && fat <= 10)
+        return "低脂优先";
+      if (fiber !== null && fiber >= 5)
+        return "高纤维优先";
+      return "轻负担推荐";
+    };
     const fallbackRecommend = () => {
+      recommendMode.value = "NORMAL";
       common_vendor.index.request({
         url: baseUrl.value + "/user/dish/list",
         method: "GET",
@@ -162,7 +223,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             const dishes = res.data.data || [];
             recommendList.value = dishes.slice(0, 6).map((dish) => ({
               ...dish,
-              tags: ["推荐"],
+              tags: buildSmartTags(dish, { healthGoal: 3 }, "NORMAL"),
+              dietHint: "匹配度 98%",
               image: dish.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
             }));
           }
@@ -274,7 +336,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return cartList.value.reduce((sum, item) => sum + (item.number || 0), 0);
     });
     const cartTotalPrice = common_vendor.computed(() => {
-      return cartList.value.reduce((sum, item) => sum + (item.amount || item.price) * (item.number || 0), 0).toFixed(1);
+      return cartList.value.reduce((sum, item) => sum + (item.amount || item.price) * (item.number || 0), 0).toFixed(2);
     });
     const getRealTimeWeather = () => {
       common_vendor.index.request({
@@ -322,7 +384,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         h: common_vendor.t(((_a = common_vendor.unref(profileStore).calculatedBMI) == null ? void 0 : _a.toFixed(1)) || "--"),
         i: common_vendor.t(common_vendor.unref(profileStore).bmiCategory || "未知"),
         j: common_vendor.t(((_b = common_vendor.unref(profileStore).suggestIntake) == null ? void 0 : _b.toFixed(0)) || "--"),
-        k: common_vendor.f(recommendList.value, (item, index, i0) => {
+        k: common_vendor.t(recommendTitle.value),
+        l: common_vendor.t(recommendSubtitle.value),
+        m: common_vendor.f(recommendList.value, (item, index, i0) => {
           return {
             a: resolveDishImage(item.image),
             b: common_vendor.t(item.name),
@@ -333,14 +397,18 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
               };
             }),
             d: common_vendor.t(item.calories),
-            e: common_vendor.t(item.price),
-            f: common_vendor.o(($event) => openDishDetail(item), index),
-            g: index,
-            h: common_vendor.o(($event) => openDishDetail(item), index)
+            e: common_vendor.t(isDietMode.value ? item.dietHint || "轻负担推荐" : "匹配度 98%"),
+            f: common_vendor.t(item.price),
+            g: common_vendor.o(($event) => openDishDetail(item), index),
+            h: index,
+            i: common_vendor.o(($event) => openDishDetail(item), index)
           };
         }),
-        l: common_vendor.unref(common_assets.iconHot),
-        m: common_vendor.f(dishList.value, (dish, index, i0) => {
+        n: common_vendor.n({
+          "diet-tag": isDietMode.value
+        }),
+        o: common_vendor.unref(common_assets.iconHot),
+        p: common_vendor.f(dishList.value, (dish, index, i0) => {
           return common_vendor.e({
             a: index === 0
           }, index === 0 ? {} : index === 1 ? {} : index === 2 ? {} : {
@@ -358,17 +426,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             l: common_vendor.o(($event) => openDishDetail(dish), dish.id)
           });
         }),
-        n: cartTotalCount.value > 0
+        q: cartTotalCount.value > 0
       }, cartTotalCount.value > 0 ? {
-        o: common_vendor.t(cartTotalCount.value)
+        r: common_vendor.t(cartTotalCount.value)
       } : {}, {
-        p: common_vendor.t(cartTotalPrice.value),
-        q: common_vendor.o(submitOrder),
-        r: common_vendor.o(toggleCart),
-        s: openCartList.value
+        s: common_vendor.t(cartTotalPrice.value),
+        t: common_vendor.o(submitOrder),
+        v: common_vendor.o(toggleCart),
+        w: openCartList.value
       }, openCartList.value ? {
-        t: common_vendor.o(clearCart),
-        v: common_vendor.f(cartList.value, (item, idx, i0) => {
+        x: common_vendor.o(clearCart),
+        y: common_vendor.f(cartList.value, (item, idx, i0) => {
           return {
             a: common_vendor.t(item.name),
             b: common_vendor.o(($event) => subCart(item), idx),
@@ -377,13 +445,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: idx
           };
         }),
-        w: common_vendor.o(() => {
+        z: common_vendor.o(() => {
         }),
-        x: common_vendor.o(($event) => openCartList.value = false)
+        A: common_vendor.o(($event) => openCartList.value = false)
       } : {}, {
-        y: common_vendor.o(($event) => showDishDetail.value = false),
-        z: common_vendor.o(addToCart),
-        A: common_vendor.p({
+        B: common_vendor.o(($event) => showDishDetail.value = false),
+        C: common_vendor.o(addToCart),
+        D: common_vendor.p({
           visible: showDishDetail.value,
           dish: currentDetailDish.value
         })

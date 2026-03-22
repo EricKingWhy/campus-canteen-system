@@ -59,10 +59,10 @@
     <view class="section">
       <view class="section-header">
         <view class="title-row">
-          <text class="title">智选6道菜</text>
+          <text class="title">{{ recommendTitle }}</text>
           <image class="target-icon" src="/static/icon/jingzhunpipei.png" mode="aspectFit" />
         </view>
-        <text class="subtitle">根据您的健康画像定制</text>
+        <text class="subtitle">{{ recommendSubtitle }}</text>
       </view>
       <scroll-view class="recommend-scroll" scroll-x show-scrollbar="false">
         <view class="rec-card" v-for="(item, index) in recommendList" :key="index" @click="openDishDetail(item)">
@@ -74,11 +74,11 @@
           <view class="rec-info">
             <view class="rec-name">{{ item.name }}</view>
             <view class="rec-tags">
-              <text class="tag" v-for="tag in item.tags" :key="tag">{{ tag }}</text>
+              <text :class="['tag', { 'diet-tag': isDietMode }]" v-for="tag in item.tags" :key="tag">{{ tag }}</text>
             </view>
             <view class="rec-meta">
               <text class="calories">🔥 {{ item.calories }} kcal</text>
-              <text class="stock">匹配度 98%</text>
+              <text class="stock">{{ isDietMode ? (item.dietHint || '轻负担推荐') : '匹配度 98%' }}</text>
             </view>
             <view class="rec-action">
               <text class="price">¥{{ item.price }}</text>
@@ -206,6 +206,13 @@ const openDishDetail = (dish: any) => {
 
 // 智选6道菜 - 从后端 4层漏斗引擎获取
 const recommendList = ref<any[]>([])
+const recommendMode = ref<'NORMAL' | 'DIET' | 'COLD_START'>('NORMAL')
+const isDietMode = computed(() => recommendMode.value === 'DIET')
+const recommendTitle = computed(() => isDietMode.value ? '轻负控卡推荐' : '智选6道菜')
+const recommendSubtitle = computed(() => isDietMode.value
+   ? '今日热量已达标，为您优先推荐低负担菜品'
+   : '根据您的健康画像定制'
+)
 // 今日营养数据(用于组装 DTO)
 const todayCalories = ref(0)
 const todayProtein = ref(0)
@@ -253,6 +260,25 @@ const resolveDishImage = (image?: string) => {
    if (image.startsWith('http')) return image
    if (image.startsWith('/static/dish/')) return baseUrl.value + image
    return baseUrl.value + '/static/dish/' + image.replace(/^\/+/, '')
+}
+
+const toNumber = (value: any): number | null => {
+   const num = Number(value)
+   return Number.isFinite(num) ? num : null
+}
+
+const resolveRecommendMode = (payload: any): 'NORMAL' | 'DIET' | 'COLD_START' => {
+   if (!payload || Array.isArray(payload)) {
+      return 'NORMAL'
+   }
+   const mode = String(payload.recommendMode || '').toUpperCase()
+   if (mode === 'DIET' || mode === 'COLD_START' || mode === 'NORMAL') {
+      return mode as 'NORMAL' | 'DIET' | 'COLD_START'
+   }
+   if (payload.isDietMode === true) {
+      return 'DIET'
+   }
+   return 'NORMAL'
 }
 
 const fetchTodayNutrition = () => {
@@ -309,17 +335,25 @@ const getRecommendData = () => {
       success: (res: any) => {
          console.log('智选6道菜响应:', res.data);
          if (res.data.code === 0 || res.data.code === 1) {
-            const dishes = res.data.data || [];
+            const payload = res.data.data
+            const mode = resolveRecommendMode(payload)
+            const dishes = Array.isArray(payload) ? payload : (payload?.dishes || [])
+            recommendMode.value = mode
             recommendList.value = dishes.map((dish: any) => ({
                ...dish,
-               tags: buildSmartTags(dish, dto),
+               tags: buildSmartTags(dish, dto, mode),
+               dietHint: buildDietHint(dish, mode),
                image: dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
             }));
-            console.log('智选6道菜渲染:', recommendList.value.length, '道');
+            console.log('智选6道菜渲染:', recommendList.value.length, '道', 'mode=', mode);
+         } else {
+            recommendMode.value = 'NORMAL'
+            fallbackRecommend();
          }
       },
       fail: (err) => {
          console.error('智选6道菜请求失败，降级到普通列表:', err);
+         recommendMode.value = 'NORMAL'
          // 降级：调普通 dish/list
          fallbackRecommend();
       }
@@ -327,18 +361,45 @@ const getRecommendData = () => {
 }
 
 // 智能标签生成
-const buildSmartTags = (dish: any, dto: any): string[] => {
+const buildSmartTags = (dish: any, dto: any, mode: 'NORMAL' | 'DIET' | 'COLD_START' = 'NORMAL'): string[] => {
    const tags: string[] = []
-   if (dish.calories && dish.calories < 400) tags.push('低卡')
-   if (dish.protein && dish.protein > 20) tags.push('高蛋白')
-   if (dto.healthGoal === 1 && dish.fat && dish.fat < 10) tags.push('减脂友好')
-   if (dto.healthGoal === 2 && dish.protein && dish.protein > 25) tags.push('增肌之选')
+   const calories = toNumber(dish.calories)
+   const protein = toNumber(dish.protein)
+   const fat = toNumber(dish.fat)
+   const fiber = toNumber(dish.fiber)
+
+   if (mode === 'DIET') {
+      if (fiber !== null && fiber >= 5) tags.push('高纤维')
+      if (calories !== null && calories <= 280) tags.push('超低卡')
+      if (fat !== null && fat <= 10) tags.push('低脂')
+      if (tags.length === 0) tags.push('轻负担')
+      return tags
+   }
+
+   if (calories !== null && calories < 400) tags.push('低卡')
+   if (protein !== null && protein > 20) tags.push('高蛋白')
+   if (dto.healthGoal === 1 && fat !== null && fat < 10) tags.push('减脂友好')
+   if (dto.healthGoal === 2 && protein !== null && protein > 25) tags.push('增肌之选')
    if (tags.length === 0) tags.push('推荐')
    return tags
 }
 
+const buildDietHint = (dish: any, mode: 'NORMAL' | 'DIET' | 'COLD_START'): string => {
+   if (mode !== 'DIET') return '匹配度 98%'
+
+   const calories = toNumber(dish.calories)
+   const fat = toNumber(dish.fat)
+   const fiber = toNumber(dish.fiber)
+
+   if (calories !== null && calories <= 280) return '超低卡优先'
+   if (fat !== null && fat <= 10) return '低脂优先'
+   if (fiber !== null && fiber >= 5) return '高纤维优先'
+   return '轻负担推荐'
+}
+
 // 降级推荐(智选接口失败时)
 const fallbackRecommend = () => {
+   recommendMode.value = 'NORMAL'
    uni.request({
       url: baseUrl.value + '/user/dish/list',
       method: 'GET',
@@ -349,7 +410,8 @@ const fallbackRecommend = () => {
             const dishes = res.data.data || [];
             recommendList.value = dishes.slice(0, 6).map((dish: any) => ({
                ...dish,
-               tags: ['推荐'],
+               tags: buildSmartTags(dish, { healthGoal: 3 }, 'NORMAL'),
+               dietHint: '匹配度 98%',
                image: dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
             }));
          }
@@ -478,7 +540,7 @@ const cartTotalCount = computed(() => {
 })
 
 const cartTotalPrice = computed(() => {
-   return cartList.value.reduce((sum, item) => sum + ((item.amount || item.price) * (item.number || 0)), 0).toFixed(1)
+   return cartList.value.reduce((sum, item) => sum + ((item.amount || item.price) * (item.number || 0)), 0).toFixed(2)
 })
 
 // 【核心新增】请求和风天气实时数据
@@ -672,7 +734,8 @@ $spacing: 32rpx;
 .recommend-scroll {
   white-space: nowrap;
   padding-left: $spacing;
-  height: 420rpx; // Fixed height to ensure rendering
+  height: 456rpx; // 增高避免卡片底部按钮被裁剪
+  padding-bottom: 12rpx;
 
   .rec-card {
     display: inline-block;
@@ -690,7 +753,7 @@ $spacing: 32rpx;
     }
 
     .rec-info {
-      padding: 20rpx;
+      padding: 20rpx 20rpx 28rpx;
       
       .rec-name { font-size: 28rpx; font-weight: bold; color: $text-main; margin-bottom: 8rpx; white-space: normal; } // Allow wrap
       
@@ -700,6 +763,7 @@ $spacing: 32rpx;
         gap: 8rpx;
         margin-bottom: 12rpx;
         .tag { font-size: 18rpx; color: $primary; border: 1px solid $primary; padding: 2rpx 8rpx; border-radius: 8rpx; }
+        .diet-tag { color: #21A366; border-color: #21A366; background: rgba(33, 163, 102, 0.08); }
       }
 
       .rec-meta {
@@ -719,6 +783,7 @@ $spacing: 32rpx;
         .add-btn { 
           width: 56rpx; height: 56rpx; background: $text-main; border-radius: 50%; 
           color: white; font-size: 40rpx; display: flex; align-items: center; justify-content: center;
+          line-height: 1;
           box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.3);
         }
       }
@@ -788,13 +853,13 @@ $spacing: 32rpx;
   z-index: 100;
   
   .cart-content {
-    background: $text-main; // Dark theme for contrast (Thesis style)
+    background: #1A1A1A;
     height: 100rpx;
     border-radius: 50rpx;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10rpx 0 32rpx; // Right padding smaller for button
+    padding: 0 10rpx 0 20rpx;
     box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.25);
 
     .price-section {
@@ -803,24 +868,31 @@ $spacing: 32rpx;
        
        .cart-icon-wrap {
           position: relative;
-          margin-right: 24rpx;
-          .cart-emoji { font-size: 48rpx; }
+          width: 72rpx;
+          height: 72rpx;
+          border-radius: 50%;
+          margin-right: 20rpx;
+          background: #333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .cart-emoji { font-size: 40rpx; line-height: 1; }
           .badge { 
              position: absolute; top: -10rpx; right: -10rpx; 
-             background: $primary; color: white; font-size: 20rpx; 
+             background: #ff4d4f; color: white; font-size: 20rpx;
              width: 36rpx; height: 36rpx; border-radius: 50%; 
-             text-align: center; line-height: 36rpx; border: 2rpx solid $text-main;
+             text-align: center; line-height: 36rpx; border: 2rpx solid #1A1A1A;
           }
        }
-       .total-price { color: white; font-size: 36rpx; font-weight: bold; font-family: 'DIN', sans-serif;}
+       .total-price { color: white; font-size: 44rpx; font-weight: bold; font-family: 'DIN', sans-serif; letter-spacing: 1rpx; }
     }
 
     .checkout-btn {
-       background: #FF8C42;
+       background: #ffa000;
        color: white;
        height: 80rpx;
        padding: 0 48rpx;
-       border-radius: 40rpx;
+       border-radius: 999rpx;
        display: flex;
        align-items: center;
        font-weight: bold;

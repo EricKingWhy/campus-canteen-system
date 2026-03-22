@@ -172,7 +172,7 @@
             :class="{ active: formData.healthGoal === item.value }"
             @click="formData.healthGoal = item.value"
           >
-            <text class="goal-icon">{{ item.icon }}</text>
+            <image class="goal-icon" :src="goalIconMap[item.value]" mode="aspectFit" />
             <text class="goal-name">{{ item.name }}</text>
           </view>
         </view>
@@ -334,6 +334,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useUserProfileStore } from '@/stores/modules/userProfile'
 import type { UserProfileDTO } from '@/api/user'
+import goalIconJianzhi from '@/assets/images/icons/jianzhi.png'
+import goalIconZengji from '@/assets/images/icons/zengji.png'
+import goalIconWeichi from '@/assets/images/icons/weichi.png'
 
 const profileStore = useUserProfileStore()
 
@@ -341,6 +344,12 @@ const profileStore = useUserProfileStore()
 const currentStep = ref(1)
 const loading = ref(false)
 const customAvoid = ref('')
+
+const goalIconMap: Record<number, string> = {
+  1: goalIconJianzhi,
+  2: goalIconZengji,
+  3: goalIconWeichi
+}
 
 // 表单数据
 const formData = ref<UserProfileDTO>({
@@ -916,7 +925,8 @@ $text-muted: #a4978f;
     }
 
     .goal-icon {
-      font-size: 40rpx;
+      width: 48rpx;
+      height: 48rpx;
       margin-bottom: 12rpx;
     }
 

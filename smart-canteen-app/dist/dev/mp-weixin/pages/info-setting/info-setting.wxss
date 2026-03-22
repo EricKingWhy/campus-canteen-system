@@ -327,7 +327,8 @@
   background: rgba(255, 140, 66, 0.07);
 }
 .goal-grid .goal-card .goal-icon.data-v-84cc0418 {
-  font-size: 40rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-bottom: 12rpx;
 }
 .goal-grid .goal-card .goal-name.data-v-84cc0418 {

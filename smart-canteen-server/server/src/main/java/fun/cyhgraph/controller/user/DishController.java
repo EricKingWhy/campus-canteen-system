@@ -7,6 +7,7 @@ import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.result.Result;
 import fun.cyhgraph.service.DishService;
 import fun.cyhgraph.vo.DishVO;
+import fun.cyhgraph.vo.SmartRecommendVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,17 +79,9 @@ public class DishController {
      * 【智选6道菜】4层漏斗推荐引擎接口
      */
     @PostMapping("/smartPick6")
-    public Result<List<DishVO>> smartPick6(@RequestBody SmartRecommendDTO dto) {
+    public Result<SmartRecommendVO> smartPick6(@RequestBody SmartRecommendDTO dto) {
         log.info("C端-智选6道菜, 入参: {}", dto);
-
-        List<Dish> dishes = dishService.getSmartPick6(dto);
-
-        List<DishVO> result = dishes.stream().map(d -> {
-            DishVO vo = new DishVO();
-            BeanUtils.copyProperties(d, vo);
-            return vo;
-        }).collect(Collectors.toList());
-
+        SmartRecommendVO result = dishService.getSmartPick6(dto);
         return Result.success(result);
     }
 }

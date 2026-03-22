@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const stores_modules_userProfile = require("../../stores/modules/userProfile.js");
 const common_assets = require("../../common/assets.js");
+const stores_modules_userProfile = require("../../stores/modules/userProfile.js");
 require("../../api/user.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
@@ -471,14 +471,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, isOverspending.value ? {} : {}, {
         N: common_vendor.t(formatMoney(monthSpent.value)),
         O: spendingProgress.value + "%",
-        P: common_vendor.t(formatInt(predictedTotal.value)),
-        Q: selectedRange.value === "7days" ? 1 : "",
-        R: common_vendor.o(($event) => setRange("7days")),
-        S: selectedRange.value === "30days" ? 1 : "",
-        T: common_vendor.o(($event) => setRange("30days")),
-        U: selectedRange.value === "7days" && weeklyCostTrend.value && weeklyCostTrend.value.length > 0
+        P: common_assets._imports_0$1,
+        Q: common_vendor.t(formatInt(predictedTotal.value)),
+        R: selectedRange.value === "7days" ? 1 : "",
+        S: common_vendor.o(($event) => setRange("7days")),
+        T: selectedRange.value === "30days" ? 1 : "",
+        U: common_vendor.o(($event) => setRange("30days")),
+        V: selectedRange.value === "7days" && weeklyCostTrend.value && weeklyCostTrend.value.length > 0
       }, selectedRange.value === "7days" && weeklyCostTrend.value && weeklyCostTrend.value.length > 0 ? {
-        V: common_vendor.f(weeklyCostTrend.value, (item, index, i0) => {
+        W: common_vendor.f(weeklyCostTrend.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.value),
             b: item.barHeight + "rpx",
@@ -488,9 +489,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : selectedRange.value === "30days" && monthlyCostTrend.value.length > 0 ? {
-        X: common_vendor.t(areaTooltipText.value),
-        Y: common_vendor.o(onAreaCanvasTouch),
-        Z: common_vendor.f(monthlyCostTrend.value, (item, index, i0) => {
+        Y: common_vendor.t(areaTooltipText.value),
+        Z: common_vendor.o(onAreaCanvasTouch),
+        aa: common_vendor.f(monthlyCostTrend.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.displayLabel),
             b: `x-${index}`,
@@ -498,12 +499,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        W: selectedRange.value === "30days" && monthlyCostTrend.value.length > 0,
-        aa: categoryBreakdown.value && categoryBreakdown.value.length > 0
+        X: selectedRange.value === "30days" && monthlyCostTrend.value.length > 0,
+        ab: categoryBreakdown.value && categoryBreakdown.value.length > 0
       }, categoryBreakdown.value && categoryBreakdown.value.length > 0 ? {
-        ab: common_vendor.s(compositionDonutStyle.value),
-        ac: common_vendor.t(topCategory.value),
-        ad: common_vendor.f(categoryBreakdown.value, (cat, k0, i0) => {
+        ac: common_vendor.s(compositionDonutStyle.value),
+        ad: common_vendor.t(topCategory.value),
+        ae: common_vendor.f(categoryBreakdown.value, (cat, k0, i0) => {
           return {
             a: cat.color,
             b: common_vendor.t(cat.name),
@@ -512,9 +513,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        ae: costTip.value
+        af: costTip.value
       }, costTip.value ? {
-        af: common_vendor.t(costTip.value)
+        ag: common_vendor.t(costTip.value)
       } : {}) : {}, {
         g: pageState.value === "noData",
         i: activeTab.value === "health",
