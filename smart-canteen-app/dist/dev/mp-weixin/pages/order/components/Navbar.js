@@ -33,16 +33,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return {
         a: common_assets._imports_0$2,
         b: common_vendor.o(back),
-        c: common_assets._imports_1,
-        d: ((_a = common_vendor.unref(safeAreaInsets)) == null ? void 0 : _a.top) + "px",
-        e: common_vendor.t(status.value === true ? "营业中" : "打烊中"),
-        f: common_vendor.p({
+        c: ((_a = common_vendor.unref(safeAreaInsets)) == null ? void 0 : _a.top) + "px",
+        d: common_vendor.t(status.value === true ? "营业中" : "打烊中"),
+        e: common_vendor.p({
           ["custom-prefix"]: "iconfont",
           type: "icon-qian",
           size: "15"
         }),
-        g: common_vendor.o(phone),
-        h: common_vendor.p({
+        f: common_vendor.o(phone),
+        g: common_vendor.p({
           ["custom-prefix"]: "iconfont",
           type: "icon-dianhua",
           size: "20"

@@ -71,7 +71,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     const dishList = common_vendor.ref([]);
     const cartList = common_vendor.ref([]);
-    const baseUrl = common_vendor.ref("http://127.0.0.1:8081");
+    const baseUrl = common_vendor.ref("http://121.41.59.61:8081");
     const resolveDishImage = (image) => {
       if (!image)
         return defaultDishImage;

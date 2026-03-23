@@ -17,7 +17,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       pic: ""
     });
     const isLegacyDefaultAvatar = (avatar) => {
-      return !!avatar && (avatar.includes("photo-1599566150163-29194dcaad36") || avatar.includes("images.unsplash.com") || avatar.startsWith("http") && !avatar.includes("127.0.0.1") && !avatar.includes("localhost"));
+      return !!avatar && (avatar.includes("photo-1599566150163-29194dcaad36") || avatar.includes("images.unsplash.com") || avatar.startsWith("http") && !avatar.includes("121.41.59.61") && !avatar.includes("localhost"));
     };
     const items = [
       {

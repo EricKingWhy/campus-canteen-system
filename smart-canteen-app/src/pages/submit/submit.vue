@@ -335,3 +335,4 @@ const submitOrder = () => {
 .pay-btn { background: #00b89c; border-radius: 100rpx; height: 90rpx; padding: 0 40rpx; display: flex; align-items: center; color: white; border: none; }
 .btn-text { font-size: 30rpx; font-weight: bold; }
 </style>
+

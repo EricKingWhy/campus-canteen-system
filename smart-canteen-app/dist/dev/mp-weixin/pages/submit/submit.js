@@ -8,7 +8,7 @@ const _easycom_uni_icons = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-ic
 if (!Math) {
   _easycom_uni_icons();
 }
-const baseUrl = "http://127.0.0.1:8081";
+const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "submit",
   setup(__props) {

@@ -3,7 +3,7 @@ const common_vendor = require("../../common/vendor.js");
 const api_order = require("../../api/order.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
-const baseUrl = "http://127.0.0.1:8081";
+const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "weekly-report",
   setup(__props) {

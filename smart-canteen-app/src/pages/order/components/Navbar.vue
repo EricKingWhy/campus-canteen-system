@@ -6,7 +6,7 @@
       <!-- logo文字 -->
       <view class="logo">
         <image class="back" src="@/static/icon/back.png" @tap="back"></image>
-        <image class="brand" src="@/static/images/logo.png"></image>
+        <!-- <image class="brand" src="@/static/images/logo.png"></image> -->
         <text class="logo-text">REVERSE · 启动</text>
       </view>
       <view class="logo">

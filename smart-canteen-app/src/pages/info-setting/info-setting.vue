@@ -30,7 +30,7 @@
         <view class="avatar-upload" @click="chooseAvatar">
           <image 
             class="avatar-preview" 
-            :src="(!formData.avatar || formData.avatar.includes('photo-1599566150163-29194dcaad36') || formData.avatar.includes('images.unsplash.com') || (formData.avatar.startsWith('http') && !formData.avatar.includes('127.0.0.1') && !formData.avatar.includes('localhost'))) ? '/static/images/default_avatar.jpg' : formData.avatar" 
+            :src="(!formData.avatar || formData.avatar.includes('photo-1599566150163-29194dcaad36') || formData.avatar.includes('images.unsplash.com') || (formData.avatar.startsWith('http') && !formData.avatar.includes('121.41.59.61') && !formData.avatar.includes('localhost'))) ? '/static/images/default_avatar.jpg' : formData.avatar" 
             mode="aspectFill"
           />
           <view class="avatar-overlay">

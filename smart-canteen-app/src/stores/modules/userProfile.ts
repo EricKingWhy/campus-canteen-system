@@ -20,7 +20,7 @@ export const useUserProfileStore = defineStore('userProfile', () => {
         const avatarValue = (avatar || '').trim()
         if (!avatarValue) return defaultAvatarPath
         if (legacyDefaultAvatarKeys.some((key) => avatarValue.includes(key))) return defaultAvatarPath
-        if (avatarValue.startsWith('http') && !avatarValue.includes('127.0.0.1') && !avatarValue.includes('localhost')) return defaultAvatarPath
+        if (avatarValue.startsWith('http') && !avatarValue.includes('121.41.59.61') && !avatarValue.includes('localhost')) return defaultAvatarPath
         return avatarValue
     }
 

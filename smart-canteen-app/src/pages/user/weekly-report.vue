@@ -446,3 +446,4 @@ $tertiary: #77574d;
    .suggestion-text { font-size: 24rpx; color: $on-surface-variant; font-weight: 500; line-height: 1.6; font-style: italic; }
 }
 </style>
+

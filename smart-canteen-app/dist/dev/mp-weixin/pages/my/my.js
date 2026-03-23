@@ -9,7 +9,7 @@ if (!Math) {
   pushMsg();
 }
 const pushMsg = () => "../../components/message/pushMsg.js";
-const baseUrl = "http://127.0.0.1:8081";
+const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "my",
   setup(__props) {

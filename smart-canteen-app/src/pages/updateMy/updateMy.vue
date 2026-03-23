@@ -49,7 +49,7 @@ const isLegacyDefaultAvatar = (avatar: string) => {
   return !!avatar && (
     avatar.includes('photo-1599566150163-29194dcaad36') ||
     avatar.includes('images.unsplash.com') ||
-    (avatar.startsWith('http') && !avatar.includes('127.0.0.1') && !avatar.includes('localhost'))
+    (avatar.startsWith('http') && !avatar.includes('121.41.59.61') && !avatar.includes('localhost'))
   )
 }
 

@@ -112,7 +112,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: "http://127.0.0.1:8081/analysis/health/summary",
+          url: "http://121.41.59.61:8081/analysis/health/summary",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -135,7 +135,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a, _b, _c;
       try {
         const res = await common_vendor.index.request({
-          url: "http://127.0.0.1:8081/analysis/health/trend?range=7",
+          url: "http://121.41.59.61:8081/analysis/health/trend?range=7",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -305,7 +305,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: `http://127.0.0.1:8081/analysis/cost/trend?range=${range}`,
+          url: `http://121.41.59.61:8081/analysis/cost/trend?range=${range}`,
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -350,7 +350,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: "http://127.0.0.1:8081/analysis/cost/summary",
+          url: "http://121.41.59.61:8081/analysis/cost/summary",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
