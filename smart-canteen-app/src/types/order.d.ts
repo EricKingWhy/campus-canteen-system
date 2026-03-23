@@ -84,3 +84,27 @@ export type WeeklyAnalysisVO = Partial<{
   topDishCount: number
   avgIntervalHours: number
 }>
+
+export type WeeklyTrendItem = Partial<{
+  day: string
+  dailyTotal: number
+}>
+
+export type WeeklyMealPeriodItem = Partial<{
+  mealPeriod: string
+  percentage: number
+}>
+
+export type WeeklyReportVO = Partial<{
+  totalAmount: number
+  totalOrders: number
+  orderCount: number
+  dailyAverage: number
+  lastWeekAmount: number
+  diffAmount: number
+  dailyTrend: WeeklyTrendItem[]
+  mealPeriodDistribution: WeeklyMealPeriodItem[]
+  maxSpendDish: string
+  maxSpendAmount: number
+  mostFrequentDish: string
+}>

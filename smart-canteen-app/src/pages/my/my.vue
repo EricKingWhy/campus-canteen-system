@@ -43,7 +43,7 @@
        <!-- 今日饮食卡片 -->
        <view class="card diet-card">
           <view class="card-header">
-             <view class="icon-bg orange"><image class="dashboard-icon" :src="dietIcon" mode="aspectFit" /></view>
+             <view class="icon-bg orange"><image class="dashboard-icon diet-dashboard-icon" :src="dietIcon" mode="aspectFit" /></view>
              <text class="card-title">今日饮食</text>
           </view>
           <view class="diet-list">
@@ -390,6 +390,11 @@ $text-main: #333333;
    
    /* 今日饮食卡片 */
    .diet-card {
+      .diet-dashboard-icon {
+         width: 42rpx !important;
+         height: 42rpx !important;
+      }
+
       .diet-list {
          display: flex;
          flex-direction: column;

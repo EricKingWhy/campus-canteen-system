@@ -488,14 +488,14 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             keywords.add("饮品");
             keywords.add("小吃");
             keywords.add("轻食");
-            keywords.add("轻饮食");
+            keywords.add("健康轻食");
         } else if (now.isAfter(LocalTime.of(16, 30)) && now.isBefore(LocalTime.of(21, 0))) {
             // 晚餐时段
             keywords.add("晚餐");
             keywords.add("饮品");
             keywords.add("小吃");
             keywords.add("轻食");
-            keywords.add("轻饮食");
+            keywords.add("健康轻食");
         } else {
             // 其他时段(深夜/凌晨) -> 不限制分类
             return Collections.emptyList();

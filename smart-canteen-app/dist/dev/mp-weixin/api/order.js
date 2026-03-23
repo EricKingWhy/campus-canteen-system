@@ -20,6 +20,14 @@ const getWeeklyAnalysisAPI = () => {
     method: "GET"
   });
 };
+const getWeeklyReportAPI = (params) => {
+  return utils_http.http({
+    url: "/user/order/weekly-report",
+    method: "GET",
+    data: params
+  });
+};
 exports.getOrderPageAPI = getOrderPageAPI;
 exports.getWeeklyAnalysisAPI = getWeeklyAnalysisAPI;
+exports.getWeeklyReportAPI = getWeeklyReportAPI;
 exports.reOrderAPI = reOrderAPI;

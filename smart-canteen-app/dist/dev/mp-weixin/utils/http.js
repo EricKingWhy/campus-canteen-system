@@ -1,7 +1,7 @@
 "use strict";
 const common_vendor = require("../common/vendor.js");
 const stores_modules_user = require("../stores/modules/user.js");
-const baseURL = "http://121.41.59.61:8081";
+const baseURL = "http://127.0.0.1:8081";
 const httpInterceptor = {
   // 拦截前触发
   invoke(options) {

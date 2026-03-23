@@ -3,51 +3,135 @@ const common_vendor = require("../../common/vendor.js");
 const api_order = require("../../api/order.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
-const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "weekly-report",
   setup(__props) {
-    const weeklyTotal = common_vendor.ref("138.50");
-    const dailyAvg = common_vendor.ref("19.79");
-    const totalOrders = common_vendor.ref(20);
-    const trendUp = common_vendor.ref(true);
-    const trendPercent = common_vendor.ref(8);
-    const trendDiff = common_vendor.ref("10.30");
-    const dateRange = common_vendor.computed(() => {
+    const dayLabels = ["一", "二", "三", "四", "五", "六", "日"];
+    const mealColorMap = {
+      早餐: "#77574d",
+      午餐: "#f68a2f",
+      晚餐: "#ffdbcd"
+    };
+    const getWeekRange = () => {
       const now = /* @__PURE__ */ new Date();
       const dayOfWeek = now.getDay() || 7;
       const monday = new Date(now);
       monday.setDate(now.getDate() - dayOfWeek + 1);
+      monday.setHours(0, 0, 0, 0);
       const sunday = new Date(monday);
       sunday.setDate(monday.getDate() + 6);
-      const fmt = (d) => `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-      return `${fmt(monday)} - ${fmt(sunday)}`;
+      sunday.setHours(23, 59, 59, 999);
+      return { monday, sunday };
+    };
+    const formatDate = (date, separator = "-") => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      return `${yyyy}${separator}${mm}${separator}${dd}`;
+    };
+    const weekRange = common_vendor.ref(getWeekRange());
+    const dateRange = common_vendor.computed(() => {
+      return `${formatDate(weekRange.value.monday, ".")} - ${formatDate(weekRange.value.sunday, ".")}`;
     });
-    const weekDays = common_vendor.ref([
-      { label: "一", percent: 40, amount: "15.50", isMax: false },
-      { label: "二", percent: 55, amount: "21.00", isMax: false },
-      { label: "三", percent: 90, amount: "28.50", isMax: false },
-      { label: "四", percent: 45, amount: "17.00", isMax: false },
-      { label: "五", percent: 65, amount: "24.00", isMax: false },
-      { label: "六", percent: 30, amount: "18.50", isMax: false },
-      { label: "日", percent: 25, amount: "14.00", isMax: false }
+    const reportData = common_vendor.ref({
+      totalAmount: 0,
+      totalOrders: 0,
+      orderCount: 0,
+      dailyAverage: 0,
+      lastWeekAmount: 0,
+      diffAmount: 0,
+      dailyTrend: [],
+      mealPeriodDistribution: []
+    });
+    const weeklyTotal = common_vendor.computed(() => Number(reportData.value.totalAmount || 0).toFixed(2));
+    const dailyAvg = common_vendor.computed(() => Number(reportData.value.dailyAverage || 0).toFixed(2));
+    const totalOrders = common_vendor.computed(() => Number(reportData.value.orderCount ?? reportData.value.totalOrders ?? 0));
+    const trendDiff = common_vendor.computed(() => Math.abs(Number(reportData.value.diffAmount || 0)).toFixed(2));
+    const trendUp = common_vendor.computed(() => Number(reportData.value.diffAmount || 0) >= 0);
+    const trendArrow = common_vendor.computed(() => {
+      const diff = Number(reportData.value.diffAmount || 0);
+      if (diff === 0)
+        return "→";
+      return diff > 0 ? "↑" : "↓";
+    });
+    const summaryTrendText = common_vendor.computed(() => {
+      const diff = Number(reportData.value.diffAmount || 0);
+      if (diff === 0)
+        return "持平";
+      return diff > 0 ? "多" : "少";
+    });
+    const trendPercent = common_vendor.computed(() => {
+      const current = Number(reportData.value.totalAmount || 0);
+      const last = Number(reportData.value.lastWeekAmount || 0);
+      if (last <= 0)
+        return current > 0 ? 100 : 0;
+      return Math.round(Math.abs((current - last) / last * 100));
+    });
+    const weekDays = common_vendor.ref([]);
+    const mealPeriods = common_vendor.ref([
+      { name: "午餐", percent: 0, color: mealColorMap["午餐"] },
+      { name: "晚餐", percent: 0, color: mealColorMap["晚餐"] },
+      { name: "早餐", percent: 0, color: mealColorMap["早餐"] }
     ]);
+    const coreMealPeriod = common_vendor.computed(() => {
+      if (!mealPeriods.value.length)
+        return "暂无";
+      const sorted = [...mealPeriods.value].sort((a, b) => b.percent - a.percent);
+      return sorted[0].percent > 0 ? sorted[0].name : "暂无";
+    });
     const getTodayWeekIndex = () => {
       const jsDay = (/* @__PURE__ */ new Date()).getDay();
       return jsDay === 0 ? 6 : jsDay - 1;
     };
-    const syncTodayHighlight = () => {
+    const buildWeekDays = (trend = []) => {
+      const trendMap = /* @__PURE__ */ new Map();
+      trend.forEach((item) => {
+        if (item.day) {
+          trendMap.set(item.day, Number(item.dailyTotal || 0));
+        }
+      });
+      const bars = [];
+      const monday = new Date(weekRange.value.monday);
+      for (let i = 0; i < 7; i++) {
+        const current = new Date(monday);
+        current.setDate(monday.getDate() + i);
+        const key = formatDate(current, "-");
+        const amount = Number(trendMap.get(key) || 0);
+        bars.push({
+          label: dayLabels[i],
+          percent: 0,
+          amount: amount.toFixed(2),
+          isMax: false
+        });
+      }
+      const maxAmount = Math.max(...bars.map((item) => Number(item.amount)), 0);
       const todayIndex = getTodayWeekIndex();
-      weekDays.value = weekDays.value.map((day, idx) => ({
-        ...day,
-        isMax: idx === todayIndex
+      weekDays.value = bars.map((item, idx) => {
+        const amount = Number(item.amount);
+        let percent = 8;
+        if (maxAmount > 0) {
+          percent = amount > 0 ? Math.max(amount / maxAmount * 100, 15) : 8;
+        }
+        return {
+          ...item,
+          percent,
+          isMax: idx === todayIndex
+        };
+      });
+    };
+    const buildMealPeriods = (distribution = []) => {
+      const percentageMap = {};
+      distribution.forEach((item) => {
+        if (item.mealPeriod) {
+          percentageMap[item.mealPeriod] = Number(item.percentage || 0);
+        }
+      });
+      mealPeriods.value = ["午餐", "晚餐", "早餐"].map((name) => ({
+        name,
+        percent: Number((percentageMap[name] || 0).toFixed(1)),
+        color: mealColorMap[name]
       }));
     };
-    const mealPeriods = common_vendor.ref([
-      { name: "午餐", percent: 45, color: "#f68a2f" },
-      { name: "晚餐", percent: 35, color: "#ffdbcd" },
-      { name: "早餐", percent: 20, color: "#77574d" }
-    ]);
     const analysisData = common_vendor.ref({
       maxAmount: 0,
       maxDishName: "",
@@ -65,37 +149,30 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         { label: "平均下单间隔", value: avgIntervalValue, emoji: "⏱️", bgColor: "#ffdbcd" }
       ];
     });
-    const fetchWeeklyData = () => {
-      const token = common_vendor.index.getStorageSync("token");
-      common_vendor.index.request({
-        url: baseUrl + "/analysis/cost/summary",
-        method: "GET",
-        header: { "authentication": token },
-        success: (res) => {
-          console.log("Weekly cost summary:", res.data);
-          if (res.data && res.data.code === 0 && res.data.data) {
-            const data = res.data.data;
-            if (data.weekSpent)
-              weeklyTotal.value = data.weekSpent.toFixed(2);
-            if (data.totalOrders)
-              totalOrders.value = data.totalOrders;
-          }
-        },
-        fail: (err) => {
-          console.error("获取周报数据失败:", err);
+    const fetchWeeklyData = async () => {
+      try {
+        const res = await api_order.getWeeklyReportAPI({
+          start_date: formatDate(weekRange.value.monday, "-"),
+          end_date: formatDate(weekRange.value.sunday, "-")
+        });
+        if (res.code === 0 && res.data) {
+          const data = res.data;
+          reportData.value = {
+            ...reportData.value,
+            ...data,
+            totalAmount: Number(data.totalAmount || 0),
+            totalOrders: Number(data.totalOrders || 0),
+            orderCount: Number(data.orderCount ?? data.totalOrders ?? 0),
+            dailyAverage: Number(data.dailyAverage || 0),
+            lastWeekAmount: Number(data.lastWeekAmount || 0),
+            diffAmount: Number(data.diffAmount || 0)
+          };
+          buildWeekDays(data.dailyTrend || []);
+          buildMealPeriods(data.mealPeriodDistribution || []);
         }
-      });
-      common_vendor.index.request({
-        url: baseUrl + "/analysis/health/trend?range=7",
-        method: "GET",
-        header: { "authentication": token },
-        success: (res) => {
-          console.log("Weekly health trend:", res.data);
-        },
-        fail: (err) => {
-          console.error("获取健康趋势失败:", err);
-        }
-      });
+      } catch (error) {
+        console.error("获取周报数据失败:", error);
+      }
     };
     const fetchWeeklyAnalysis = async () => {
       try {
@@ -113,27 +190,25 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         console.error("获取本周餐点分析失败:", error);
       }
     };
-    const goBack = () => {
-      common_vendor.index.navigateBack();
-    };
     common_vendor.onLoad(() => {
-      syncTodayHighlight();
+      weekRange.value = getWeekRange();
+      buildWeekDays([]);
+      buildMealPeriods([]);
       fetchWeeklyData();
       fetchWeeklyAnalysis();
     });
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.o(goBack),
-        b: common_vendor.t(dateRange.value),
-        c: common_vendor.t(weeklyTotal.value),
-        d: common_vendor.t(trendUp.value ? "↑" : "↓"),
-        e: common_vendor.t(trendPercent.value),
-        f: common_vendor.n(trendUp.value ? "up" : "down"),
-        g: common_vendor.t(dailyAvg.value),
-        h: common_vendor.t(totalOrders.value),
-        i: common_vendor.t(trendUp.value ? "多" : "少"),
-        j: common_vendor.t(trendDiff.value),
-        k: common_vendor.f(weekDays.value, (day, idx, i0) => {
+        a: common_vendor.t(dateRange.value),
+        b: common_vendor.t(weeklyTotal.value),
+        c: common_vendor.t(trendArrow.value),
+        d: common_vendor.t(trendPercent.value),
+        e: common_vendor.n(trendUp.value ? "up" : "down"),
+        f: common_vendor.t(dailyAvg.value),
+        g: common_vendor.t(totalOrders.value),
+        h: common_vendor.t(summaryTrendText.value),
+        i: common_vendor.t(trendDiff.value),
+        j: common_vendor.f(weekDays.value, (day, idx, i0) => {
           return common_vendor.e({
             a: day.isMax
           }, day.isMax ? {
@@ -146,6 +221,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             g: idx
           });
         }),
+        k: common_vendor.t(coreMealPeriod.value),
         l: common_vendor.f(mealPeriods.value, (m, k0, i0) => {
           return {
             a: m.color,

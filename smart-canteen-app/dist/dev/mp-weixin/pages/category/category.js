@@ -8,7 +8,7 @@ const _sfc_main = {
   },
   data() {
     return {
-      baseUrl: "http://121.41.59.61:8081",
+      baseUrl: "http://127.0.0.1:8081",
       // 后端基准地点点址
       categoryList: [],
       dishList: [],

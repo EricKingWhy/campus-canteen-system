@@ -1,0 +1,697 @@
+
+> smart-canteen-uniapp@0.0.0 dev:mp-weixin
+> uni -p mp-weixin
+
+请注意运行模式下，因日志输出、sourcemap 以及未压缩源码等原因，性能和包体积，均不及发行模式。若要正式发布，请点击发行菜单或使用 cli 发布命令进行发布
+正在编译中...
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/5.04.2026031801.html
+​Browserslist: caniuse-lite is outdated. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme​
+[35m[plugin:uni:mp-using-component][39m [31mCannot find module 'C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/static/icon/back.png' from 'C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/order/components/Navbar.vue'[39m
+at [36mpages/order/components/Navbar.vue:1:0[39m
+开始差量编译...
+DONE  Build complete. Watching for changes...
+运行方式：打开 微信开发者工具, 导入 [36mdist\dev\mp-weixin[39m 运行。
+[36mready in 56230ms.[39m
+
+copy static\cash_pay.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\cash_pay.png
+copy static\wechat_pay.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\wechat_pay.png
+copy static\icon=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon
+copy static\icons=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons
+copy static\images=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images
+copy static\styles=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\styles
+copy static\tabbar=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabbar
+copy static\tabs=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs
+copy static\icon\girl.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\girl.png
+copy static\icon\boy.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\boy.png
+copy static\icon\history.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\history.png
+copy static\icon\icon-radio-selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\icon-radio-selected.png
+copy static\icon\icon-radio.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\icon-radio.png
+copy static\icon\jingzhunpipei.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\jingzhunpipei.png
+copy static\icon\my.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\my.png
+copy static\icon\pay.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\pay.png
+copy static\icon\remove.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\remove.png
+copy static\icon\sousuo.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\sousuo.png
+copy static\icon\sub.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\sub.png
+copy static\icon\toRight.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\toRight.png
+copy static\icons\breakfast.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\breakfast.png
+copy static\icons\diancan.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\diancan.png
+copy static\icons\dinner.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\dinner.png
+copy static\icons\drink.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\drink.png
+copy static\icons\gerenxinxishezhi.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\gerenxinxishezhi.png
+copy static\icons\hot.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\hot.png
+copy static\icons\lishidingdan.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\lishidingdan.png
+copy static\icons\lunch.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\lunch.png
+copy static\icons\mima.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\mima.png
+copy static\icons\nicheng.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\nicheng.png
+copy static\icons\no-analysis-hero.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\no-analysis-hero.png
+copy static\icons\shanzhu.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\shanzhu.png
+copy static\icons\shouye.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\shouye.png
+copy static\icons\shujufenxi-baobeifenxi.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\shujufenxi-baobeifenxi.png
+copy static\icons\staple.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\staple.png
+copy static\icons\wode.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\wode.png
+copy static\icons\wodeshoucangyong.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\wodeshoucangyong.png
+copy static\icons\xiaofeijilu.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\xiaofeijilu.png
+copy static\icons\youxiang.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\youxiang.png
+copy static\icons\zhanghao.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\zhanghao.png
+copy static\images\default_avatar.jpg=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\default_avatar.jpg
+copy static\images\search_table_empty.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\search_table_empty.png
+copy static\images\undraw_time_change.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\undraw_time_change.png
+copy static\images\user_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\user_default.png
+copy static\styles\iconfont.css=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\styles\iconfont.css
+copy static\styles\iconfont.ttf=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\styles\iconfont.ttf
+copy static\tabbar\order.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabbar\order.png
+copy static\tabbar\order_active.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabbar\order_active.png
+copy static\tabs\cart_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\cart_selected.png
+copy static\tabs\category_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\category_default.png
+copy static\tabs\category_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\category_selected.png
+copy static\tabs\health_default.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\health_default.png
+copy static\tabs\health_selected.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\tabs\health_selected.png
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/index/index_v2.vue:96:11[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/index/index_v2.vue:96:11[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/index/index_v2.vue:96:11[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/login/login.vue:11:7[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (23:39)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+188|        activeCategoryIndex: 0,
+189|        searchKeyword: '', // 銆愭牳蹇冩柊澧炪€戞悳绱㈠叧閿瘝缁戝畾
+190|        searchPlaceholders: ['浣庤剛楦¤兏鑲?, '榛勭剸楦?, '姘存灉鎷肩洏', '楹诲﹩璞嗚厫', '閰歌彍楸?],
+   |                                         ^
+191|        currentPlaceholderIndex: 0,
+192|        searchPlaceholderText: '鎼滅储鎯冲悆鐨勮彍鍝?(濡傦細浣庤剛楦¤兏鑲?',[39m
+at [36mpages/category/category.vue:23:39[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (32:56)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/login/login.vue
+127|        
+128|        if (!loginPayload.username || !loginPayload.password) {
+129|          return uni.showToast({ title: '璇峰～鍐欏畬鏁?, icon: 'none' });
+   |                                                          ^
+130|        }
+131|        [39m
+at [36mpages/login/login.vue:32:56[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/index/index_v2.vue:96:11[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (23:39)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+188|        activeCategoryIndex: 0,
+189|        searchKeyword: '', // 銆愭牳蹇冩柊澧炪€戞悳绱㈠叧閿瘝缁戝畾
+190|        searchPlaceholders: ['浣庤剛楦¤兏鑲?, '榛勭剸楦?, '姘存灉鎷肩洏', '楹诲﹩璞嗚厫', '閰歌彍楸?],
+   |                                         ^
+191|        currentPlaceholderIndex: 0,
+192|        searchPlaceholderText: '鎼滅储鎯冲悆鐨勮彍鍝?(濡傦細浣庤剛楦¤兏鑲?',[39m
+at [36mpages/category/category.vue:23:39[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/index/index_v2.vue:96:11[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (88:37)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+253|      updateSearchPlaceholder(reset = false) {
+254|        if (!this.searchPlaceholders.length) {
+255|          this.searchPlaceholderText = '鎼滅储鎯冲悆鐨勮彍鍝?;
+   |                                       ^
+256|          return;
+257|        }[39m
+at [36mpages/category/category.vue:88:37[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (39:5)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/index/index_v2.vue
+212|  const recommendTitle = computed(() => isDietMode.value ? '杞昏礋鎺у崱鎺ㄨ崘' : '鏅洪€?閬撹彍')
+213|  const recommendSubtitle = computed(() => isDietMode.value
+214|     ? '浠婃棩鐑噺宸茶揪鏍囷紝涓烘偍浼樺厛鎺ㄨ崘浣庤礋鎷呰彍鍝?
+   |       ^
+215|     : '鏍规嵁鎮ㄧ殑鍋ュ悍鐢诲儚瀹氬埗'
+216|  )[39m
+at [36mpages/index/index_v2.vue:39:5[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (23:9)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/my/my.vue
+130|    name: '',
+131|    gender: 1,
+132|    phone: '鏈缃?,
+   |           ^
+133|    pic: '',
+134|  })[39m
+at [36mpages/my/my.vue:23:9[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (23:9)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/my/my.vue
+130|    name: '',
+131|    gender: 1,
+132|    phone: '鏈缃?,
+   |           ^
+133|    pic: '',
+134|  })[39m
+at [36mpages/my/my.vue:23:9[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (88:37)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+253|      updateSearchPlaceholder(reset = false) {
+254|        if (!this.searchPlaceholders.length) {
+255|          this.searchPlaceholderText = '鎼滅储鎯冲悆鐨勮彍鍝?;
+   |                                       ^
+256|          return;
+257|        }[39m
+at [36mpages/category/category.vue:88:37[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (88:37)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+253|      updateSearchPlaceholder(reset = false) {
+254|        if (!this.searchPlaceholders.length) {
+255|          this.searchPlaceholderText = '鎼滅储鎯冲悆鐨勮彍鍝?;
+   |                                       ^
+256|          return;
+257|        }[39m
+at [36mpages/category/category.vue:88:37[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/order/order.vue:112:32[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/order/order.vue:112:32[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/order/order.vue:112:32[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (165:14)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/order/order.vue
+331|  // 鍙湁鑿滃搧鎵嶈閫夋嫨瑙勬牸/鍙ｅ懗(澶氱鍙ｅ懗瑙勬牸鏁版嵁澶勭悊)
+332|  const chooseNorm = async (dish: DishItem) => {
+333|    console.log('鐐瑰嚮浜嗛€夋嫨瑙勬牸chooseNorm锛屽緱鍒颁簡璇ヨ彍鍝佺殑鎵€鏈夊彛鍛虫暟鎹?, dish.flavors)
+   |                ^
+334|    // 鎵€鏈夊彛鍛虫暟鎹斁鍒癴lavors涓?
+335|    flavors.value = dish.flavors[39m
+at [36mpages/order/order.vue:165:14[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/detail/detail.vue:19:15[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/detail/detail.vue:19:15[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/detail/detail.vue:19:15[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/detail/detail.vue:19:15[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (60:16)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/detail/detail.vue
+231|    if (type === 'dishId') {
+232|      res = await getDishByIdAPI(id)
+233|      console.log("銆愭牳寮圭骇瀹℃煡銆慍绔敹鍒扮殑鑿滃搧瀹屾暣鏁版嵁锛?, res.data);
+   |                  ^
+234|      dish.value = res.data
+235|    } else {[39m
+at [36mpages/detail/detail.vue:60:16[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (60:16)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/detail/detail.vue
+231|    if (type === 'dishId') {
+232|      res = await getDishByIdAPI(id)
+233|      console.log("銆愭牳寮圭骇瀹℃煡銆慍绔敹鍒扮殑鑿滃搧瀹屾暣鏁版嵁锛?, res.data);
+   |                  ^
+234|      dish.value = res.data
+235|    } else {[39m
+at [36mpages/detail/detail.vue:60:16[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (60:16)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/detail/detail.vue
+231|    if (type === 'dishId') {
+232|      res = await getDishByIdAPI(id)
+233|      console.log("銆愭牳寮圭骇瀹℃煡銆慍绔敹鍒扮殑鑿滃搧瀹屾暣鏁版嵁锛?, res.data);
+   |                  ^
+234|      dish.value = res.data
+235|    } else {[39m
+at [36mpages/detail/detail.vue:60:16[39m
+[35m[plugin:commonjs][39m [31mInvalid end tag.[39m
+at [36mpages/order/order.vue:105:3[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (60:16)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/detail/detail.vue
+231|    if (type === 'dishId') {
+232|      res = await getDishByIdAPI(id)
+233|      console.log("銆愭牳寮圭骇瀹℃煡銆慍绔敹鍒扮殑鑿滃搧瀹屾暣鏁版嵁锛?, res.data);
+   |                  ^
+234|      dish.value = res.data
+235|    } else {[39m
+at [36mpages/detail/detail.vue:60:16[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (60:16)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/detail/detail.vue
+231|    if (type === 'dishId') {
+232|      res = await getDishByIdAPI(id)
+233|      console.log("銆愭牳寮圭骇瀹℃煡銆慍绔敹鍒扮殑鑿滃搧瀹屾暣鏁版嵁锛?, res.data);
+   |                  ^
+234|      dish.value = res.data
+235|    } else {[39m
+at [36mpages/detail/detail.vue:60:16[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/favorite/favorite.vue:6:9[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/orderDetail/orderDetail.vue:54:17[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/pay/pay.vue:51:13[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/pay/pay.vue:51:13[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (19:32)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/orderDetail/orderDetail.vue
+198|  // Status configurations
+199|  const statusConfig: any = {
+200|    1: { text: '寰呬粯娆?, subtitle: '璇峰敖蹇畬鎴愭敮浠?, icon: 'wallet', class: 'status-pending' },
+   |                                  ^
+201|    2: { text: '待接单', subtitle: '订单等待商家接单', icon: 'loop', class: 'status-active' },
+202|    3: { text: '后厨制作中', subtitle: '后厨制作中，请耐心等待', icon: 'fire', class: 'status-active' },[39m
+at [36mpages/orderDetail/orderDetail.vue:19:32[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (19:32)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/orderDetail/orderDetail.vue
+198|  // Status configurations
+199|  const statusConfig: any = {
+200|    1: { text: '寰呬粯娆?, subtitle: '璇峰敖蹇畬鎴愭敮浠?, icon: 'wallet', class: 'status-pending' },
+   |                                  ^
+201|    2: { text: '待接单', subtitle: '订单等待商家接单', icon: 'loop', class: 'status-active' },
+202|    3: { text: '后厨制作中', subtitle: '后厨制作中，请耐心等待', icon: 'fire', class: 'status-active' },[39m
+at [36mpages/orderDetail/orderDetail.vue:19:32[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/history/history.vue:21:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/history/history.vue:21:7[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/history/history.vue:21:7[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (80:14)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/history/history.vue
+143|  
+144|  onLoad(async () => {
+145|    console.log('棣栧厛鍒嗛〉鑾峰彇鎵€鏈夎鍗曚俊鎭?, orderDTO.value)
+   |                ^
+146|    // 鍒嗛〉鑾峰彇鎵€鏈夎鍗曚俊鎭紙鍒氬紑濮嬪彧灞曠ず鍓?鏉★級
+147|    const res = await getOrderPage(0)[39m
+at [36mpages/history/history.vue:80:14[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/user/weekly-report.vue:6:9[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/user/weekly-report.vue:6:9[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mcomponents/DishDetailPopup.vue:46:15[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (104:33)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/components/DishDetailPopup.vue
+231|    const dessertTokens = ['澶х', '楹昏柉', '甯冧竵', '绯嶇矐', '姹ゅ渾', '铔嬬硶', '鐢滅偣', '鐢滃搧', '鑺嬫偿'];
+232|    const drinkTokens = ['饮品', '奶茶', '咖啡', '拿铁', '可乐', '豆浆', '果汁', '茶', '美式'];
+233|    const spicyMainTokens = ['闈?, '绮?, '绫崇嚎', '鐩栭キ', '鎷岄キ', '鐐掗キ', '鐗涜倝', '楦¤倝', '鐚倝', '楸肩墖', '楹昏荆', '棣欒荆'];
+   |                                   ^
+234|  
+235|    const isDessert = containsAny(text, dessertTokens);[39m
+at [36mcomponents/DishDetailPopup.vue:104:33[39m
+[35m[plugin:commonjs][39m [31mError parsing JavaScript expression: 
+(isFavorite ? '鈾? : '鈾?)
+Unexpected token, expected "," (1:21)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/components/DishDetailPopup.vue
+9  |        <!-- 銆愭牳蹇冨姛鑳姐€戞敹钘忔寜閽?-->
+10 |        <view class="favorite-btn" @click.stop="toggleFavorite" :class="{ loading: favoriteLoading }">
+11 |          <text class="heart-icon" :class="{ active: isFavorite }">{{ isFavorite ? '鈾? : '鈾? }}</text>
+   |                                                           ^^^^^^^^^^^^^^^^^^^^^^
+12 |        </view>
+13 |  
+[39m
+at [36mcomponents/DishDetailPopup.vue:1:0[39m
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (22:39)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+193|        activeCategoryIndex: 0,
+194|        searchKeyword: '', // 銆愭牳蹇冩柊澧炪€戞悳绱㈠叧閿瘝缁戝畾
+195|        searchPlaceholders: ['浣庤剛楦¤兏鑲?, '榛勭剸楦?, '姘存灉鎷肩洏', '楹诲﹩璞嗚厫', '閰歌彍楸?],
+   |                                         ^
+196|        currentPlaceholderIndex: 0,
+197|        searchPlaceholderText: '鎼滅储鎯冲悆鐨勮彍鍝?(濡傦細浣庤剛楦¤兏鑲?',[39m
+at [36mpages/category/category.vue:22:39[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (22:39)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+193|        activeCategoryIndex: 0,
+194|        searchKeyword: '', // 銆愭牳蹇冩柊澧炪€戞悳绱㈠叧閿瘝缁戝畾
+195|        searchPlaceholders: ['浣庤剛楦¤兏鑲?, '榛勭剸楦?, '姘存灉鎷肩洏', '楹诲﹩璞嗚厫', '閰歌彍楸?],
+   |                                         ^
+196|        currentPlaceholderIndex: 0,
+197|        searchPlaceholderText: '鎼滅储鎯冲悆鐨勮彍鍝?(濡傦細浣庤剛楦¤兏鑲?',[39m
+at [36mpages/category/category.vue:22:39[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (22:39)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+193|        activeCategoryIndex: 0,
+194|        searchKeyword: '', // 銆愭牳蹇冩柊澧炪€戞悳绱㈠叧閿瘝缁戝畾
+195|        searchPlaceholders: ['浣庤剛楦¤兏鑲?, '榛勭剸楦?, '姘存灉鎷肩洏', '楹诲﹩璞嗚厫', '閰歌彍楸?],
+   |                                         ^
+196|        currentPlaceholderIndex: 0,
+197|        searchPlaceholderText: '鎼滅储鎯冲悆鐨勮彍鍝?(濡傦細浣庤剛楦¤兏鑲?',[39m
+at [36mpages/category/category.vue:22:39[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (22:39)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+193|        activeCategoryIndex: 0,
+194|        searchKeyword: '', // 銆愭牳蹇冩柊澧炪€戞悳绱㈠叧閿瘝缁戝畾
+195|        searchPlaceholders: ['浣庤剛楦¤兏鑲?, '榛勭剸楦?, '姘存灉鎷肩洏', '楹诲﹩璞嗚厫', '閰歌彍楸?],
+   |                                         ^
+196|        currentPlaceholderIndex: 0,
+197|        searchPlaceholderText: '鎼滅储鎯冲悆鐨勮彍鍝?(濡傦細浣庤剛楦¤兏鑲?',[39m
+at [36mpages/category/category.vue:22:39[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (87:37)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/category/category.vue
+258|      updateSearchPlaceholder(reset = false) {
+259|        if (!this.searchPlaceholders.length) {
+260|          this.searchPlaceholderText = '鎼滅储鎯冲悆鐨勮彍鍝?;
+   |                                       ^
+261|          return;
+262|        }[39m
+at [36mpages/category/category.vue:87:37[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unterminated string constant. (126:14)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/addOrEditAddress/addOrEditAddress.vue
+198|  // 鏍囩鐨勯€夐」澶勭悊
+199|  const getTextOption = (item: any) => {
+200|    console.log('鐐瑰嚮浜嗘爣绛?, item)
+   |                ^
+201|    form.label = item.name
+202|  }[39m
+at [36mpages/addOrEditAddress/addOrEditAddress.vue:126:14[39m
+[35m[plugin:commonjs][39m [31mError parsing JavaScript expression: 
+(diningType === 1 ? '鍫傞 路 涓€妤? : '鎵撳寘 路 浜屾ゼ')
+Unexpected token, expected "," (1:35)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/pay/success.vue
+32 |              <view class="floor-tag">
+33 |                <uni-icons type="shop-filled" size="16" color="#ea580c"></uni-icons>
+34 |                <text>{{ diningType === 1 ? '鍫傞 路 涓€妤? : '鎵撳寘 路 浜屾ゼ' }}</text>
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+35 |              </view>
+36 |              <view class="pickup-label">鍙栭鍦扮偣鐐圭偣</view>
+[39m
+at [36mpages/pay/success.vue:1:0[39m
+[35m[plugin:commonjs][39m [31mWhitespace was expected.[39m
+at [36mpages/updateMy/updateMy.vue:19:66[39m
+[35m[plugin:commonjs][39m [31mWhitespace was expected.[39m
+at [36mpages/info-setting/info-setting.vue:47:26[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token, expected "," (42:51)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/info-setting/info-setting.vue
+376|  const activityOptions = [
+377|    { value: 1, name: '涔呭潗', desc: '鏋佸皯杩愬姩', icon: '馃獞' },
+378|    { value: 2, name: '杞诲害', desc: '姣忓懆1-3澶?, icon: '馃毝' },
+   |                                                     ^
+379|    { value: 3, name: '涓害', desc: '姣忓懆3-5澶?, icon: '馃弮' },
+380|    { value: 4, name: '閲嶅害', desc: '姣忓懆6-7澶?, icon: '馃挭' }[39m
+at [36mpages/info-setting/info-setting.vue:42:51[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/health-analysis/health-analysis.vue:32:9[39m
+[35m[plugin:commonjs][39m [31m[vue/compiler-sfc] Unexpected token (188:0)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/health-analysis/health-analysis.vue
+493|    } catch (e) {
+494|      console.error('鑾峰彇鍋ュ悍瓒嬪娍澶辫触:', e)
+495|    }
+   |      ^
+496|  }
+   |  ^
+497|  [39m
+at [36mpages/health-analysis/health-analysis.vue:188:0[39m
+[35m[plugin:commonjs][39m [31mError parsing JavaScript expression: 
+(status === true ? '钀ヤ笟涓? : '鎵撶儕涓?)
+Unexpected token, expected "," (1:29)
+
+C:/Users/王浩宇/Desktop/毕业设计工具/校园食堂管理系统/smart-canteen-main/smart-canteen-main/smart-canteen-app/src/pages/order/components/Navbar.vue
+17 |      <view class="info">
+18 |        <view class="info1">
+19 |          <view class="status">{{ status === true ? '钀ヤ笟涓? : '鎵撶儕涓? }}</view>
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |          <uni-icons custom-prefix="iconfont" type="icon-qian" size="15"></uni-icons>
+21 |          <text class="price" style="font-size:12px">璐㈤噾椋熷爞娓╅Θ鐩歌仛锛?</text>
+[39m
+at [36mpages/order/components/Navbar.vue:1:0[39m
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+[35m[plugin:commonjs][39m [31mAt least one <template> or <script> is required in a single file component.[39m
+at [36mpages/submit/success.vue:1:0[39m
+[35m[plugin:commonjs][39m [31mAt least one <template> or <script> is required in a single file component.[39m
+at [36mpages/submit/success.vue:1:0[39m
+[35m[plugin:commonjs][39m [31mAt least one <template> or <script> is required in a single file component.[39m
+at [36mpages/submit/success.vue:1:0[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+[35m[plugin:vite:css][39m [31m[postcss] Could not resolve "@/static/images/navigator_bg.png" from "pages/order/components/Navbar.vue"[39m
+at [36mpages/order/components/Navbar.vue:11:3[39m
+[33m     9 | /* 自定义导航条 */
+    10 | .navbar {
+  > 11 |   background-image: url(@/static/images/navigator_bg.png);
+       |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    12 |   background-size: cover;
+    13 |   position: relative;
+    14 |   display: flex;[39m
+copy static\images\navigator_bg.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\images\navigator_bg.png
+DONE  Build complete. Watching for changes...
+copy static\icon\address.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\address.png
+copy static\icon\add.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\add.png
+copy static\icon\back.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\back.png
+copy static\icon\choose.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\choose.png
+copy static\icon\clear.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\clear.png
+copy static\icon\close.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\close.png
+copy static\icon\edit.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\edit.png
+copy static\icon\finish.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\finish.png
+copy static\icon\饿饿.png=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icon\饿饿.png
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+[35m[plugin:commonjs][39m [31mIllegal tag name. Use '&lt;' to print '<'.[39m
+at [36mpages/favorite/favorite.vue:6:29[39m
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+copy static\icons\ali_iconkaluli.svg=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\ali_iconkaluli.svg
+DONE  Build complete. Watching for changes...
+copy static\icons\ali_iconkaluli.svg=>C:\Users\王浩宇\Desktop\毕业设计工具\校园食堂管理系统\smart-canteen-main\smart-canteen-main\smart-canteen-app\dist\dev\mp-weixin\static\icons\ali_iconkaluli.svg
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/health-analysis/health-analysis.vue:32:9[39m
+[35m[plugin:commonjs][39m [31mElement is missing end tag.[39m
+at [36mpages/health-analysis/health-analysis.vue:32:9[39m
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+开始差量编译...
+DONE  Build complete. Watching for changes...
+^C^C

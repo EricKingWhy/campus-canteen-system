@@ -9,6 +9,24 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "health-analysis",
   setup(__props) {
     const profileStore = stores_modules_userProfile.useUserProfileStore();
+    const chartPalette = ["#85C4FF", "#81D398", "#FFC56E"];
+    const getChartColor = (index) => chartPalette[index % chartPalette.length];
+    const getHealthTrendBarStyle = (heightPct, index) => ({
+      height: `${heightPct}%`,
+      left: `${index * 14.28}%`,
+      width: "16rpx",
+      background: `linear-gradient(180deg, ${getChartColor(index)} 0%, ${getChartColor(index)}cc 100%)`,
+      borderRadius: "24rpx 24rpx 0 0",
+      boxShadow: `0 8rpx 18rpx ${getChartColor(index)}20`
+    });
+    const getCostBarStyle = (barHeight, index, isToday2) => ({
+      height: `${barHeight}rpx`,
+      width: "20rpx",
+      maxWidth: "20rpx",
+      background: `linear-gradient(180deg, ${getChartColor(index)} 0%, ${getChartColor(index)}d9 100%)`,
+      borderRadius: isToday2 ? "22rpx 22rpx 0 0" : "18rpx 18rpx 0 0",
+      boxShadow: isToday2 ? `0 10rpx 22rpx ${getChartColor(index)}22` : `0 6rpx 14rpx ${getChartColor(index)}18`
+    });
     const toNum = (v, d = 0) => {
       if (v === null || v === void 0)
         return d;
@@ -112,7 +130,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: "http://121.41.59.61:8081/analysis/health/summary",
+          url: "http://127.0.0.1:8081/analysis/health/summary",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -135,7 +153,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a, _b, _c;
       try {
         const res = await common_vendor.index.request({
-          url: "http://121.41.59.61:8081/analysis/health/trend?range=7",
+          url: "http://127.0.0.1:8081/analysis/health/trend?range=7",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -305,7 +323,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: `http://121.41.59.61:8081/analysis/cost/trend?range=${range}`,
+          url: `http://127.0.0.1:8081/analysis/cost/trend?range=${range}`,
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -350,7 +368,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: "http://121.41.59.61:8081/analysis/cost/summary",
+          url: "http://127.0.0.1:8081/analysis/cost/summary",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -456,8 +474,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         J: common_vendor.f(weeklyHealthTrend.value, (point, index, i0) => {
           return {
             a: index,
-            b: point.heightPct + "%",
-            c: index * 14.28 + "%"
+            b: common_vendor.s(getHealthTrendBarStyle(point.heightPct, index))
           };
         }),
         K: common_vendor.f(weekDays, (day, k0, i0) => {
@@ -482,7 +499,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         W: common_vendor.f(weeklyCostTrend.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.value),
-            b: item.barHeight + "rpx",
+            b: common_vendor.s(getCostBarStyle(item.barHeight, index, item.isToday)),
             c: common_vendor.t(item.day),
             d: index,
             e: item.isToday ? 1 : ""

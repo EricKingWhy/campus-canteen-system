@@ -1,13 +1,5 @@
 <template>
   <view class="page-container">
-    <!-- TopAppBar -->
-    <view class="top-bar">
-      <view class="left" @click="goBack">
-        <text class="back-icon">←</text>
-        <text class="bar-title">Weekly Report</text>
-      </view>
-    </view>
-
     <scroll-view scroll-y class="main-scroll">
       <!-- Header Section -->
       <view class="section-header">
@@ -22,7 +14,7 @@
           <text class="currency">¥</text>
           <text class="amount">{{ weeklyTotal }}</text>
           <view class="trend-badge" :class="trendUp ? 'up' : 'down'">
-            <text>{{ trendUp ? '↑' : '↓' }} {{ trendPercent }}%</text>
+            <text>{{ trendArrow }} {{ trendPercent }}%</text>
           </view>
         </view>
         <view class="summary-grid">
@@ -35,7 +27,7 @@
             <text class="grid-value">{{ totalOrders }}次</text>
           </view>
         </view>
-        <text class="summary-note">较上周{{ trendUp ? '多' : '少' }}支出 ¥{{ trendDiff }}</text>
+        <text class="summary-note">较上周{{ summaryTrendText }}支出 ¥{{ trendDiff }}</text>
       </view>
 
       <!-- Weekly Spend Trend Card -->
@@ -59,7 +51,7 @@
         <text class="card-title">用餐段分布</text>
         <view class="dist-center-label">
           <text class="dist-small">核心时段</text>
-          <text class="dist-main">午餐</text>
+          <text class="dist-main">{{ coreMealPeriod }}</text>
         </view>
         <view class="dist-list">
           <view class="dist-row" v-for="m in mealPeriods" :key="m.name">
@@ -99,60 +91,159 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { getWeeklyAnalysisAPI } from '@/api/order'
+import { getWeeklyAnalysisAPI, getWeeklyReportAPI } from '@/api/order'
+import type { WeeklyMealPeriodItem, WeeklyReportVO, WeeklyTrendItem } from '@/types/order'
 
-const baseUrl = 'http://127.0.0.1:8081'
+type WeekDayBar = {
+  label: string
+  percent: number
+  amount: string
+  isMax: boolean
+}
 
-// === Summary Data ===
-const weeklyTotal = ref('138.50')
-const dailyAvg = ref('19.79')
-const totalOrders = ref(20)
-const trendUp = ref(true)
-const trendPercent = ref(8)
-const trendDiff = ref('10.30')
+type MealPeriodItem = {
+  name: string
+  percent: number
+  color: string
+}
 
-// Date range
+const dayLabels = ['一', '二', '三', '四', '五', '六', '日']
+
+const mealColorMap: Record<string, string> = {
+  早餐: '#77574d',
+  午餐: '#f68a2f',
+  晚餐: '#ffdbcd',
+}
+
+const getWeekRange = () => {
+  const now = new Date()
+  const dayOfWeek = now.getDay() || 7
+  const monday = new Date(now)
+  monday.setDate(now.getDate() - dayOfWeek + 1)
+  monday.setHours(0, 0, 0, 0)
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+  sunday.setHours(23, 59, 59, 999)
+  return { monday, sunday }
+}
+
+const formatDate = (date: Date, separator = '-') => {
+  const yyyy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  return `${yyyy}${separator}${mm}${separator}${dd}`
+}
+
+const weekRange = ref(getWeekRange())
+
 const dateRange = computed(() => {
-   const now = new Date()
-   const dayOfWeek = now.getDay() || 7
-   const monday = new Date(now)
-   monday.setDate(now.getDate() - dayOfWeek + 1)
-   const sunday = new Date(monday)
-   sunday.setDate(monday.getDate() + 6)
-   const fmt = (d: Date) => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
-   return `${fmt(monday)} - ${fmt(sunday)}`
+  return `${formatDate(weekRange.value.monday, '.')} - ${formatDate(weekRange.value.sunday, '.')}`
 })
 
-// === Bar Chart Data ===
-const weekDays = ref([
-   { label: '一', percent: 40, amount: '15.50', isMax: false },
-   { label: '二', percent: 55, amount: '21.00', isMax: false },
-   { label: '三', percent: 90, amount: '28.50', isMax: false },
-   { label: '四', percent: 45, amount: '17.00', isMax: false },
-   { label: '五', percent: 65, amount: '24.00', isMax: false },
-   { label: '六', percent: 30, amount: '18.50', isMax: false },
-   { label: '日', percent: 25, amount: '14.00', isMax: false },
+const reportData = ref<WeeklyReportVO>({
+  totalAmount: 0,
+  totalOrders: 0,
+  orderCount: 0,
+  dailyAverage: 0,
+  lastWeekAmount: 0,
+  diffAmount: 0,
+  dailyTrend: [],
+  mealPeriodDistribution: [],
+})
+
+const weeklyTotal = computed(() => Number(reportData.value.totalAmount || 0).toFixed(2))
+const dailyAvg = computed(() => Number(reportData.value.dailyAverage || 0).toFixed(2))
+const totalOrders = computed(() => Number(reportData.value.orderCount ?? reportData.value.totalOrders ?? 0))
+const trendDiff = computed(() => Math.abs(Number(reportData.value.diffAmount || 0)).toFixed(2))
+const trendUp = computed(() => Number(reportData.value.diffAmount || 0) >= 0)
+const trendArrow = computed(() => {
+  const diff = Number(reportData.value.diffAmount || 0)
+  if (diff === 0) return '→'
+  return diff > 0 ? '↑' : '↓'
+})
+const summaryTrendText = computed(() => {
+  const diff = Number(reportData.value.diffAmount || 0)
+  if (diff === 0) return '持平'
+  return diff > 0 ? '多' : '少'
+})
+const trendPercent = computed(() => {
+  const current = Number(reportData.value.totalAmount || 0)
+  const last = Number(reportData.value.lastWeekAmount || 0)
+  if (last <= 0) return current > 0 ? 100 : 0
+  return Math.round(Math.abs(((current - last) / last) * 100))
+})
+
+const weekDays = ref<WeekDayBar[]>([])
+const mealPeriods = ref<MealPeriodItem[]>([
+  { name: '午餐', percent: 0, color: mealColorMap['午餐'] },
+  { name: '晚餐', percent: 0, color: mealColorMap['晚餐'] },
+  { name: '早餐', percent: 0, color: mealColorMap['早餐'] },
 ])
+
+const coreMealPeriod = computed(() => {
+  if (!mealPeriods.value.length) return '暂无'
+  const sorted = [...mealPeriods.value].sort((a, b) => b.percent - a.percent)
+  return sorted[0].percent > 0 ? sorted[0].name : '暂无'
+})
 
 const getTodayWeekIndex = () => {
-   const jsDay = new Date().getDay() // 0=周日, 1=周一 ... 6=周六
-   return jsDay === 0 ? 6 : jsDay - 1 // 图表从周一到周日 => 0..6
+  const jsDay = new Date().getDay()
+  return jsDay === 0 ? 6 : jsDay - 1
 }
 
-const syncTodayHighlight = () => {
-   const todayIndex = getTodayWeekIndex()
-   weekDays.value = weekDays.value.map((day, idx) => ({
-      ...day,
-      isMax: idx === todayIndex
-   }))
+const buildWeekDays = (trend: WeeklyTrendItem[] = []) => {
+  const trendMap = new Map<string, number>()
+  trend.forEach((item) => {
+    if (item.day) {
+      trendMap.set(item.day, Number(item.dailyTotal || 0))
+    }
+  })
+
+  const bars: WeekDayBar[] = []
+  const monday = new Date(weekRange.value.monday)
+  for (let i = 0; i < 7; i++) {
+    const current = new Date(monday)
+    current.setDate(monday.getDate() + i)
+    const key = formatDate(current, '-')
+    const amount = Number(trendMap.get(key) || 0)
+    bars.push({
+      label: dayLabels[i],
+      percent: 0,
+      amount: amount.toFixed(2),
+      isMax: false,
+    })
+  }
+
+  const maxAmount = Math.max(...bars.map((item) => Number(item.amount)), 0)
+  const todayIndex = getTodayWeekIndex()
+  weekDays.value = bars.map((item, idx) => {
+    const amount = Number(item.amount)
+    let percent = 8
+    if (maxAmount > 0) {
+      percent = amount > 0 ? Math.max((amount / maxAmount) * 100, 15) : 8
+    }
+    return {
+      ...item,
+      percent,
+      isMax: idx === todayIndex,
+    }
+  })
 }
 
-// === Meal Period Distribution ===
-const mealPeriods = ref([
-   { name: '午餐', percent: 45, color: '#f68a2f' },
-   { name: '晚餐', percent: 35, color: '#ffdbcd' },
-   { name: '早餐', percent: 20, color: '#77574d' },
-])
+const buildMealPeriods = (distribution: WeeklyMealPeriodItem[] = []) => {
+  const percentageMap: Record<string, number> = {}
+  distribution.forEach((item) => {
+    if (item.mealPeriod) {
+      percentageMap[item.mealPeriod] = Number(item.percentage || 0)
+    }
+  })
+
+  mealPeriods.value = ['午餐', '晚餐', '早餐'].map((name) => ({
+    name,
+    percent: Number((percentageMap[name] || 0).toFixed(1)),
+    color: mealColorMap[name],
+  }))
+}
 
 const analysisData = ref({
    maxAmount: 0,
@@ -182,38 +273,30 @@ const analysisItems = computed(() => {
 })
 
 // === Fetch Real Data ===
-const fetchWeeklyData = () => {
-   const token = uni.getStorageSync('token')
-   // Fetch cost trend
-   uni.request({
-      url: baseUrl + '/analysis/cost/summary',
-      method: 'GET',
-      header: { 'authentication': token },
-      success: (res: any) => {
-         console.log('Weekly cost summary:', res.data)
-         if (res.data && res.data.code === 0 && res.data.data) {
-            const data = res.data.data
-            if (data.weekSpent) weeklyTotal.value = data.weekSpent.toFixed(2)
-            if (data.totalOrders) totalOrders.value = data.totalOrders
-         }
-      },
-      fail: (err) => {
-         console.error('获取周报数据失败:', err)
+const fetchWeeklyData = async () => {
+  try {
+    const res = await getWeeklyReportAPI({
+      start_date: formatDate(weekRange.value.monday, '-'),
+      end_date: formatDate(weekRange.value.sunday, '-'),
+    })
+    if (res.code === 0 && res.data) {
+      const data = res.data
+      reportData.value = {
+        ...reportData.value,
+        ...data,
+        totalAmount: Number(data.totalAmount || 0),
+        totalOrders: Number(data.totalOrders || 0),
+        orderCount: Number(data.orderCount ?? data.totalOrders ?? 0),
+        dailyAverage: Number(data.dailyAverage || 0),
+        lastWeekAmount: Number(data.lastWeekAmount || 0),
+        diffAmount: Number(data.diffAmount || 0),
       }
-   })
-   
-   // Fetch health trend for 7 days
-   uni.request({
-      url: baseUrl + '/analysis/health/trend?range=7',
-      method: 'GET',
-      header: { 'authentication': token },
-      success: (res: any) => {
-         console.log('Weekly health trend:', res.data)
-      },
-      fail: (err) => {
-         console.error('获取健康趋势失败:', err)
-      }
-   })
+      buildWeekDays(data.dailyTrend || [])
+      buildMealPeriods(data.mealPeriodDistribution || [])
+    }
+  } catch (error) {
+    console.error('获取周报数据失败:', error)
+  }
 }
 
 const fetchWeeklyAnalysis = async () => {
@@ -233,15 +316,14 @@ const fetchWeeklyAnalysis = async () => {
    }
 }
 
-const goBack = () => {
-   uni.navigateBack()
-}
-
 onLoad(() => {
-   syncTodayHighlight()
-   fetchWeeklyData()
-   fetchWeeklyAnalysis()
+  weekRange.value = getWeekRange()
+  buildWeekDays([])
+  buildMealPeriods([])
+  fetchWeeklyData()
+  fetchWeeklyAnalysis()
 })
+
 </script>
 
 <style lang="scss" scoped>
@@ -257,31 +339,13 @@ $tertiary: #77574d;
 .page-container {
    min-height: 100vh;
    background: $surface;
-}
-
-.top-bar {
-   position: sticky;
-   top: 0;
-   z-index: 50;
-   background: $surface;
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   padding: 24rpx 32rpx;
-   padding-top: calc(var(--status-bar-height, 44px) + 12rpx);
-   
-   .left {
-      display: flex;
-      align-items: center;
-      gap: 16rpx;
-      .back-icon { font-size: 40rpx; color: $primary-container; }
-      .bar-title { font-size: 36rpx; font-weight: 700; color: $on-surface; }
-   }
+   box-sizing: border-box;
 }
 
 .main-scroll {
    height: calc(100vh - 100rpx);
    padding: 0 24rpx;
+   box-sizing: border-box;
 }
 
 .section-header {
@@ -298,6 +362,7 @@ $tertiary: #77574d;
    box-shadow: 0 8rpx 32rpx rgba(27,28,26,0.04);
    position: relative;
    overflow: hidden;
+   box-sizing: border-box;
    
    .summary-label { font-size: 22rpx; font-weight: 600; color: $on-surface-variant; text-transform: uppercase; letter-spacing: 4rpx; margin-bottom: 12rpx; }
    .summary-amount-row {
@@ -331,6 +396,7 @@ $tertiary: #77574d;
    border-radius: 48rpx;
    padding: 48rpx;
    margin-bottom: 32rpx;
+   box-sizing: border-box;
    
    .trend-header {
       display: flex; justify-content: space-between; align-items: center; margin-bottom: 32rpx;
@@ -395,6 +461,7 @@ $tertiary: #77574d;
    margin-bottom: 32rpx;
    box-shadow: 0 4rpx 24rpx rgba(27,28,26,0.03);
    border: 1rpx solid $surface-container;
+   box-sizing: border-box;
 }
 
 .card-title { display: block; font-size: 32rpx; font-weight: 700; color: $on-surface; margin-bottom: 24rpx; }
@@ -441,6 +508,7 @@ $tertiary: #77574d;
    display: flex;
    gap: 16rpx;
    margin-bottom: 32rpx;
+   box-sizing: border-box;
    
    .suggestion-icon { font-size: 32rpx; }
    .suggestion-text { font-size: 24rpx; color: $on-surface-variant; font-weight: 500; line-height: 1.6; font-style: italic; }

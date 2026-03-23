@@ -12,7 +12,7 @@ if (!Math) {
   Navbar();
 }
 const Navbar = () => "./components/Navbar.js";
-const baseUrl = "http://121.41.59.61:8081";
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "order",
   setup(__props) {
@@ -108,7 +108,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         // 确保这里取到了输入的 "面"
       };
       common_vendor.index.request({
-        url: "http://121.41.59.61:8081/user/dish/list",
+        url: "http://127.0.0.1:8081/user/dish/list",
         method: "GET",
         data: queryParams,
         header: { "authentication": common_vendor.index.getStorageSync("token") },

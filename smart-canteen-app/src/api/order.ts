@@ -1,5 +1,13 @@
 import { http } from '@/utils/http'
-import type { OrderPageDTO, OrderSubmitVO, OrderVO, PageVO, OrderPaymentDTO, WeeklyAnalysisVO } from '@/types/order'
+import type {
+  OrderPageDTO,
+  OrderSubmitVO,
+  OrderVO,
+  PageVO,
+  OrderPaymentDTO,
+  WeeklyAnalysisVO,
+  WeeklyReportVO,
+} from '@/types/order'
 
 // 用户下单
 export const submitOrderAPI = (params: any) => {
@@ -74,5 +82,14 @@ export const getWeeklyAnalysisAPI = () => {
   return http<WeeklyAnalysisVO>({
     url: '/analysis/weekly-analysis',
     method: 'GET',
+  })
+}
+
+// 用户消费周报（本周）
+export const getWeeklyReportAPI = (params: { start_date: string; end_date: string }) => {
+  return http<WeeklyReportVO>({
+    url: '/user/order/weekly-report',
+    method: 'GET',
+    data: params,
   })
 }

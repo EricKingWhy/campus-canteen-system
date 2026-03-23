@@ -154,7 +154,7 @@
                 v-for="(point, index) in weeklyHealthTrend" 
                 :key="index"
                 class="chart-point"
-                :style="{ height: point.heightPct + '%', left: (index * 14.28) + '%' }"
+                :style="getHealthTrendBarStyle(point.heightPct, index)"
               ></view>
             </view>
             <view class="chart-labels">
@@ -217,7 +217,7 @@
               :class="{ highlight: item.isToday }"
             >
               <view class="bar-area">
-                <view class="bar" :style="{ height: item.barHeight + 'rpx' }">
+                <view class="bar" :style="getCostBarStyle(item.barHeight, index, item.isToday)">
                   <text class="bar-tooltip">¥{{ item.value }}</text>
                 </view>
               </view>
@@ -294,6 +294,27 @@ import promptIcon from '@/assets/images/icons/prompt.png'
 import healthAnalysisIcon from '@/assets/images/icons/icon_health_analysis_new.png'
 
 const profileStore = useUserProfileStore()
+
+const chartPalette = ['#85C4FF', '#81D398', '#FFC56E']
+const getChartColor = (index: number) => chartPalette[index % chartPalette.length]
+const getHealthTrendBarStyle = (heightPct: number, index: number) => ({
+  height: `${heightPct}%`,
+  left: `${index * 14.28}%`,
+  width: '16rpx',
+  background: `linear-gradient(180deg, ${getChartColor(index)} 0%, ${getChartColor(index)}cc 100%)`,
+  borderRadius: '24rpx 24rpx 0 0',
+  boxShadow: `0 8rpx 18rpx ${getChartColor(index)}20`
+})
+const getCostBarStyle = (barHeight: number, index: number, isToday: boolean) => ({
+  height: `${barHeight}rpx`,
+  width: '20rpx',
+  maxWidth: '20rpx',
+  background: `linear-gradient(180deg, ${getChartColor(index)} 0%, ${getChartColor(index)}d9 100%)`,
+  borderRadius: isToday ? '22rpx 22rpx 0 0' : '18rpx 18rpx 0 0',
+  boxShadow: isToday
+    ? `0 10rpx 22rpx ${getChartColor(index)}22`
+    : `0 6rpx 14rpx ${getChartColor(index)}18`
+})
 
 // ============ 安全格式化工具函数 ============
 const toNum = (v: any, d = 0): number => {
@@ -761,6 +782,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   padding-bottom: 120rpx;
+  box-sizing: border-box;
 }
 
 // Header
@@ -772,6 +794,7 @@ onMounted(() => {
   backdrop-filter: blur(10px);
   padding: 20rpx 32rpx;
   padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  box-sizing: border-box;
 }
 
 .tab-toggle {
@@ -805,6 +828,7 @@ onMounted(() => {
 .content {
   flex: 1;
   padding: 0 32rpx;
+  box-sizing: border-box;
 }
 
 // Empty States
@@ -895,6 +919,7 @@ onMounted(() => {
   padding: 40rpx;
   margin-bottom: 24rpx;
   box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
 }
 
 .card-header {
@@ -1161,14 +1186,33 @@ onMounted(() => {
   height: 200rpx;
   position: relative;
   margin: 24rpx 0;
+  border-radius: 24rpx 24rpx 0 0;
+  background-image:
+    repeating-linear-gradient(
+      to top,
+      transparent 0,
+      transparent 86rpx,
+      rgba(240, 240, 240, 0.55) 86rpx,
+      rgba(240, 240, 240, 0.55) 88rpx
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(247, 247, 247, 0.55) 0,
+      rgba(247, 247, 247, 0.55) 2rpx,
+      transparent 2rpx,
+      transparent 30rpx
+    );
+  background-size: 100% 88rpx, 30rpx 88rpx;
+  background-position: left bottom, left bottom;
+  background-repeat: repeat;
 }
 
 .chart-point {
   position: absolute;
   bottom: 0;
-  width: 8rpx;
-  background: #34c759;
-  border-radius: 4rpx 4rpx 0 0;
+  min-height: 18rpx;
+  transform: translateX(-50%);
+  transition: all 0.28s ease-out;
 }
 
 .chart-labels {
@@ -1270,6 +1314,7 @@ onMounted(() => {
   align-items: flex-end;
   padding-top: 40rpx;
   padding-bottom: 16rpx;
+  gap: 12rpx;
 }
 
 .bar-item {
@@ -1286,20 +1331,34 @@ onMounted(() => {
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  border-radius: 24rpx 24rpx 0 0;
+  background-image:
+    repeating-linear-gradient(
+      to top,
+      transparent 0,
+      transparent 94rpx,
+      rgba(240, 240, 240, 0.5) 94rpx,
+      rgba(240, 240, 240, 0.5) 96rpx
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(247, 247, 247, 0.5) 0,
+      rgba(247, 247, 247, 0.5) 2rpx,
+      transparent 2rpx,
+      transparent 30rpx
+    );
+  background-size: 100% 96rpx, 30rpx 96rpx;
+  background-position: left bottom, left bottom;
+  background-repeat: repeat;
 }
 
 .bar {
-  width: 36rpx;
-  max-width: 48rpx;
   min-height: 20rpx;
-  background: rgba(255, 140, 66, 0.28);
-  border-radius: 8rpx 8rpx 0 0;
   position: relative;
-  transition: all 0.3s;
+  transition: all 0.28s ease-out;
   
   .highlight & {
-    background: #ff8c42;
-    box-shadow: 0 12rpx 30rpx rgba(255, 140, 66, 0.25);
+    transform: translateY(-4rpx);
   }
 }
 

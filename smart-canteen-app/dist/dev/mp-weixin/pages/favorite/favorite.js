@@ -4,7 +4,7 @@ const api_favorite = require("../../api/favorite.js");
 const api_cart = require("../../api/cart.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
-const baseUrl = "http://121.41.59.61:8081";
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "favorite",
   setup(__props) {
@@ -63,18 +63,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const goDetail = (dish) => {
       common_vendor.index.showToast({ title: dish.name, icon: "none" });
     };
-    const goBack = () => {
-      common_vendor.index.navigateBack();
-    };
     common_vendor.onShow(() => {
       loadFavorites();
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.o(goBack),
-        b: loading.value
+        a: loading.value
       }, loading.value ? {} : favoriteList.value.length === 0 ? {} : {
-        d: common_vendor.f(favoriteList.value, (dish, k0, i0) => {
+        c: common_vendor.f(favoriteList.value, (dish, k0, i0) => {
           return {
             a: resolveImageUrl(dish.image),
             b: common_vendor.t(dish.name),
@@ -87,7 +83,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       }, {
-        c: favoriteList.value.length === 0
+        b: favoriteList.value.length === 0
       });
     };
   }

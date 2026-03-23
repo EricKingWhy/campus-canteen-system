@@ -183,6 +183,8 @@
   border-radius: 8rpx;
   font-size: 20rpx;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
 }
 .content .dish-item .dish-info-col .tags-row .tag-badge.grey.data-v-4046d630 {
   background: #f3f4f6;
@@ -195,6 +197,28 @@
 .content .dish-item .dish-info-col .tags-row .tag-badge.green.data-v-4046d630 {
   background: #f0fdf4;
   color: #16a34a;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge .kcal-inline.data-v-4046d630 {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge .kcal-svg.data-v-4046d630 {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  display: block;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge .kcal-number.data-v-4046d630 {
+  font-size: 13px;
+  color: #8C8C8C;
+  line-height: 1;
+}
+.content .dish-item .dish-info-col .tags-row .tag-badge .kcal-unit.data-v-4046d630 {
+  font-size: 11px;
+  color: #8C8C8C;
+  line-height: 1;
 }
 .content .dish-item .dish-info-col .price-action-row.data-v-4046d630 {
   display: flex;

@@ -159,7 +159,7 @@
   min-width: 0 !important;
   overflow: hidden !important;
   /* 防止溢出内容撑破布局 */
-  background-color: #fff;
+  background-color: #F9F8F6;
 }
 .secondary .carousel.data-v-88bf5328 {
   height: 200rpx;
@@ -202,11 +202,15 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  padding: 20rpx 0;
+  padding: 20rpx 20rpx 24rpx;
 }
 .secondary .section .dish.data-v-88bf5328 {
   width: 520rpx;
-  margin: 10rpx 30rpx 10rpx 20rpx;
+  margin: 0 10px 14px;
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border: none;
   display: flex;
 }
 .secondary .section .dish image.data-v-88bf5328 {

@@ -704,7 +704,7 @@ onUnmounted(() => {
   width: 0 !important; /* Flex 经典神技：强制其宽度由父级分配，不被子元素撑开 */
   min-width: 0 !important;
   overflow: hidden !important; /* 防止溢出内容撑破布局 */
-  background-color: #fff;
+  background-color: #F9F8F6;
 
   .carousel {
     height: 200rpx;
@@ -756,12 +756,15 @@ onUnmounted(() => {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    padding: 20rpx 0;
+    padding: 20rpx 20rpx 24rpx;
 
     .dish {
       width: 520rpx;
-      margin: 10rpx 30rpx 10rpx 20rpx;
-      // background-color: #f6f6f6;
+      margin: 0 10px 14px;
+      background-color: #FFFFFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      border: none;
       display: flex;
 
       image {

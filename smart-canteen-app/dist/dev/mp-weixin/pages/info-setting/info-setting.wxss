@@ -88,6 +88,7 @@
   background: #fffaf5;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 .header.data-v-84cc0418 {
   display: flex;
@@ -100,6 +101,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  box-sizing: border-box;
 }
 .header .back-btn.data-v-84cc0418 {
   width: 76rpx;
@@ -132,6 +134,7 @@
 }
 .progress-section.data-v-84cc0418 {
   padding: 8rpx 32rpx 24rpx;
+  box-sizing: border-box;
 }
 .progress-section .progress-info.data-v-84cc0418 {
   display: flex;
@@ -161,6 +164,7 @@
 .content.data-v-84cc0418 {
   flex: 1;
   padding: 0 28rpx 200rpx;
+  box-sizing: border-box;
 }
 .section.data-v-84cc0418 {
   margin-bottom: 32rpx;
@@ -180,28 +184,42 @@
 }
 .gender-selector.data-v-84cc0418 {
   display: flex;
-  background: #f0f0f0;
-  border-radius: 16rpx;
-  padding: 8rpx;
+  gap: 16rpx;
 }
 .gender-selector .gender-option.data-v-84cc0418 {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  padding: 24rpx;
-  border-radius: 12rpx;
-  color: #6e6159;
+  gap: 10rpx;
+  padding: 28rpx 20rpx;
+  border-radius: 20rpx;
+  background: #f8f5ef;
+  color: #8c8c8c;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
   transition: all 0.2s;
 }
-.gender-selector .gender-option.active.data-v-84cc0418 {
-  background: #ffffff;
-  color: #2d241f;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+.gender-selector .gender-option.male.active.data-v-84cc0418 {
+  background: #e6f7ff;
+  color: #1890ff;
+  box-shadow: 0 6rpx 16rpx rgba(24, 144, 255, 0.16);
 }
-.gender-selector .gender-option .gender-icon.data-v-84cc0418 {
-  font-size: 36rpx;
+.gender-selector .gender-option.female.active.data-v-84cc0418 {
+  background: #fff1f0;
+  color: #ff4d4f;
+  box-shadow: 0 6rpx 16rpx rgba(255, 77, 79, 0.12);
+}
+.gender-selector .gender-option .gender-icon-svg.data-v-84cc0418 {
+  width: 40rpx;
+  height: 40rpx;
+}
+.gender-selector .gender-option .gender-label.data-v-84cc0418 {
+  font-size: 34rpx;
+  font-weight: 500;
+  line-height: 1;
+}
+.gender-selector .gender-option.active .gender-icon-svg.data-v-84cc0418 {
+  filter: saturate(1.2);
 }
 .card.data-v-84cc0418 {
   background: #ffffff;
@@ -209,6 +227,7 @@
   padding: 28rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
 }
 .card .card-header.data-v-84cc0418 {
   display: flex;
@@ -343,6 +362,7 @@
   color: #fff;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 .health-preview.data-v-84cc0418::before {
   content: "";
@@ -535,6 +555,7 @@
   -webkit-backdrop-filter: blur(20rpx);
           backdrop-filter: blur(20rpx);
   border-top: 1rpx solid #f3e9de;
+  box-sizing: border-box;
 }
 .footer .primary-btn.data-v-84cc0418 {
   width: 100%;

@@ -65,20 +65,20 @@
         <text class="section-title">基础数据</text>
         <view class="gender-selector">
           <view 
-            class="gender-option" 
-            :class="{ active: formData.gender === 1 }"
-            @click="formData.gender = 1"
+            class="gender-option male" 
+            :class="{ active: selectedGender === 1 }"
+            @click="setGender(1)"
           >
-            <text class="gender-icon">♂</text>
-            <text>男</text>
+            <image class="gender-icon-svg" :src="maleGenderIcon" mode="aspectFit" />
+            <text class="gender-label">男</text>
           </view>
           <view 
-            class="gender-option" 
-            :class="{ active: formData.gender === 2 }"
-            @click="formData.gender = 2"
+            class="gender-option female" 
+            :class="{ active: selectedGender === 2 }"
+            @click="setGender(2)"
           >
-            <text class="gender-icon">♀</text>
-            <text>女</text>
+            <image class="gender-icon-svg" :src="femaleGenderIcon" mode="aspectFit" />
+            <text class="gender-label">女</text>
           </view>
         </view>
       </view>
@@ -88,7 +88,7 @@
         <text class="card-label">年龄</text>
         <view class="stepper">
           <view class="stepper-btn" @click="formData.age = Math.max(10, (formData.age || 20) - 1)">
-            <text></text>
+            <text>-</text>
           </view>
           <text class="stepper-value">{{ formData.age || 20 }}</text>
           <view class="stepper-btn" @click="formData.age = Math.min(80, (formData.age || 20) + 1)">
@@ -367,6 +367,25 @@ const formData = ref<UserProfileDTO>({
   nutritionPref: '',
   mealBudget: 15
 })
+
+const selectedGender = computed(() => formData.value.gender || 1)
+const setGender = (gender: 1 | 2) => {
+  formData.value.gender = gender
+}
+
+const createGenderIcon = (svg: string) => `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+
+const maleGenderIcon = computed(() =>
+  selectedGender.value === 1
+    ? createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7.5" cy="12.5" r="4.1" stroke="#1890ff" stroke-width="1.6"/><path d="M10.9 9.1L15.4 4.6" stroke="#1890ff" stroke-width="1.6" stroke-linecap="round"/><path d="M12.8 4.6H15.4V7.2" stroke="#1890ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    : createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7.5" cy="12.5" r="4.1" stroke="#8C8C8C" stroke-width="1.6"/><path d="M10.9 9.1L15.4 4.6" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round"/><path d="M12.8 4.6H15.4V7.2" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+)
+
+const femaleGenderIcon = computed(() =>
+  selectedGender.value === 2
+    ? createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="7.3" r="4.2" stroke="#ff4d4f" stroke-width="1.6"/><path d="M10 11.6V16.2" stroke="#ff4d4f" stroke-width="1.6" stroke-linecap="round"/><path d="M7.7 13.9H12.3" stroke="#ff4d4f" stroke-width="1.6" stroke-linecap="round"/></svg>')
+    : createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="7.3" r="4.2" stroke="#8C8C8C" stroke-width="1.6"/><path d="M10 11.6V16.2" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round"/><path d="M7.7 13.9H12.3" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round"/></svg>')
+)
 
 // 选项配置
 const activityOptions = [
@@ -648,6 +667,7 @@ $text-muted: #a4978f;
   background: $bg;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .header {
@@ -660,6 +680,7 @@ $text-muted: #a4978f;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-sizing: border-box;
 
   .back-btn {
     width: 76rpx;
@@ -698,6 +719,7 @@ $text-muted: #a4978f;
 
 .progress-section {
   padding: 8rpx 32rpx 24rpx;
+  box-sizing: border-box;
 
   .progress-info {
     display: flex;
@@ -733,6 +755,7 @@ $text-muted: #a4978f;
 .content {
   flex: 1;
   padding: 0 28rpx 200rpx;
+  box-sizing: border-box;
 }
 
 .section {
@@ -756,29 +779,46 @@ $text-muted: #a4978f;
 
 .gender-selector {
   display: flex;
-  background: #f0f0f0;
-  border-radius: 16rpx;
-  padding: 8rpx;
+  gap: 16rpx;
 
   .gender-option {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12rpx;
-    padding: 24rpx;
-    border-radius: 12rpx;
-    color: $text-secondary;
+    gap: 10rpx;
+    padding: 28rpx 20rpx;
+    border-radius: 20rpx;
+    background: #f8f5ef;
+    color: #8c8c8c;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
     transition: all 0.2s;
 
-    &.active {
-      background: $card-bg;
-      color: $text-primary;
-      box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+    &.male.active {
+      background: #e6f7ff;
+      color: #1890ff;
+      box-shadow: 0 6rpx 16rpx rgba(24, 144, 255, 0.16);
     }
 
-    .gender-icon {
-      font-size: 36rpx;
+    &.female.active {
+      background: #fff1f0;
+      color: #ff4d4f;
+      box-shadow: 0 6rpx 16rpx rgba(255, 77, 79, 0.12);
+    }
+
+    .gender-icon-svg {
+      width: 40rpx;
+      height: 40rpx;
+    }
+
+    .gender-label {
+      font-size: 34rpx;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    &.active .gender-icon-svg {
+      filter: saturate(1.2);
     }
   }
 }
@@ -789,6 +829,7 @@ $text-muted: #a4978f;
   padding: 28rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
 
   .card-header {
     display: flex;
@@ -945,6 +986,7 @@ $text-muted: #a4978f;
   color: #fff;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 
   &::before {
     content: '';
@@ -1159,6 +1201,7 @@ $text-muted: #a4978f;
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(20rpx);
   border-top: 1rpx solid #f3e9de;
+  box-sizing: border-box;
 
   .primary-btn {
     width: 100%;

@@ -26,35 +26,12 @@
 .page-container.data-v-3226081b {
   min-height: 100vh;
   background: #fbf9f5;
-}
-.top-bar.data-v-3226081b {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: #fbf9f5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx 32rpx;
-  padding-top: calc(var(--status-bar-height, 44px) + 12rpx);
-}
-.top-bar .left.data-v-3226081b {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-}
-.top-bar .left .back-icon.data-v-3226081b {
-  font-size: 40rpx;
-  color: #f68a2f;
-}
-.top-bar .left .bar-title.data-v-3226081b {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1b1c1a;
+  box-sizing: border-box;
 }
 .main-scroll.data-v-3226081b {
   height: calc(100vh - 100rpx);
   padding: 0 24rpx;
+  box-sizing: border-box;
 }
 .section-header.data-v-3226081b {
   margin-bottom: 32rpx;
@@ -80,6 +57,7 @@
   box-shadow: 0 8rpx 32rpx rgba(27, 28, 26, 0.04);
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 .summary-card .summary-label.data-v-3226081b {
   font-size: 22rpx;
@@ -155,6 +133,7 @@
   border-radius: 48rpx;
   padding: 48rpx;
   margin-bottom: 32rpx;
+  box-sizing: border-box;
 }
 .trend-card .trend-header.data-v-3226081b {
   display: flex;
@@ -226,6 +205,7 @@
   margin-bottom: 32rpx;
   box-shadow: 0 4rpx 24rpx rgba(27, 28, 26, 0.03);
   border: 1rpx solid #efeeea;
+  box-sizing: border-box;
 }
 .card-title.data-v-3226081b {
   display: block;
@@ -318,6 +298,7 @@
   display: flex;
   gap: 16rpx;
   margin-bottom: 32rpx;
+  box-sizing: border-box;
 }
 .suggestion-card .suggestion-icon.data-v-3226081b {
   font-size: 32rpx;

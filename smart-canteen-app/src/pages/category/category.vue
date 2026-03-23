@@ -58,7 +58,11 @@
                 <text class="dish-desc">{{ item.description || '暂无描述' }}</text>
                 <view class="tags-row">
                   <view class="tag-badge grey" v-if="item.calories">
-                    <text>🔥 {{ item.calories }}kcal</text>
+                    <view class="kcal-inline">
+                      <image class="kcal-svg" src="/static/icons/ali_iconkaluli.svg" mode="aspectFit"></image>
+                      <text class="kcal-number">{{ item.calories }}</text>
+                      <text class="kcal-unit">kcal</text>
+                    </view>
                   </view>
                   <view class="tag-badge orange" v-if="index % 2 === 0"> <!-- Mock tag logic -->
                     <text>💪 高蛋白</text>
@@ -686,10 +690,38 @@ $price-red: #ef4444;
                border-radius: 8rpx;
                font-size: 20rpx;
                font-weight: 500;
+               display: inline-flex;
+               align-items: center;
                
                &.grey { background: #f3f4f6; color: #6b7280; }
                &.orange { background: #fff7ed; color: $primary; }
                &.green { background: #f0fdf4; color: #16a34a; }
+
+               .kcal-inline {
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 4px;
+                  line-height: 1;
+               }
+
+               .kcal-svg {
+                  width: 14px;
+                  height: 14px;
+                  flex: none;
+                  display: block;
+               }
+
+               .kcal-number {
+                  font-size: 13px;
+                  color: #8C8C8C;
+                  line-height: 1;
+               }
+
+               .kcal-unit {
+                  font-size: 11px;
+                  color: #8C8C8C;
+                  line-height: 1;
+               }
             }
          }
          

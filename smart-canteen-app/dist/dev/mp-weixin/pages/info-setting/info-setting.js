@@ -32,6 +32,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       nutritionPref: "",
       mealBudget: 15
     });
+    const selectedGender = common_vendor.computed(() => formData.value.gender || 1);
+    const setGender = (gender) => {
+      formData.value.gender = gender;
+    };
+    const createGenderIcon = (svg) => `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    const maleGenderIcon = common_vendor.computed(
+      () => selectedGender.value === 1 ? createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7.5" cy="12.5" r="4.1" stroke="#1890ff" stroke-width="1.6"/><path d="M10.9 9.1L15.4 4.6" stroke="#1890ff" stroke-width="1.6" stroke-linecap="round"/><path d="M12.8 4.6H15.4V7.2" stroke="#1890ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>') : createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7.5" cy="12.5" r="4.1" stroke="#8C8C8C" stroke-width="1.6"/><path d="M10.9 9.1L15.4 4.6" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round"/><path d="M12.8 4.6H15.4V7.2" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    );
+    const femaleGenderIcon = common_vendor.computed(
+      () => selectedGender.value === 2 ? createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="7.3" r="4.2" stroke="#ff4d4f" stroke-width="1.6"/><path d="M10 11.6V16.2" stroke="#ff4d4f" stroke-width="1.6" stroke-linecap="round"/><path d="M7.7 13.9H12.3" stroke="#ff4d4f" stroke-width="1.6" stroke-linecap="round"/></svg>') : createGenderIcon('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="7.3" r="4.2" stroke="#8C8C8C" stroke-width="1.6"/><path d="M10 11.6V16.2" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round"/><path d="M7.7 13.9H12.3" stroke="#8C8C8C" stroke-width="1.6" stroke-linecap="round"/></svg>')
+    );
     const activityOptions = [
       { value: 1, name: "久坐", desc: "极少运动", icon: "🪑" },
       { value: 2, name: "轻度", desc: "每周1-3天", icon: "🚶" },
@@ -227,22 +238,24 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         k: common_vendor.o(($event) => formData.value.nickname = $event.detail.value),
         l: formData.value.phone,
         m: common_vendor.o(($event) => formData.value.phone = $event.detail.value),
-        n: formData.value.gender === 1 ? 1 : "",
-        o: common_vendor.o(($event) => formData.value.gender = 1),
-        p: formData.value.gender === 2 ? 1 : "",
-        q: common_vendor.o(($event) => formData.value.gender = 2),
-        r: common_vendor.o(($event) => formData.value.age = Math.max(10, (formData.value.age || 20) - 1)),
-        s: common_vendor.t(formData.value.age || 20),
-        t: common_vendor.o(($event) => formData.value.age = Math.min(80, (formData.value.age || 20) + 1)),
-        v: common_vendor.o([($event) => formData.value.height = $event.detail.value, onHeightInput]),
-        w: formData.value.height,
-        x: formData.value.height || 170,
-        y: common_vendor.o(onHeightSliderChange),
-        z: common_vendor.o([($event) => formData.value.weight = $event.detail.value, onWeightInput]),
-        A: formData.value.weight,
-        B: formData.value.weight || 65,
-        C: common_vendor.o(onWeightSliderChange),
-        D: common_vendor.f(activityOptions, (item, k0, i0) => {
+        n: maleGenderIcon.value,
+        o: selectedGender.value === 1 ? 1 : "",
+        p: common_vendor.o(($event) => setGender(1)),
+        q: femaleGenderIcon.value,
+        r: selectedGender.value === 2 ? 1 : "",
+        s: common_vendor.o(($event) => setGender(2)),
+        t: common_vendor.o(($event) => formData.value.age = Math.max(10, (formData.value.age || 20) - 1)),
+        v: common_vendor.t(formData.value.age || 20),
+        w: common_vendor.o(($event) => formData.value.age = Math.min(80, (formData.value.age || 20) + 1)),
+        x: common_vendor.o([($event) => formData.value.height = $event.detail.value, onHeightInput]),
+        y: formData.value.height,
+        z: formData.value.height || 170,
+        A: common_vendor.o(onHeightSliderChange),
+        B: common_vendor.o([($event) => formData.value.weight = $event.detail.value, onWeightInput]),
+        C: formData.value.weight,
+        D: formData.value.weight || 65,
+        E: common_vendor.o(onWeightSliderChange),
+        F: common_vendor.f(activityOptions, (item, k0, i0) => {
           return {
             a: common_vendor.t(item.icon),
             b: common_vendor.t(item.name),
@@ -252,7 +265,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             f: common_vendor.o(($event) => formData.value.activityLevel = item.value, item.value)
           };
         }),
-        E: common_vendor.f(goalOptions, (item, k0, i0) => {
+        G: common_vendor.f(goalOptions, (item, k0, i0) => {
           return {
             a: goalIconMap[item.value],
             b: common_vendor.t(item.name),
@@ -261,17 +274,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => formData.value.healthGoal = item.value, item.value)
           };
         }),
-        F: common_vendor.t(calculatedBMI.value || "--"),
-        G: common_vendor.t(bmiCategory.value),
-        H: calculatedBMI.value
+        H: common_vendor.t(calculatedBMI.value || "--"),
+        I: common_vendor.t(bmiCategory.value),
+        J: calculatedBMI.value
       }, calculatedBMI.value ? {
-        I: bmiIndicatorPosition.value
+        K: bmiIndicatorPosition.value
       } : {}, {
-        J: common_vendor.t(calculatedBMR.value || "--"),
-        K: common_vendor.t(calculatedTDEE.value || "--"),
-        L: common_vendor.t(suggestIntake.value || "--")
+        L: common_vendor.t(calculatedBMR.value || "--"),
+        M: common_vendor.t(calculatedTDEE.value || "--"),
+        N: common_vendor.t(suggestIntake.value || "--")
       }) : {
-        M: common_vendor.f(tasteOptions, (tag, k0, i0) => {
+        O: common_vendor.f(tasteOptions, (tag, k0, i0) => {
           var _a, _b, _c;
           return common_vendor.e({
             a: common_vendor.t(tag),
@@ -282,7 +295,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => toggleTag("tasteTags", tag), tag)
           });
         }),
-        N: common_vendor.f(avoidOptions, (tag, k0, i0) => {
+        P: common_vendor.f(avoidOptions, (tag, k0, i0) => {
           var _a, _b, _c;
           return common_vendor.e({
             a: common_vendor.t(tag),
@@ -293,10 +306,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => toggleTag("avoidTags", tag), tag)
           });
         }),
-        O: common_vendor.o(addCustomAvoid),
-        P: customAvoid.value,
-        Q: common_vendor.o(($event) => customAvoid.value = $event.detail.value),
-        R: common_vendor.f(nutritionOptions, (item, k0, i0) => {
+        Q: common_vendor.o(addCustomAvoid),
+        R: customAvoid.value,
+        S: common_vendor.o(($event) => customAvoid.value = $event.detail.value),
+        T: common_vendor.f(nutritionOptions, (item, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(item),
             b: formData.value.nutritionPref === item
@@ -306,17 +319,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => formData.value.nutritionPref = item, item)
           });
         }),
-        S: common_vendor.t(formData.value.mealBudget || 15),
-        T: formData.value.mealBudget || 15,
-        U: common_vendor.o(onBudgetSliderChange)
+        U: common_vendor.t(formData.value.mealBudget || 15),
+        V: formData.value.mealBudget || 15,
+        W: common_vendor.o(onBudgetSliderChange)
       }, {
-        V: currentStep.value === 1
+        X: currentStep.value === 1
       }, currentStep.value === 1 ? {
-        W: common_vendor.o(nextStep)
+        Y: common_vendor.o(nextStep)
       } : {
-        X: common_vendor.o(handleSave),
-        Y: loading.value,
-        Z: common_vendor.o(handleSkip)
+        Z: common_vendor.o(handleSave),
+        aa: loading.value,
+        ab: common_vendor.o(handleSkip)
       });
     };
   }

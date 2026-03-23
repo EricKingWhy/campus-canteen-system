@@ -29,6 +29,7 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 120rpx;
+  box-sizing: border-box;
 }
 .header.data-v-85d0b700 {
   position: sticky;
@@ -39,6 +40,7 @@
           backdrop-filter: blur(10px);
   padding: 20rpx 32rpx;
   padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  box-sizing: border-box;
 }
 .tab-toggle.data-v-85d0b700 {
   display: flex;
@@ -67,6 +69,7 @@
 .content.data-v-85d0b700 {
   flex: 1;
   padding: 0 32rpx;
+  box-sizing: border-box;
 }
 .empty-state.data-v-85d0b700 {
   display: flex;
@@ -145,6 +148,7 @@
   padding: 40rpx;
   margin-bottom: 24rpx;
   box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
 }
 .card-header.data-v-85d0b700 {
   display: flex;
@@ -373,13 +377,18 @@
   height: 200rpx;
   position: relative;
   margin: 24rpx 0;
+  border-radius: 24rpx 24rpx 0 0;
+  background-image: repeating-linear-gradient(to top, transparent 0, transparent 86rpx, rgba(240, 240, 240, 0.55) 86rpx, rgba(240, 240, 240, 0.55) 88rpx), repeating-linear-gradient(to right, rgba(247, 247, 247, 0.55) 0, rgba(247, 247, 247, 0.55) 2rpx, transparent 2rpx, transparent 30rpx);
+  background-size: 100% 88rpx, 30rpx 88rpx;
+  background-position: left bottom, left bottom;
+  background-repeat: repeat;
 }
 .chart-point.data-v-85d0b700 {
   position: absolute;
   bottom: 0;
-  width: 8rpx;
-  background: #34c759;
-  border-radius: 4rpx 4rpx 0 0;
+  min-height: 18rpx;
+  transform: translateX(-50%);
+  transition: all 0.28s ease-out;
 }
 .chart-labels.data-v-85d0b700 {
   display: flex;
@@ -465,6 +474,7 @@
   align-items: flex-end;
   padding-top: 40rpx;
   padding-bottom: 16rpx;
+  gap: 12rpx;
 }
 .bar-item.data-v-85d0b700 {
   flex: 1;
@@ -479,19 +489,19 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  border-radius: 24rpx 24rpx 0 0;
+  background-image: repeating-linear-gradient(to top, transparent 0, transparent 94rpx, rgba(240, 240, 240, 0.5) 94rpx, rgba(240, 240, 240, 0.5) 96rpx), repeating-linear-gradient(to right, rgba(247, 247, 247, 0.5) 0, rgba(247, 247, 247, 0.5) 2rpx, transparent 2rpx, transparent 30rpx);
+  background-size: 100% 96rpx, 30rpx 96rpx;
+  background-position: left bottom, left bottom;
+  background-repeat: repeat;
 }
 .bar.data-v-85d0b700 {
-  width: 36rpx;
-  max-width: 48rpx;
   min-height: 20rpx;
-  background: rgba(255, 140, 66, 0.28);
-  border-radius: 8rpx 8rpx 0 0;
   position: relative;
-  transition: all 0.3s;
+  transition: all 0.28s ease-out;
 }
 .highlight .bar.data-v-85d0b700 {
-  background: #ff8c42;
-  box-shadow: 0 12rpx 30rpx rgba(255, 140, 66, 0.25);
+  transform: translateY(-4rpx);
 }
 .bar-tooltip.data-v-85d0b700 {
   position: absolute;

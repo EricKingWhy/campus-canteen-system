@@ -476,7 +476,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getUserId, userId)
                 .ge(Orders::getOrderTime, startTime)
-                .le(Orders::getOrderTime, endTime);
+                .le(Orders::getOrderTime, endTime)
+                .eq(Orders::getPayStatus, Orders.PAID)
+                .ne(Orders::getStatus, Orders.CANCELLED);
         List<Orders> ordersList = orderMapper.selectList(queryWrapper);
 
         java.math.BigDecimal totalAmount = java.math.BigDecimal.ZERO;
@@ -488,12 +490,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         }
         report.setTotalAmount(totalAmount);
         report.setTotalOrders(totalOrders);
-        long days = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        report.setOrderCount(totalOrders);
+
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.LocalDate effectiveEndDate = endDate.isAfter(today) ? today : endDate;
+        long days = java.time.temporal.ChronoUnit.DAYS.between(startDate, effectiveEndDate) + 1;
+        if (days <= 0) {
+            days = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        }
         if (days > 0) {
             report.setDailyAverage(totalAmount.divide(java.math.BigDecimal.valueOf(days), 2, java.math.RoundingMode.HALF_UP));
         } else {
             report.setDailyAverage(java.math.BigDecimal.ZERO);
         }
+
+        java.time.LocalDate lastWeekStartDate = startDate.minusWeeks(1);
+        java.time.LocalDate lastWeekEndDate = endDate.minusWeeks(1);
+        java.math.BigDecimal lastWeekAmount = orderMapper.sumAmountByUserIdAndTimeRange(
+                userId,
+                lastWeekStartDate.atTime(java.time.LocalTime.MIN),
+                lastWeekEndDate.atTime(java.time.LocalTime.MAX),
+                Orders.PAID
+        );
+        if (lastWeekAmount == null) {
+            lastWeekAmount = java.math.BigDecimal.ZERO;
+        }
+        report.setLastWeekAmount(lastWeekAmount);
+        report.setDiffAmount(totalAmount.subtract(lastWeekAmount));
 
         // 2. 7日金额趋势
         List<fun.cyhgraph.vo.DailyTrendVO> trendList = orderMapper.getWeeklyDailyTrend(userId, startTime, endTime);

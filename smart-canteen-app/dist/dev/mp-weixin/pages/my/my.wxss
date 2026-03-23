@@ -151,6 +151,10 @@
   color: #999;
   margin-top: auto;
 }
+.dashboard-grid .diet-card .diet-dashboard-icon.data-v-d3687551 {
+  width: 42rpx !important;
+  height: 42rpx !important;
+}
 .dashboard-grid .diet-card .diet-list.data-v-d3687551 {
   display: flex;
   flex-direction: column;

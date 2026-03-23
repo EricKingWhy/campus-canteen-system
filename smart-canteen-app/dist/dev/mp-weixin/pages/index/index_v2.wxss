@@ -253,8 +253,27 @@
   margin-bottom: 16rpx;
 }
 .recommend-scroll .rec-card .rec-info .rec-meta .calories.data-v-464d1350 {
-  font-size: 20rpx;
-  color: #666;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #8C8C8C;
+  line-height: 1;
+}
+.recommend-scroll .rec-card .rec-info .rec-meta .calories .kcal-svg.data-v-464d1350 {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  display: block;
+}
+.recommend-scroll .rec-card .rec-info .rec-meta .calories .kcal-number.data-v-464d1350 {
+  font-size: 13px;
+  color: #8C8C8C;
+  line-height: 1;
+}
+.recommend-scroll .rec-card .rec-info .rec-meta .calories .kcal-unit.data-v-464d1350 {
+  font-size: 11px;
+  color: #8C8C8C;
+  line-height: 1;
 }
 .recommend-scroll .rec-card .rec-info .rec-meta .stock.data-v-464d1350 {
   font-size: 20rpx;

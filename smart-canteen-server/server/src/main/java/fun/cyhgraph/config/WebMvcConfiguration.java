@@ -144,6 +144,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 registry.addResourceHandler("/static/upload/**")
                                 .addResourceLocations(uploadStaticRootDir.toUri().toString());
 
+                // 生产单机模式: 映射部署目录同级 images 目录
+                registry.addResourceHandler("/images/**")
+                                .addResourceLocations("file:./images/");
+                // 兼容数据库已存的 /static/dish/xxx.png
+                registry.addResourceHandler("/static/dish/**")
+                                .addResourceLocations("file:./images/dish/");
+
                 // 【核心修复】静态资源映射 (项目 classpath 静态资源)
                 registry.addResourceHandler("/static/**")
                                 .addResourceLocations("classpath:/static/");

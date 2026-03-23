@@ -25,7 +25,7 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * 按用户ID、时间范围和支付状态汇总订单金额
      * 用于餐费分析
      */
-    @Select("SELECT COALESCE(SUM(amount), 0) FROM orders WHERE user_id = #{userId} AND order_time >= #{startTime} AND order_time <= #{endTime} AND pay_status = #{payStatus}")
+    @Select("SELECT COALESCE(SUM(amount), 0) FROM orders WHERE user_id = #{userId} AND order_time >= #{startTime} AND order_time <= #{endTime} AND pay_status = #{payStatus} AND status != 6")
     BigDecimal sumAmountByUserIdAndTimeRange(
             @Param("userId") Long userId,
             @Param("startTime") LocalDateTime startTime,

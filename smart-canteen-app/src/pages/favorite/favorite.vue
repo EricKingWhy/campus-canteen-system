@@ -1,14 +1,5 @@
 <template>
   <view class="page-container">
-    <!-- Header -->
-    <view class="header">
-      <view class="back-btn" @click="goBack">
-        <text class="icon">←</text>
-      </view>
-      <text class="title">我的收藏</text>
-      <view class="placeholder"></view>
-    </view>
-
     <!-- Loading -->
     <view v-if="loading" class="loading-box">
       <text>加载中...</text>
@@ -129,11 +120,6 @@ const goDetail = (dish: any) => {
   uni.showToast({ title: dish.name, icon: 'none' })
 }
 
-// 返回
-const goBack = () => {
-  uni.navigateBack()
-}
-
 // 页面显示时加载
 onShow(() => {
   loadFavorites()
@@ -147,31 +133,7 @@ $bg: #F7F8FA;
 .page-container {
   min-height: 100vh;
   background: $bg;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 40rpx 30rpx 30rpx;
-  background: white;
-  
-  .back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .icon { font-size: 40rpx; color: #333; }
-  }
-  
-  .title {
-    font-size: 36rpx;
-    font-weight: bold;
-    color: #1A1A1A;
-  }
-  
-  .placeholder { width: 60rpx; }
+  box-sizing: border-box;
 }
 
 .loading-box, .empty-box {
@@ -188,6 +150,7 @@ $bg: #F7F8FA;
 
 .list-container {
   padding: 30rpx;
+  box-sizing: border-box;
 }
 
 .dish-card {
@@ -197,6 +160,7 @@ $bg: #F7F8FA;
   padding: 24rpx;
   margin-bottom: 24rpx;
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  box-sizing: border-box;
   
   .dish-img {
     width: 180rpx;

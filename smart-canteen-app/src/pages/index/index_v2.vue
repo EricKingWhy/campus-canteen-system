@@ -77,7 +77,11 @@
               <text :class="['tag', { 'diet-tag': isDietMode }]" v-for="tag in item.tags" :key="tag">{{ tag }}</text>
             </view>
             <view class="rec-meta">
-              <text class="calories">🔥 {{ item.calories }} kcal</text>
+              <view class="calories">
+                <image class="kcal-svg" src="/static/icons/ali_iconkaluli.svg" mode="aspectFit"></image>
+                <text class="kcal-number">{{ item.calories }}</text>
+                <text class="kcal-unit">kcal</text>
+              </view>
               <text class="stock">{{ isDietMode ? (item.dietHint || '轻负担推荐') : '匹配度 98%' }}</text>
             </view>
             <view class="rec-action">
@@ -770,7 +774,32 @@ $spacing: 32rpx;
         display: flex;
         justify-content: space-between;
         margin-bottom: 16rpx;
-        .calories { font-size: 20rpx; color: #666; }
+        .calories {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          color: #8C8C8C;
+          line-height: 1;
+
+          .kcal-svg {
+            width: 14px;
+            height: 14px;
+            flex: none;
+            display: block;
+          }
+
+          .kcal-number {
+            font-size: 13px;
+            color: #8C8C8C;
+            line-height: 1;
+          }
+
+          .kcal-unit {
+            font-size: 11px;
+            color: #8C8C8C;
+            line-height: 1;
+          }
+        }
         .stock { font-size: 20rpx; color: #52C41A; font-weight: 600; }
       }
 

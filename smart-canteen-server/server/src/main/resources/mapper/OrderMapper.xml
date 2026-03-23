@@ -3,9 +3,13 @@
 <mapper namespace="fun.cyhgraph.mapper.OrderMapper">
 
     <select id="getWeeklyDailyTrend" resultType="fun.cyhgraph.vo.DailyTrendVO">
-        SELECT DATE_FORMAT(order_time, '%Y-%m-%d') as day, SUM(amount) as dailyTotal
-        FROM orders
-        WHERE user_id = #{userId} AND order_time >= #{startTime} AND order_time &lt;= #{endTime}
+        SELECT DATE_FORMAT(o.order_time, '%Y-%m-%d') as day, SUM(o.amount) as dailyTotal
+        FROM orders o
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
         GROUP BY day
         ORDER BY day ASC
     </select>
@@ -20,7 +24,11 @@
             COUNT(*) as percentage
         FROM orders o
         JOIN order_detail od ON o.id = od.order_id
-        WHERE o.user_id = #{userId} AND o.order_time >= #{startTime} AND o.order_time &lt;= #{endTime}
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
         GROUP BY mealPeriod
     </select>
 
@@ -28,7 +36,11 @@
         SELECT od.name as dishName, SUM(od.amount) as totalSpend
         FROM order_detail od
         JOIN orders o ON od.order_id = o.id
-        WHERE o.user_id = #{userId} AND o.order_time >= #{startTime} AND o.order_time &lt;= #{endTime}
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
         GROUP BY od.name
         ORDER BY totalSpend DESC
         LIMIT 1
@@ -38,7 +50,11 @@
         SELECT od.name as dishName, SUM(od.number) as totalCount
         FROM order_detail od
         JOIN orders o ON od.order_id = o.id
-        WHERE o.user_id = #{userId} AND o.order_time >= #{startTime} AND o.order_time &lt;= #{endTime}
+        WHERE o.user_id = #{userId}
+          AND o.order_time >= #{startTime}
+          AND o.order_time &lt;= #{endTime}
+          AND o.pay_status = 1
+          AND o.status != 6
         GROUP BY od.name
         ORDER BY totalCount DESC
         LIMIT 1

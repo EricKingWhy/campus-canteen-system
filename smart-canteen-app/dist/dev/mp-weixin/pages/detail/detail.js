@@ -6,7 +6,7 @@ const api_dish = require("../../api/dish.js");
 const api_setmeal = require("../../api/setmeal.js");
 require("../../utils/http.js");
 require("../../stores/modules/user.js");
-const baseUrl = "http://121.41.59.61:8081";
+const baseUrl = "http://127.0.0.1:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "detail",
   setup(__props) {

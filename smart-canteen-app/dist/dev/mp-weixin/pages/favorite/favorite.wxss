@@ -26,32 +26,7 @@
 .page-container.data-v-89f6d808 {
   min-height: 100vh;
   background: #F7F8FA;
-}
-.header.data-v-89f6d808 {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 40rpx 30rpx 30rpx;
-  background: white;
-}
-.header .back-btn.data-v-89f6d808 {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.header .back-btn .icon.data-v-89f6d808 {
-  font-size: 40rpx;
-  color: #333;
-}
-.header .title.data-v-89f6d808 {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #1A1A1A;
-}
-.header .placeholder.data-v-89f6d808 {
-  width: 60rpx;
+  box-sizing: border-box;
 }
 .loading-box.data-v-89f6d808, .empty-box.data-v-89f6d808 {
   display: flex;
@@ -75,6 +50,7 @@
 }
 .list-container.data-v-89f6d808 {
   padding: 30rpx;
+  box-sizing: border-box;
 }
 .dish-card.data-v-89f6d808 {
   display: flex;
@@ -83,6 +59,7 @@
   padding: 24rpx;
   margin-bottom: 24rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
 }
 .dish-card .dish-img.data-v-89f6d808 {
   width: 180rpx;

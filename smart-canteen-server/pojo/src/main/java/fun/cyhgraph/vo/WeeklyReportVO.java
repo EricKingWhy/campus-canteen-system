@@ -15,7 +15,10 @@ import java.util.List;
 public class WeeklyReportVO implements Serializable {
     private BigDecimal totalAmount;
     private Integer totalOrders;
+    private Integer orderCount;
     private BigDecimal dailyAverage;
+    private BigDecimal lastWeekAmount;
+    private BigDecimal diffAmount;
     private List<DailyTrendVO> dailyTrend;
     private List<MealPeriodVO> mealPeriodDistribution;
     private String maxSpendDish;
