@@ -33,13 +33,13 @@
               <uni-icons type="shop-filled" size="16" color="#ea580c"></uni-icons>
               <text>{{ diningType === 1 ? '堂食 · 一楼' : '打包 · 二楼' }}</text>
             </view>
-            <view class="pickup-label">取餐地点点点</view>
+            <view class="pickup-label">取餐地点</view>
             <view class="pickup-number">
               <text class="prefix">{{ numberPrefix }}</text>
               <text class="num">{{ pickupNumber }}</text>
             </view>
             <view class="hint-box">
-              <text>请留地点点点<text class="highlight">{{ diningType === 1 ? '一楼' : '二楼' }}</text>叫号地点点点</text>
+              <text>请留意<text class="highlight">{{ diningType === 1 ? '一楼' : '二楼' }}</text>叫号地点</text>
             </view>
           </view>
 
@@ -88,6 +88,7 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
 const safeAreaTop = ref(44)
+const baseUrl = 'http://121.41.59.61:8081'
 const orderId = ref<number | string>('')
 const amount = ref('0.00')
 const estimatedTime = ref('--:--')
@@ -100,6 +101,39 @@ const pickupNumber = computed(() => {
   return idStr.slice(-5) || '00000'
 })
 
+const pad2 = (v: number) => String(v).padStart(2, '0')
+const formatToHHmm = (value?: string) => {
+  if (!value) return '--:--'
+  const normalized = value.includes('T') ? value : value.replace(' ', 'T')
+  const date = new Date(normalized)
+  if (!Number.isNaN(date.getTime())) {
+    return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`
+  }
+  return value.length >= 16 ? value.substring(11, 16) : '--:--'
+}
+
+const fetchOrderDetail = () => {
+  if (!orderId.value) return
+  uni.request({
+    url: `${baseUrl}/user/order/orderDetail/${orderId.value}`,
+    method: 'GET',
+    header: { authentication: uni.getStorageSync('token') },
+    success: (res: any) => {
+      const data = res?.data?.data
+      if ((res?.data?.code === 1 || res?.data?.code === 0) && data) {
+        if (data.amount !== undefined && data.amount !== null) {
+          amount.value = Number(data.amount).toFixed(2)
+        }
+        if (data.packAmount !== undefined && data.packAmount !== null) {
+          diningType.value = Number(data.packAmount) > 0 ? 2 : 1
+        }
+        estimatedTime.value = formatToHHmm(data.estimatedDeliveryTime)
+        orderTime.value = formatToHHmm(data.orderTime)
+      }
+    },
+  })
+}
+
 onLoad((options: any) => {
   const sysInfo = uni.getSystemInfoSync()
   if (sysInfo.safeArea) safeAreaTop.value = sysInfo.safeArea.top + 10
@@ -110,12 +144,13 @@ onLoad((options: any) => {
     diningType.value = parseInt(options.packAmount) > 0 ? 2 : 1
     
     if (options.estimatedTime) {
-      estimatedTime.value = options.estimatedTime.substring(11, 16)
+      estimatedTime.value = formatToHHmm(options.estimatedTime)
     }
     if (options.orderTime) {
-      orderTime.value = options.orderTime.substring(11, 16)
+      orderTime.value = formatToHHmm(options.orderTime)
     }
   }
+  fetchOrderDetail()
 })
 
 const goBack = () => uni.navigateBack()

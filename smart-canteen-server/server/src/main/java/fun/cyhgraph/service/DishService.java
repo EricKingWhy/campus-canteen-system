@@ -30,6 +30,8 @@ public interface DishService extends IService<Dish> {
     // 【核心修复】根据分类ID查询
     List<Dish> listByCategoryId(Long categoryId);
 
+    void normalizeImageUrls(List<Dish> dishes);
+
     // 【临时工具】修复图片
     void fixImages();
 

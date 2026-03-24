@@ -45,6 +45,7 @@ public class DishController {
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
 
         List<Dish> list = dishService.list(queryWrapper);
+        dishService.normalizeImageUrls(list);
 
         List<DishVO> dishVOList = list.stream().map(d -> {
             DishVO dishVO = new DishVO();
@@ -77,6 +78,7 @@ public class DishController {
         queryWrapper.last("LIMIT 10");
 
         List<Dish> list = dishService.list(queryWrapper);
+        dishService.normalizeImageUrls(list);
         List<DishVO> dishVOList = list.stream().map(d -> {
             DishVO dishVO = new DishVO();
             BeanUtils.copyProperties(d, dishVO);

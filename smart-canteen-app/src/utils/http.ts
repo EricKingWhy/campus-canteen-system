@@ -2,7 +2,7 @@ import { useUserStore } from '@/stores/modules/user'
 
 // 请求基地址
 // ✅ 正确写法：去掉后面的 /user，只要端口号
-export const baseURL = 'http://127.0.0.1:8081'
+export const baseURL = 'http://121.41.59.61:8081'
 
 // 拦截器配置
 const httpInterceptor = {

@@ -52,6 +52,9 @@
         </view>
       </view>
       <view class="btn_box">
+        <view class="history_item_go_pay" v-if="item.status === 1" @click.stop="goToPay(item)">
+          去付款
+        </view>
         <view class="history_item_reOrder" @click.stop="reOrder(item.id as number)">再来一单</view>
         <view class="history_item_push_order" v-if="item.status === 2" @click.stop="pushOrder(item.id as number)">
           催单
@@ -127,7 +130,7 @@ const statusList = [
 const activeIndex = ref(0)
 const historyOrders = ref<OrderVO[]>([])
 const showPendingEmptyState = computed(() => activeIndex.value === 1 && historyOrders.value.length === 0)
-const baseURL = 'http://127.0.0.1:8081'
+const baseURL = 'http://121.41.59.61:8081'
 
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'
@@ -203,14 +206,28 @@ const toOrderDetail = (id: number | string) => {
 }
 
 // 再来一单
+const goToPay = (item: OrderVO) => {
+  if (!item?.id) {
+    uni.showToast({ title: '订单信息缺失', icon: 'none' })
+    return
+  }
+  const orderId = String(item.id)
+  const orderNumber = encodeURIComponent(String(item.number || ''))
+  const amount = encodeURIComponent(String(item.amount ?? '0.00'))
+  const diningType = Number(item.packAmount || 0) > 0 ? 2 : 1
+  uni.navigateTo({
+    url: `/pages/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`,
+  })
+}
+
 const reOrder = async (id: number) => {
   console.log('再来一单', id)
   // 菜品批量加入购物车之前，要先清购物车，避免批量加入购物车后数据并不完全一样
   await cleanCartAPI()
   // 再来一单会将当前订单的菜品批量加入购物车，跳转到订单页面后，购物车将高亮显示
   await reOrderAPI(id as number)
-  uni.redirectTo({
-    url: '/pages/order/order',
+  uni.switchTab({
+    url: '/pages/category/category',
   })
 }
 
@@ -376,6 +393,28 @@ const pushOrder = (id: number) => {
         color: #ff8c42;
         background: #fff9f3;
       }
+      .history_item_go_pay {
+        float: right;
+        margin-left: 20rpx;
+        min-width: 160rpx;
+        height: 66rpx;
+        padding: 0 32rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ffc94a 0%, #ffb000 60%, #f59e0b 100%);
+        border-radius: 999rpx;
+        font-size: 26rpx;
+        font-weight: 500;
+        letter-spacing: 1rpx;
+        color: #FFFFFF;
+        box-shadow: 0 8rpx 18rpx rgba(255, 176, 0, 0.24), inset 0 2rpx 0 rgba(255, 255, 255, 0.32);
+        transition: transform 0.15s ease, opacity 0.15s ease;
+        &:active {
+          transform: scale(0.98) translateY(1rpx);
+          opacity: 0.95;
+        }
+      }
       .history_item_push_order {
         float: right;
         width: 140rpx;
@@ -398,4 +437,3 @@ page {
   background-color: #fffaf5;
 }
 </style>
-

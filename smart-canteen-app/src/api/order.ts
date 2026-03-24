@@ -65,7 +65,7 @@ export const cancelOrderAPI = (id: number) => {
 // 再来一单，要批量加入菜品到购物车，所以是POST请求
 export const reOrderAPI = (id: number) => {
   return http({
-    url: `/user/order/reOrder/${id}`,
+    url: `/user/order/repetition/${id}`,
     method: 'POST',
   })
 }

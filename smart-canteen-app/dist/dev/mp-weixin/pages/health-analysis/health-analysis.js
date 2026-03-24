@@ -91,6 +91,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const weeklyCostTrend = common_vendor.ref([]);
     const monthlyCostTrend = common_vendor.ref([]);
     const selectedAreaIndex = common_vendor.ref(0);
+    const areaCanvasVersion = common_vendor.ref(0);
+    const areaCanvasId = common_vendor.computed(() => `costTrendCanvas_${areaCanvasVersion.value}`);
     const areaCanvasRect = common_vendor.ref(null);
     const categoryBreakdown = common_vendor.ref([]);
     const topCategory = common_vendor.computed(() => {
@@ -130,7 +132,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: "http://127.0.0.1:8081/analysis/health/summary",
+          url: "http://121.41.59.61:8081/analysis/health/summary",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -153,7 +155,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a, _b, _c;
       try {
         const res = await common_vendor.index.request({
-          url: "http://127.0.0.1:8081/analysis/health/trend?range=7",
+          url: "http://121.41.59.61:8081/analysis/health/trend?range=7",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -211,7 +213,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return Math.round(windowWidth / 750 * rpx);
     };
     const queryAreaCanvasRect = () => {
-      common_vendor.index.createSelectorQuery().select("#costTrendCanvas").boundingClientRect((rect) => {
+      common_vendor.index.createSelectorQuery().select(`#${areaCanvasId.value}`).boundingClientRect((rect) => {
         if (rect && rect.width) {
           areaCanvasRect.value = { left: rect.left, width: rect.width };
         }
@@ -220,7 +222,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const draw30DayAreaChart = () => {
       if (selectedRange.value !== "30days" || !monthlyCostTrend.value.length)
         return;
-      const ctx = common_vendor.index.createCanvasContext("costTrendCanvas");
+      const ctx = common_vendor.index.createCanvasContext(areaCanvasId.value);
       const width = rpxToPx(610);
       const height = rpxToPx(320);
       const padding = {
@@ -298,6 +300,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const setRange = async (range) => {
       if (selectedRange.value === range)
         return;
+      if (range === "30days") {
+        areaCanvasVersion.value += 1;
+      }
       selectedRange.value = range;
       const dayRange = range === "30days" ? 30 : 7;
       await fetchCostTrend(dayRange);
@@ -323,7 +328,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: `http://127.0.0.1:8081/analysis/cost/trend?range=${range}`,
+          url: `http://121.41.59.61:8081/analysis/cost/trend?range=${range}`,
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -368,7 +373,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       var _a;
       try {
         const res = await common_vendor.index.request({
-          url: "http://127.0.0.1:8081/analysis/cost/summary",
+          url: "http://121.41.59.61:8081/analysis/cost/summary",
           method: "GET",
           header: { "authentication": common_vendor.index.getStorageSync("token") }
         });
@@ -408,13 +413,6 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         fetchCostTrend(7)
       ]);
     };
-    common_vendor.watch(selectedRange, async (range) => {
-      if (range !== "30days" || !monthlyCostTrend.value.length)
-        return;
-      await common_vendor.nextTick$1();
-      queryAreaCanvasRect();
-      draw30DayAreaChart();
-    });
     common_vendor.watch(selectedAreaIndex, () => {
       if (selectedRange.value === "30days") {
         draw30DayAreaChart();
@@ -507,8 +505,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         })
       } : selectedRange.value === "30days" && monthlyCostTrend.value.length > 0 ? {
         Y: common_vendor.t(areaTooltipText.value),
-        Z: common_vendor.o(onAreaCanvasTouch),
-        aa: common_vendor.f(monthlyCostTrend.value, (item, index, i0) => {
+        Z: areaCanvasId.value,
+        aa: areaCanvasId.value,
+        ab: common_vendor.o(onAreaCanvasTouch),
+        ac: common_vendor.f(monthlyCostTrend.value, (item, index, i0) => {
           return {
             a: common_vendor.t(item.displayLabel),
             b: `x-${index}`,
@@ -517,11 +517,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         })
       } : {}, {
         X: selectedRange.value === "30days" && monthlyCostTrend.value.length > 0,
-        ab: categoryBreakdown.value && categoryBreakdown.value.length > 0
+        ad: categoryBreakdown.value && categoryBreakdown.value.length > 0
       }, categoryBreakdown.value && categoryBreakdown.value.length > 0 ? {
-        ac: common_vendor.s(compositionDonutStyle.value),
-        ad: common_vendor.t(topCategory.value),
-        ae: common_vendor.f(categoryBreakdown.value, (cat, k0, i0) => {
+        ae: common_vendor.s(compositionDonutStyle.value),
+        af: common_vendor.t(topCategory.value),
+        ag: common_vendor.f(categoryBreakdown.value, (cat, k0, i0) => {
           return {
             a: cat.color,
             b: common_vendor.t(cat.name),
@@ -530,9 +530,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        af: costTip.value
+        ah: costTip.value
       }, costTip.value ? {
-        ag: common_vendor.t(costTip.value)
+        ai: common_vendor.t(costTip.value)
       } : {}) : {}, {
         g: pageState.value === "noData",
         i: activeTab.value === "health",

@@ -10,7 +10,7 @@ const getOrderPageAPI = (params) => {
 };
 const reOrderAPI = (id) => {
   return utils_http.http({
-    url: `/user/order/reOrder/${id}`,
+    url: `/user/order/repetition/${id}`,
     method: "POST"
   });
 };

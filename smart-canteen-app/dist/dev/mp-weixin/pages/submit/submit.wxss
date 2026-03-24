@@ -289,7 +289,7 @@
 }
 .glass-bar {
   border-radius: 100rpx;
-  padding: 16rpx 16rpx 16rpx 48rpx;
+  padding: 16rpx 8rpx 16rpx 48rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -314,6 +314,9 @@
   border-radius: 100rpx;
   height: 90rpx;
   padding: 0 40rpx;
+  margin: 0;
+  margin-left: auto;
+  margin-right: 0;
   display: flex;
   align-items: center;
   color: white;

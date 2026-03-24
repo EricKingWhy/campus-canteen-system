@@ -139,7 +139,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['close', 'addToCart']);
-const baseUrl = 'http://127.0.0.1:8081';
+const baseUrl = 'http://121.41.59.61:8081';
 
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png';

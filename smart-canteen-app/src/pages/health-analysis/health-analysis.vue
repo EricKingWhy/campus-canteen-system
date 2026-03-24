@@ -227,8 +227,8 @@
           <view class="area-chart" v-else-if="selectedRange === '30days' && monthlyCostTrend.length > 0">
             <view class="area-tooltip">{{ areaTooltipText }}</view>
             <canvas
-              canvas-id="costTrendCanvas"
-              id="costTrendCanvas"
+              :canvas-id="areaCanvasId"
+              :id="areaCanvasId"
               class="area-canvas"
               @touchstart="onAreaCanvasTouch"
             />
@@ -403,6 +403,8 @@ const selectedRange = ref<'7days' | '30days'>('7days')
 const weeklyCostTrend = ref<TrendPoint[]>([])
 const monthlyCostTrend = ref<TrendPoint[]>([])
 const selectedAreaIndex = ref(0)
+const areaCanvasVersion = ref(0)
+const areaCanvasId = computed(() => `costTrendCanvas_${areaCanvasVersion.value}`)
 const areaCanvasRect = ref<{ left: number; width: number } | null>(null)
 const categoryBreakdown = ref<{ name: string; amount: number; color: string }[]>([])
 const topCategory = computed(() => {
@@ -446,7 +448,7 @@ const goToRecommend = () => {
 const fetchHealthSummary = async () => {
   try {
     const res = await uni.request({
-      url: 'http://127.0.0.1:8081/analysis/health/summary',
+      url: 'http://121.41.59.61:8081/analysis/health/summary',
       method: 'GET',
       header: { 'authentication': uni.getStorageSync('token') }
     })
@@ -470,7 +472,7 @@ const fetchHealthSummary = async () => {
 const fetchHealthTrend = async () => {
   try {
     const res = await uni.request({
-      url: 'http://127.0.0.1:8081/analysis/health/trend?range=7',
+      url: 'http://121.41.59.61:8081/analysis/health/trend?range=7',
       method: 'GET',
       header: { 'authentication': uni.getStorageSync('token') }
     })
@@ -532,7 +534,7 @@ const rpxToPx = (rpx: number): number => {
 
 const queryAreaCanvasRect = () => {
   uni.createSelectorQuery()
-    .select('#costTrendCanvas')
+    .select(`#${areaCanvasId.value}`)
     .boundingClientRect((rect: any) => {
       if (rect && rect.width) {
         areaCanvasRect.value = { left: rect.left, width: rect.width }
@@ -544,7 +546,7 @@ const queryAreaCanvasRect = () => {
 const draw30DayAreaChart = () => {
   if (selectedRange.value !== '30days' || !monthlyCostTrend.value.length) return
 
-  const ctx = uni.createCanvasContext('costTrendCanvas')
+  const ctx = uni.createCanvasContext(areaCanvasId.value)
   const width = rpxToPx(610)
   const height = rpxToPx(320)
   const padding = {
@@ -632,6 +634,9 @@ const draw30DayAreaChart = () => {
 
 const setRange = async (range: '7days' | '30days') => {
   if (selectedRange.value === range) return
+  if (range === '30days') {
+    areaCanvasVersion.value += 1
+  }
   selectedRange.value = range
   const dayRange = range === '30days' ? 30 : 7
   await fetchCostTrend(dayRange)
@@ -655,7 +660,7 @@ const onAreaCanvasTouch = (e: any) => {
 const fetchCostTrend = async (range: 7 | 30 = 7) => {
   try {
     const res = await uni.request({
-      url: `http://127.0.0.1:8081/analysis/cost/trend?range=${range}`,
+      url: `http://121.41.59.61:8081/analysis/cost/trend?range=${range}`,
       method: 'GET',
       header: { 'authentication': uni.getStorageSync('token') }
     })
@@ -704,7 +709,7 @@ const fetchCostTrend = async (range: 7 | 30 = 7) => {
 const fetchCostSummary = async () => {
   try {
     const res = await uni.request({
-      url: 'http://127.0.0.1:8081/analysis/cost/summary',
+      url: 'http://121.41.59.61:8081/analysis/cost/summary',
       method: 'GET',
       header: { 'authentication': uni.getStorageSync('token') }
     })
@@ -751,13 +756,6 @@ const loadAllData = async () => {
     fetchCostTrend(7)
   ])
 }
-
-watch(selectedRange, async (range) => {
-  if (range !== '30days' || !monthlyCostTrend.value.length) return
-  await nextTick()
-  queryAreaCanvasRect()
-  draw30DayAreaChart()
-})
 
 watch(selectedAreaIndex, () => {
   if (selectedRange.value === '30days') {
@@ -1550,4 +1548,3 @@ onMounted(() => {
   }
 }
 </style>
-

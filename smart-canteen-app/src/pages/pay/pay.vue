@@ -81,7 +81,7 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 const safeAreaTop = ref(44)
 const safeAreaBottom = ref(34)
 
@@ -104,6 +104,10 @@ onLoad((options: any) => {
     orderNumber.value = options.orderNumber || ''
     amount.value = options.amount || '0.00'
     diningType.value = parseInt(options.diningType) || 1
+  }
+
+  if (orderId.value) {
+    fetchLatestOrderInfo(orderId.value)
   }
 })
 
@@ -151,6 +155,28 @@ const confirmPay = () => {
       console.error('Payment failed:', err)
       uni.showToast({ title: '网络错误', icon: 'none' })
     }
+  })
+}
+
+const fetchLatestOrderInfo = (id: string) => {
+  uni.request({
+    url: `${baseUrl}/user/order/orderDetail/${id}`,
+    method: 'GET',
+    header: { 'authentication': uni.getStorageSync('token') },
+    success: (res: any) => {
+      const data = res?.data?.data
+      if ((res?.data?.code === 1 || res?.data?.code === 0) && data) {
+        if (data.number) {
+          orderNumber.value = String(data.number)
+        }
+        if (data.amount !== undefined && data.amount !== null) {
+          amount.value = Number(data.amount).toFixed(2)
+        }
+        if (data.packAmount !== undefined && data.packAmount !== null) {
+          diningType.value = Number(data.packAmount) > 0 ? 2 : 1
+        }
+      }
+    },
   })
 }
 </script>
@@ -296,4 +322,3 @@ const confirmPay = () => {
   font-weight: bold;
 }
 </style>
-

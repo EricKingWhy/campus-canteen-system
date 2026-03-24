@@ -36,7 +36,7 @@
         <view class="glass-card smart-card">
           <view class="card-header">
             <view>
-              <text class="sub-label">取餐地点点点</text>
+              <text class="sub-label">取餐地点</text>
               <text class="main-value">{{ pickupLocation }}</text>
             </view>
             <view class="edit-btn">
@@ -139,7 +139,7 @@ const remark = ref('')
 const tablewareNumber = ref(1)
 const selectedTimeStr = ref('立即取餐')
 const timeSlots = ref<string[]>([])
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'
   if (image.startsWith('http://') || image.startsWith('https://')) return image
@@ -328,11 +328,10 @@ const submitOrder = () => {
 .step-btn.active { background: #00b89c; color: white; }
 .step-val { width: 60rpx; text-align: center; line-height: 50rpx; font-weight: bold; }
 .footer-wrapper { position: fixed; bottom: 40rpx; left: 32rpx; right: 32rpx; z-index: 100; }
-.glass-bar { border-radius: 100rpx; padding: 16rpx 16rpx 16rpx 48rpx; display: flex; justify-content: space-between; align-items: center; }
+.glass-bar { border-radius: 100rpx; padding: 16rpx 8rpx 16rpx 48rpx; display: flex; justify-content: space-between; align-items: center; }
 .total-label { font-size: 20rpx; color: #ccc; display: block; }
 .symbol { color: #FF6B6B; font-size: 28rpx; font-weight: bold; }
 .amount { color: #FF6B6B; font-size: 40rpx; font-weight: bold; }
-.pay-btn { background: #00b89c; border-radius: 100rpx; height: 90rpx; padding: 0 40rpx; display: flex; align-items: center; color: white; border: none; }
+.pay-btn { background: #00b89c; border-radius: 100rpx; height: 90rpx; padding: 0 40rpx; margin: 0; margin-left: auto; margin-right: 0; display: flex; align-items: center; color: white; border: none; }
 .btn-text { font-size: 30rpx; font-weight: bold; }
 </style>
-

@@ -204,7 +204,7 @@ const dialogDish = ref<DishToCartItem>()
 const flavors = ref<FlavorItem[]>([])
 // 已选择的口味列表
 const chosedflavors = ref<string[]>([])
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'

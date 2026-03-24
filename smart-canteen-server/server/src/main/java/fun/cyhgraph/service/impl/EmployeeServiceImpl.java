@@ -39,6 +39,10 @@ import java.util.UUID;
 @Service
 public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements EmployeeService {
     private static final String EMPLOYEE_PHOTO_PREFIX = "/static/upload/employee_photos/";
+    private static final String PUBLIC_BASE_URL = "http://121.41.59.61:8081";
+    private static final String LOCALHOST_BASE_URL = "http://127.0.0.1:8081";
+    private static final String LOCALHOST_NAME_BASE_URL = "http://localhost:8081";
+    private static final String PRODUCTION_IMAGE_ROOT_DIR = "/www/wwwroot/smartcanteen/images";
     private static final String EMPLOYEE_UPLOAD_RELATIVE_DIR = "smart-canteen-admin/src/assets/images/employee_photos";
 
     @Autowired
@@ -225,9 +229,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (!StringUtils.hasText(rawPath)) {
             return null;
         }
-        if (rawPath.startsWith("http://127.0.0.1:8081")) {
-            rawPath = rawPath.substring("http://127.0.0.1:8081".length());
-        }
+        rawPath = stripKnownHostPrefix(rawPath);
         if (rawPath.startsWith(EMPLOYEE_PHOTO_PREFIX)) {
             return rawPath;
         }
@@ -270,9 +272,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             return null;
         }
         String normalized = picPath.trim().replace("\\", "/");
-        if (normalized.startsWith("http://127.0.0.1:8081")) {
-            normalized = normalized.substring("http://127.0.0.1:8081".length());
-        }
+        normalized = stripKnownHostPrefix(normalized);
         if (normalized.startsWith(EMPLOYEE_PHOTO_PREFIX)) {
             return normalized;
         }
@@ -288,6 +288,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         Path userDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
         List<Path> candidates = new ArrayList<>();
 
+        candidates.add(Paths.get(PRODUCTION_IMAGE_ROOT_DIR, "employee_photos"));
         candidates.add(userDir.resolve(EMPLOYEE_UPLOAD_RELATIVE_DIR));
         Path current = userDir;
         for (int i = 0; i < 6 && current != null; i++) {
@@ -304,5 +305,19 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
 
         return userDir.resolve(EMPLOYEE_UPLOAD_RELATIVE_DIR).normalize();
+    }
+
+    private String stripKnownHostPrefix(String rawPath) {
+        String normalized = rawPath;
+        if (normalized.startsWith(PUBLIC_BASE_URL)) {
+            normalized = normalized.substring(PUBLIC_BASE_URL.length());
+        }
+        if (normalized.startsWith(LOCALHOST_BASE_URL)) {
+            normalized = normalized.substring(LOCALHOST_BASE_URL.length());
+        }
+        if (normalized.startsWith(LOCALHOST_NAME_BASE_URL)) {
+            normalized = normalized.substring(LOCALHOST_NAME_BASE_URL.length());
+        }
+        return normalized;
     }
 }

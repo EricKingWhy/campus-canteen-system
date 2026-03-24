@@ -8,7 +8,7 @@ const _easycom_uni_icons = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-ic
 if (!Math) {
   _easycom_uni_icons();
 }
-const baseUrl = "http://127.0.0.1:8081";
+const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "orderDetail",
   setup(__props) {
@@ -193,6 +193,20 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }
       });
     };
+    const goToPay = () => {
+      var _a, _b, _c, _d;
+      const currentOrderId = String(((_a = order.value) == null ? void 0 : _a.id) || orderId.value || "");
+      if (!currentOrderId) {
+        common_vendor.index.showToast({ title: "订单信息缺失", icon: "none" });
+        return;
+      }
+      const orderNumber = encodeURIComponent(String(((_b = order.value) == null ? void 0 : _b.number) || ""));
+      const amount = encodeURIComponent(String(((_c = order.value) == null ? void 0 : _c.amount) ?? "0.00"));
+      const diningType = Number(((_d = order.value) == null ? void 0 : _d.packAmount) || 0) > 0 ? 2 : 1;
+      common_vendor.index.navigateTo({
+        url: `/pages/pay/pay?orderId=${currentOrderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`
+      });
+    };
     const goBack = () => common_vendor.index.navigateBack();
     return (_ctx, _cache) => {
       return common_vendor.e({
@@ -279,24 +293,28 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         H: common_vendor.t(order.value.cancelReason)
       } : {}, {
-        I: canCancel.value
+        I: order.value.status === 1
+      }, order.value.status === 1 ? {
+        J: common_vendor.o(goToPay)
+      } : {}, {
+        K: canCancel.value
       }, canCancel.value ? {
-        J: common_vendor.o(cancelOrder)
+        L: common_vendor.o(cancelOrder)
       } : {}, {
-        K: canReorder.value
+        M: canReorder.value
       }, canReorder.value ? {
-        L: common_vendor.o(reOrder)
+        N: common_vendor.o(reOrder)
       } : {}, {
-        M: order.value.status === 4
+        O: order.value.status === 4
       }, order.value.status === 4 ? {
-        N: common_vendor.o(completeOrder)
+        P: common_vendor.o(completeOrder)
       } : {}) : {
-        O: common_vendor.p({
+        Q: common_vendor.p({
           type: "info",
           size: "48",
           color: "#999"
         }),
-        P: common_vendor.o(fetchOrderDetail)
+        R: common_vendor.o(fetchOrderDetail)
       }, {
         f: order.value.id
       });

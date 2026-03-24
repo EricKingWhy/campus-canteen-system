@@ -8,6 +8,7 @@ const _easycom_uni_icons = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-ic
 if (!Math) {
   _easycom_uni_icons();
 }
+const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "success",
   setup(__props) {
@@ -22,6 +23,40 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       const idStr = String(orderId.value);
       return idStr.slice(-5) || "00000";
     });
+    const pad2 = (v) => String(v).padStart(2, "0");
+    const formatToHHmm = (value) => {
+      if (!value)
+        return "--:--";
+      const normalized = value.includes("T") ? value : value.replace(" ", "T");
+      const date = new Date(normalized);
+      if (!Number.isNaN(date.getTime())) {
+        return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+      }
+      return value.length >= 16 ? value.substring(11, 16) : "--:--";
+    };
+    const fetchOrderDetail = () => {
+      if (!orderId.value)
+        return;
+      common_vendor.index.request({
+        url: `${baseUrl}/user/order/orderDetail/${orderId.value}`,
+        method: "GET",
+        header: { authentication: common_vendor.index.getStorageSync("token") },
+        success: (res) => {
+          var _a, _b, _c;
+          const data = (_a = res == null ? void 0 : res.data) == null ? void 0 : _a.data;
+          if ((((_b = res == null ? void 0 : res.data) == null ? void 0 : _b.code) === 1 || ((_c = res == null ? void 0 : res.data) == null ? void 0 : _c.code) === 0) && data) {
+            if (data.amount !== void 0 && data.amount !== null) {
+              amount.value = Number(data.amount).toFixed(2);
+            }
+            if (data.packAmount !== void 0 && data.packAmount !== null) {
+              diningType.value = Number(data.packAmount) > 0 ? 2 : 1;
+            }
+            estimatedTime.value = formatToHHmm(data.estimatedDeliveryTime);
+            orderTime.value = formatToHHmm(data.orderTime);
+          }
+        }
+      });
+    };
     common_vendor.onLoad((options) => {
       const sysInfo = common_vendor.index.getSystemInfoSync();
       if (sysInfo.safeArea)
@@ -31,12 +66,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         amount.value = options.amount || "0.00";
         diningType.value = parseInt(options.packAmount) > 0 ? 2 : 1;
         if (options.estimatedTime) {
-          estimatedTime.value = options.estimatedTime.substring(11, 16);
+          estimatedTime.value = formatToHHmm(options.estimatedTime);
         }
         if (options.orderTime) {
-          orderTime.value = options.orderTime.substring(11, 16);
+          orderTime.value = formatToHHmm(options.orderTime);
         }
       }
+      fetchOrderDetail();
     });
     const goBack = () => common_vendor.index.navigateBack();
     const goHome = () => common_vendor.index.switchTab({ url: "/pages/index/index_v2" });

@@ -9,9 +9,15 @@ import fun.cyhgraph.interceptor.JwtTokenAdminInterceptor;
 import fun.cyhgraph.interceptor.JwtTokenUserInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -27,12 +33,30 @@ import java.util.List;
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
         private static final String UPLOAD_STATIC_ROOT_RELATIVE_DIR = "smart-canteen-admin/src/assets/images";
+        private static final String PRODUCTION_IMAGE_ROOT_DIR = "/www/wwwroot/smartcanteen/images";
 
         @Autowired
         private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
         @Autowired
         private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+
+        @Bean
+        public FilterRegistrationBean<CorsFilter> corsFilterRegistrationBean() {
+                CorsConfiguration corsConfiguration = new CorsConfiguration();
+                corsConfiguration.addAllowedOriginPattern("*");
+                corsConfiguration.addAllowedHeader("*");
+                corsConfiguration.addAllowedMethod("*");
+                corsConfiguration.addExposedHeader("*");
+                corsConfiguration.setAllowCredentials(true);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", corsConfiguration);
+
+                FilterRegistrationBean<CorsFilter> registrationBean = new FilterRegistrationBean<>(new CorsFilter(source));
+                registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+                return registrationBean;
+        }
 
         /**
          * 注册自定义拦截器
@@ -136,20 +160,22 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                                 .addResourceLocations("classpath:/META-INF/resources/");
 
                 Path uploadStaticRootDir = resolveUploadStaticRootDirectory();
+                Path dishStaticDir = uploadStaticRootDir.resolve("dish").normalize();
                 try {
                         Files.createDirectories(uploadStaticRootDir.resolve("employee_photos"));
+                        Files.createDirectories(dishStaticDir);
                 } catch (IOException e) {
                         throw new RuntimeException("创建员工照片目录失败: " + uploadStaticRootDir.resolve("employee_photos"), e);
                 }
                 registry.addResourceHandler("/static/upload/**")
                                 .addResourceLocations(uploadStaticRootDir.toUri().toString());
 
-                // 生产单机模式: 映射部署目录同级 images 目录
+                // 生产单机模式: 映射统一图片根目录
                 registry.addResourceHandler("/images/**")
-                                .addResourceLocations("file:./images/");
+                                .addResourceLocations(uploadStaticRootDir.toUri().toString());
                 // 兼容数据库已存的 /static/dish/xxx.png
                 registry.addResourceHandler("/static/dish/**")
-                                .addResourceLocations("file:./images/dish/");
+                                .addResourceLocations(dishStaticDir.toUri().toString());
 
                 // 【核心修复】静态资源映射 (项目 classpath 静态资源)
                 registry.addResourceHandler("/static/**")
@@ -160,6 +186,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 Path userDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
                 List<Path> candidates = new ArrayList<>();
 
+                candidates.add(Paths.get(PRODUCTION_IMAGE_ROOT_DIR));
                 candidates.add(userDir.resolve(UPLOAD_STATIC_ROOT_RELATIVE_DIR));
 
                 Path current = userDir;

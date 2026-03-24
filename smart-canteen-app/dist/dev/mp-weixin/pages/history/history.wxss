@@ -148,6 +148,28 @@
   color: #ff8c42;
   background: #fff9f3;
 }
+.history_content .history_item .btn_box .history_item_go_pay.data-v-73685b36 {
+  float: right;
+  margin-left: 20rpx;
+  min-width: 160rpx;
+  height: 66rpx;
+  padding: 0 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffc94a 0%, #ffb000 60%, #f59e0b 100%);
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  letter-spacing: 1rpx;
+  color: #FFFFFF;
+  box-shadow: 0 8rpx 18rpx rgba(255, 176, 0, 0.24), inset 0 2rpx 0 rgba(255, 255, 255, 0.32);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.history_content .history_item .btn_box .history_item_go_pay.data-v-73685b36:active {
+  transform: scale(0.98) translateY(1rpx);
+  opacity: 0.95;
+}
 .history_content .history_item .btn_box .history_item_push_order.data-v-73685b36 {
   float: right;
   width: 140rpx;

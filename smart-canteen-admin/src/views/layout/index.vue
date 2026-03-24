@@ -199,13 +199,14 @@ const quitFn = () => {
 // refs
 const websocket = ref<WebSocket | null>(null)
 const shopShow = ref(false)
+const wsBaseURL = (import.meta.env.VITE_WS_BASE_URL || (import.meta.env.PROD ? 'ws://121.41.59.61:8081' : `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname}:8081`)).replace(/\/+$/, '')
 
 const audio1 = ref<HTMLAudioElement | null>(null)
 const audio2 = ref<HTMLAudioElement | null>(null)
 
 const webSocket = () => {
   const clientId = Math.random().toString(36).slice(2)
-  const socketUrl = 'ws://127.0.0.1:8081/ws/' + clientId
+  const socketUrl = `${wsBaseURL}/ws/${clientId}`
   console.log('socketUrl', socketUrl)
 
   if (typeof WebSocket == 'undefined') {

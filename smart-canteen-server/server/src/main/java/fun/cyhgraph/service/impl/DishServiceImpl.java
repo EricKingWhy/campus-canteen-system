@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DishService {
+    private static final String PUBLIC_BASE_URL = "http://121.41.59.61:8081";
+    private static final String LOCALHOST_BASE_URL = "http://localhost:8081";
+    private static final String LOOPBACK_BASE_URL = "http://127.0.0.1:8081";
 
     @Autowired
     private DishMapper dishMapper;
@@ -41,7 +44,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     public void addDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
-        dish.setImage(normalizeImagePath(dish.getImage()));
+        dish.setImage(normalizeImagePathForStorage(dish.getImage()));
         dishMapper.insert(dish);
         Long dishId = dish.getId();
         saveFlavors(dishDTO, dishId);
@@ -53,7 +56,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             return null;
         DishDTO dto = new DishDTO();
         BeanUtils.copyProperties(dish, dto);
-        dto.setImage(normalizeImagePath(dto.getImage()));
+        dto.setImage(normalizeImageUrlForResponse(dto.getImage()));
 
         // 查询口味
         LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
@@ -76,7 +79,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     public void updateDishWithFlavor(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
-        dish.setImage(normalizeImagePath(dish.getImage()));
+        dish.setImage(normalizeImagePathForStorage(dish.getImage()));
         dishMapper.updateById(dish);
 
         LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
@@ -617,11 +620,16 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             return;
         }
         for (Dish dish : dishes) {
-            dish.setImage(normalizeImagePath(dish.getImage()));
+            dish.setImage(normalizeImageUrlForResponse(dish.getImage()));
         }
     }
 
-    private String normalizeImagePath(String image) {
+    @Override
+    public void normalizeImageUrls(List<Dish> dishes) {
+        normalizeDishList(dishes);
+    }
+
+    private String normalizeImagePathForStorage(String image) {
         if (image == null) {
             return null;
         }
@@ -629,16 +637,73 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         if (trimmed.isEmpty()) {
             return trimmed;
         }
-        if (trimmed.startsWith("/static/dish/")) {
-            return trimmed;
-        }
-        int staticIdx = trimmed.indexOf("/static/dish/");
-        if (staticIdx >= 0) {
-            return trimmed.substring(staticIdx);
-        }
         String normalized = trimmed.replace("\\", "/");
+        if (normalized.startsWith(PUBLIC_BASE_URL)) {
+            normalized = normalized.substring(PUBLIC_BASE_URL.length());
+        }
+        if (normalized.startsWith(LOCALHOST_BASE_URL)) {
+            normalized = normalized.substring(LOCALHOST_BASE_URL.length());
+        }
+        if (normalized.startsWith(LOOPBACK_BASE_URL)) {
+            normalized = normalized.substring(LOOPBACK_BASE_URL.length());
+        }
+        if (normalized.startsWith("/images/")) {
+            return normalized;
+        }
+        if (normalized.startsWith("/static/dish/")) {
+            return normalized;
+        }
+        int staticIdx = normalized.indexOf("/static/dish/");
+        if (staticIdx >= 0) {
+            return normalized.substring(staticIdx);
+        }
+        int imagesIdx = normalized.indexOf("/images/");
+        if (imagesIdx >= 0) {
+            return normalized.substring(imagesIdx);
+        }
         int slash = normalized.lastIndexOf('/');
         String fileName = slash >= 0 ? normalized.substring(slash + 1) : normalized;
         return "/static/dish/" + fileName;
+    }
+
+    private String normalizeImageUrlForResponse(String image) {
+        if (image == null) {
+            return null;
+        }
+        String normalized = image.trim().replace("\\", "/");
+        if (normalized.isEmpty()) {
+            return normalized;
+        }
+
+        normalized = normalized.replace(LOOPBACK_BASE_URL, PUBLIC_BASE_URL)
+                .replace(LOCALHOST_BASE_URL, PUBLIC_BASE_URL);
+
+        if (normalized.startsWith(PUBLIC_BASE_URL)) {
+            return normalized;
+        }
+        if (normalized.startsWith("/static/dish/")
+                || normalized.startsWith("/images/")
+                || normalized.startsWith("/static/upload/")) {
+            return PUBLIC_BASE_URL + normalized;
+        }
+
+        int staticDishIdx = normalized.indexOf("/static/dish/");
+        if (staticDishIdx >= 0) {
+            return PUBLIC_BASE_URL + normalized.substring(staticDishIdx);
+        }
+        int imagesIdx = normalized.indexOf("/images/");
+        if (imagesIdx >= 0) {
+            return PUBLIC_BASE_URL + normalized.substring(imagesIdx);
+        }
+        int uploadIdx = normalized.indexOf("/static/upload/");
+        if (uploadIdx >= 0) {
+            return PUBLIC_BASE_URL + normalized.substring(uploadIdx);
+        }
+
+        if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
+            return normalized;
+        }
+
+        return PUBLIC_BASE_URL + normalizeImagePathForStorage(normalized);
     }
 }

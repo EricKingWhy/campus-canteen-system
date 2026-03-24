@@ -1,4 +1,4 @@
-export const LOCAL_API_BASE = 'http://127.0.0.1:8081'
+export const LOCAL_API_BASE = 'http://121.41.59.61:8081'
 export const CLOUD_API_BASE = 'http://121.41.59.61:8081'
 
 const trimSlash = (value: string) => value.replace(/\/+$/, '')

@@ -221,7 +221,7 @@ const dialogDish = ref<DishToCartItem>()
 const flavors = ref<FlavorItem[]>([])
 // 已选择的口味列表
 const chosedflavors = ref<string[]>([])
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 const currentCategoryName = computed(() => {
   return categoryList.value[activeIndex.value]?.name || ''
 })
@@ -294,7 +294,7 @@ const handleSearch = async () => {
   
   // 绝对不允许把当前选中的 categoryId 塞进去
   uni.request({
-    url: 'http://127.0.0.1:8081/user/dish/list',
+    url: 'http://121.41.59.61:8081/user/dish/list',
     method: 'GET',
     data: queryParams, 
     header: { 'authentication': uni.getStorageSync('token') },

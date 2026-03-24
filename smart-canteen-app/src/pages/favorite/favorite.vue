@@ -50,7 +50,7 @@ import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { favoriteListAPI, favoriteRemoveAPI } from '@/api/favorite'
 
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 const loading = ref(true)
 const favoriteList = ref<any[]>([])
 

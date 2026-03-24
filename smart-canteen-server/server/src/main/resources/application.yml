@@ -9,9 +9,9 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/smart_canteen?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: root
-    password: "123456"
+    url: jdbc:mysql://127.0.0.1:3306/smartcanteen?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: smartcanteen
+    password: "5KRXHNDLeiLjhipp"
     type: com.alibaba.druid.pool.DruidDataSource
 
 mybatis-plus:

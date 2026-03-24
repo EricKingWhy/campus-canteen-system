@@ -153,6 +153,9 @@
         </view>
 
         <!-- Action Buttons -->
+        <view class="section-padding action-section" v-if="order.status === 1">
+          <button class="btn-go-pay" @click="goToPay">去付款</button>
+        </view>
         <view class="section-padding action-section" v-if="canCancel">
           <button class="btn-cancel" @click="cancelOrder">取消订单</button>
         </view>
@@ -183,7 +186,7 @@
 import { ref, computed } from 'vue'
 import { onLoad, onPullDownRefresh, onShow } from '@dcloudio/uni-app'
 
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'
   if (image.startsWith('http://') || image.startsWith('https://')) return image
@@ -367,6 +370,20 @@ const completeOrder = () => {
   })
 }
 
+const goToPay = () => {
+  const currentOrderId = String(order.value?.id || orderId.value || '')
+  if (!currentOrderId) {
+    uni.showToast({ title: '订单信息缺失', icon: 'none' })
+    return
+  }
+  const orderNumber = encodeURIComponent(String(order.value?.number || ''))
+  const amount = encodeURIComponent(String(order.value?.amount ?? '0.00'))
+  const diningType = Number(order.value?.packAmount || 0) > 0 ? 2 : 1
+  uni.navigateTo({
+    url: `/pages/pay/pay?orderId=${currentOrderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`,
+  })
+}
+
 const goBack = () => uni.navigateBack()
 </script>
 
@@ -515,6 +532,30 @@ $orange: #ea580c;
   background: linear-gradient(90deg, $primary, #26c6da);
   color: #fff; font-size: 30rpx; font-weight: bold; border: none;
 }
+.btn-go-pay {
+  width: 100%;
+  height: 96rpx;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #ffc94a 0%, #ffb000 55%, #f59e0b 100%);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  line-height: 1;
+  border: none;
+  box-shadow: 0 12rpx 26rpx rgba(255, 176, 0, 0.28), inset 0 2rpx 0 rgba(255, 255, 255, 0.35);
+}
+.btn-go-pay::after {
+  border: none;
+}
+.btn-go-pay:active {
+  transform: scale(0.985) translateY(1rpx);
+  opacity: 0.95;
+}
 .btn-complete {
   width: 100%; height: 96rpx; border-radius: 48rpx;
   background: linear-gradient(90deg, #10b981, #34d399); 
@@ -522,4 +563,3 @@ $orange: #ea580c;
   box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.4);
 }
 </style>
-

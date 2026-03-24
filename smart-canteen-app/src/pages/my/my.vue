@@ -123,7 +123,7 @@ import dietIcon from '@/assets/images/icons/icon_diet_new.png'
 const userStore = useUserStore()
 const profileStore = useUserProfileStore()
 const childComp: any = ref(null)
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 
 const user = reactive({
   id: userStore.profile?.id || 0,

@@ -8,7 +8,7 @@ const _easycom_uni_icons = () => "../../node-modules/@dcloudio/uni-ui/lib/uni-ic
 if (!Math) {
   _easycom_uni_icons();
 }
-const baseUrl = "http://127.0.0.1:8081";
+const baseUrl = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "pay",
   setup(__props) {
@@ -31,6 +31,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         orderNumber.value = options.orderNumber || "";
         amount.value = options.amount || "0.00";
         diningType.value = parseInt(options.diningType) || 1;
+      }
+      if (orderId.value) {
+        fetchLatestOrderInfo(orderId.value);
       }
     });
     const goBack = () => common_vendor.index.navigateBack();
@@ -69,6 +72,28 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           common_vendor.index.hideLoading();
           console.error("Payment failed:", err);
           common_vendor.index.showToast({ title: "网络错误", icon: "none" });
+        }
+      });
+    };
+    const fetchLatestOrderInfo = (id) => {
+      common_vendor.index.request({
+        url: `${baseUrl}/user/order/orderDetail/${id}`,
+        method: "GET",
+        header: { "authentication": common_vendor.index.getStorageSync("token") },
+        success: (res) => {
+          var _a, _b, _c;
+          const data = (_a = res == null ? void 0 : res.data) == null ? void 0 : _a.data;
+          if ((((_b = res == null ? void 0 : res.data) == null ? void 0 : _b.code) === 1 || ((_c = res == null ? void 0 : res.data) == null ? void 0 : _c.code) === 0) && data) {
+            if (data.number) {
+              orderNumber.value = String(data.number);
+            }
+            if (data.amount !== void 0 && data.amount !== null) {
+              amount.value = Number(data.amount).toFixed(2);
+            }
+            if (data.packAmount !== void 0 && data.packAmount !== null) {
+              diningType.value = Number(data.packAmount) > 0 ? 2 : 1;
+            }
+          }
         }
       });
     };

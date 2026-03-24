@@ -256,7 +256,7 @@ const timeGreeting = computed(() => {
 const dishList = ref<DishItem[]>([])
 // Simple Cart Logic - 改为从后端同步
 const cartList = ref<any[]>([])
-const baseUrl = ref('http://127.0.0.1:8081') // 后端地点点址 (Ref for template binding)
+const baseUrl = ref('http://121.41.59.61:8081') // 后端地点点址 (Ref for template binding)
 const defaultDishImage = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'
 
 const resolveDishImage = (image?: string) => {

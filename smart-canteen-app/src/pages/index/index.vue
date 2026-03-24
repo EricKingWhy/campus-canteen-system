@@ -219,7 +219,7 @@ const chosedflavors = ref<string[]>([])
 const healthStats = ref<HealthStats | null>(null)
 const recommendList = ref<DishItem[]>([])
 const userName = ref('')
-const baseUrl = 'http://127.0.0.1:8081'
+const baseUrl = 'http://121.41.59.61:8081'
 
 const resolveImageUrl = (image?: string) => {
   if (!image) return '/static/default_dish.png'
@@ -248,7 +248,7 @@ const getDishOrSetmealList = async (index: number) => {
 const getCartList = () => {
   console.log('=== Index getCartList called ===');
   uni.request({
-    url: 'http://127.0.0.1:8081/user/shoppingCart/list',
+    url: 'http://121.41.59.61:8081/user/shoppingCart/list',
     method: 'GET',
     header: { authentication: uni.getStorageSync('token') },
     success: (res: any) => {

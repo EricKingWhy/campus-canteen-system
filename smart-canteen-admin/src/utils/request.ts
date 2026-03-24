@@ -5,7 +5,7 @@ import { ElMessage } from 'element-plus'
 import { useUserInfoStore } from '@/store'
 
 //定义一个变量,记录公共的前缀,  baseURL: http://localhost:8080/api
-const baseURL = '/api'
+const baseURL = import.meta.env.PROD ? 'http://121.41.59.61:8081' : '/api'
 const instance = axios.create({ baseURL })
 
 const userInfoStore = useUserInfoStore()
@@ -47,11 +47,14 @@ instance.interceptors.response.use(
   },
   // 响应状态码是 4xx,5xx 时触发失败的回调
   (error) => {
-    console.dir(error)
-    if (error.response.status === 401) {
+    console.error(error)
+    const status = error.response?.status
+    if (status === 401) {
       // 无效的 token (不存在，过期，伪造或者被修改)
       // token没用了，把 Pinia 中的一切重置为空，并跳转到登录页面(相当于没token的状态)
       userInfoStore.userInfo = null
+      localStorage.removeItem('userInfo')
+      sessionStorage.removeItem('userInfo')
       ElMessage.error('用户身份已过期~')
       router.push('/login') // js无法获取this.$router，所以要引入router来跳转
     } else {

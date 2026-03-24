@@ -9,7 +9,7 @@ if (!Math) {
   pushMsg();
 }
 const pushMsg = () => "../../components/message/pushMsg.js";
-const baseURL = "http://127.0.0.1:8081";
+const baseURL = "http://121.41.59.61:8081";
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "history",
   setup(__props) {
@@ -127,12 +127,25 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         url: "/pages/orderDetail/orderDetail?orderId=" + String(id)
       });
     };
+    const goToPay = (item) => {
+      if (!(item == null ? void 0 : item.id)) {
+        common_vendor.index.showToast({ title: "订单信息缺失", icon: "none" });
+        return;
+      }
+      const orderId = String(item.id);
+      const orderNumber = encodeURIComponent(String(item.number || ""));
+      const amount = encodeURIComponent(String(item.amount ?? "0.00"));
+      const diningType = Number(item.packAmount || 0) > 0 ? 2 : 1;
+      common_vendor.index.navigateTo({
+        url: `/pages/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`
+      });
+    };
     const reOrder = async (id) => {
       console.log("再来一单", id);
       await api_cart.cleanCartAPI();
       await api_order.reOrderAPI(id);
-      common_vendor.index.redirectTo({
-        url: "/pages/order/order"
+      common_vendor.index.switchTab({
+        url: "/pages/category/category"
       });
     };
     const pushOrder = (id) => {
@@ -168,13 +181,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: common_vendor.t(statusList[item.status].name),
             e: common_vendor.t(item.amount),
             f: common_vendor.t(item.totalNum),
-            g: common_vendor.o(($event) => reOrder(item.id), index),
-            h: item.status === 2
-          }, item.status === 2 ? {
-            i: common_vendor.o(($event) => pushOrder(item.id), index)
+            g: item.status === 1
+          }, item.status === 1 ? {
+            h: common_vendor.o(($event) => goToPay(item), index)
           } : {}, {
-            j: index,
-            k: common_vendor.o(($event) => toOrderDetail(item.id), index)
+            i: common_vendor.o(($event) => reOrder(item.id), index),
+            j: item.status === 2
+          }, item.status === 2 ? {
+            k: common_vendor.o(($event) => pushOrder(item.id), index)
+          } : {}, {
+            l: index,
+            m: common_vendor.o(($event) => toOrderDetail(item.id), index)
           });
         })
       }, {
