@@ -24,7 +24,7 @@
         @click="payMethod = 1"
       >
         <view class="method-left">
-          <image class="method-icon" src="/static/wechat_pay.png" mode="aspectFit"></image>
+          <image class="method-icon" src="/subpkg-pay/static/wechat_pay.png" mode="aspectFit"></image>
           <view class="method-info">
             <text class="method-name">微信支付</text>
             <text class="method-desc">推荐使用微信支付</text>
@@ -45,7 +45,7 @@
         @click="payMethod = 2"
       >
         <view class="method-left">
-          <image class="method-icon" src="/static/cash_pay.png" mode="aspectFit"></image>
+          <image class="method-icon" src="/subpkg-pay/static/cash_pay.png" mode="aspectFit"></image>
           <view class="method-info">
             <text class="method-name">线下支付(到付)</text>
             <text class="method-desc">取餐时付款</text>
@@ -143,7 +143,7 @@ const confirmPay = () => {
         // 跳转到成功页
         setTimeout(() => {
           uni.redirectTo({
-            url: `/pages/pay/success?orderId=${orderId.value}&amount=${amount.value}&packAmount=${diningType.value === 2 ? 1 : 0}&orderTime=${new Date().toISOString()}`
+            url: `/subpkg-pay/pay/success?orderId=${orderId.value}&amount=${amount.value}&packAmount=${diningType.value === 2 ? 1 : 0}&orderTime=${new Date().toISOString()}`
           })
         }, 1000)
       } else {

@@ -87,20 +87,6 @@
 			}
 		},
 		{
-			"path": "pages/pay/pay",
-			"style": {
-				"navigationBarTitleText": "支付订单",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/pay/success",
-			"style": {
-				"navigationBarTitleText": "支付成功",
-				"navigationStyle": "custom"
-			}
-		},
-		{
 			"path": "pages/orderDetail/orderDetail",
 			"style": {
 				"navigationBarTitleText": "订单详情",
@@ -141,6 +127,27 @@
 				"navigationBarBackgroundColor": "#FF8C42",
 				"navigationBarTextStyle": "white"
 			}
+		}
+	],
+	"subPackages": [
+		{
+			"root": "subpkg-pay",
+			"pages": [
+				{
+					"path": "pay/pay",
+					"style": {
+						"navigationBarTitleText": "支付订单",
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pay/success",
+					"style": {
+						"navigationBarTitleText": "支付成功",
+						"navigationStyle": "custom"
+					}
+				}
+			]
 		}
 	],
 	"tabBar": {

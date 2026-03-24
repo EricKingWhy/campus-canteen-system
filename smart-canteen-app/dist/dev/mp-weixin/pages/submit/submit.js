@@ -126,7 +126,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             const orderId = (orderData == null ? void 0 : orderData.id) || "";
             const orderNumber = (orderData == null ? void 0 : orderData.orderNumber) || "";
             common_vendor.index.redirectTo({
-              url: `/pages/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${totalPrice.value}&diningType=${diningType.value}`
+              url: `/subpkg-pay/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${totalPrice.value}&diningType=${diningType.value}`
             });
           } else {
             common_vendor.index.showToast({ title: res.data.msg || "失败", icon: "none" });

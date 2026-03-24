@@ -12,14 +12,21 @@
     "pages/favorite/favorite",
     "pages/addOrEditAddress/addOrEditAddress",
     "pages/remark/remark",
-    "pages/pay/pay",
-    "pages/pay/success",
     "pages/orderDetail/orderDetail",
     "pages/history/history",
     "pages/updateMy/updateMy",
     "pages/info-setting/info-setting",
     "pages/health-analysis/health-analysis",
     "pages/user/weekly-report"
+  ],
+  "subPackages": [
+    {
+      "root": "subpkg-pay",
+      "pages": [
+        "pay/pay",
+        "pay/success"
+      ]
+    }
   ],
   "window": {
     "navigationBarTextStyle": "white",

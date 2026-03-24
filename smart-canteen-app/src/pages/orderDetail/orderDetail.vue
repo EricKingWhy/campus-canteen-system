@@ -380,7 +380,7 @@ const goToPay = () => {
   const amount = encodeURIComponent(String(order.value?.amount ?? '0.00'))
   const diningType = Number(order.value?.packAmount || 0) > 0 ? 2 : 1
   uni.navigateTo({
-    url: `/pages/pay/pay?orderId=${currentOrderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`,
+    url: `/subpkg-pay/pay/pay?orderId=${currentOrderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`,
   })
 }
 

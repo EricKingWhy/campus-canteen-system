@@ -137,7 +137,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       const amount = encodeURIComponent(String(item.amount ?? "0.00"));
       const diningType = Number(item.packAmount || 0) > 0 ? 2 : 1;
       common_vendor.index.navigateTo({
-        url: `/pages/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`
+        url: `/subpkg-pay/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`
       });
     };
     const reOrder = async (id) => {

@@ -204,7 +204,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       const amount = encodeURIComponent(String(((_c = order.value) == null ? void 0 : _c.amount) ?? "0.00"));
       const diningType = Number(((_d = order.value) == null ? void 0 : _d.packAmount) || 0) > 0 ? 2 : 1;
       common_vendor.index.navigateTo({
-        url: `/pages/pay/pay?orderId=${currentOrderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`
+        url: `/subpkg-pay/pay/pay?orderId=${currentOrderId}&orderNumber=${orderNumber}&amount=${amount}&diningType=${diningType}`
       });
     };
     const goBack = () => common_vendor.index.navigateBack();

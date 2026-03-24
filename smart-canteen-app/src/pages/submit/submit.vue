@@ -258,7 +258,7 @@ const submitOrder = () => {
             const orderNumber = orderData?.orderNumber || ''
             // 【修改】跳转到收银台页面，而不是直接成功页
             uni.redirectTo({ 
-               url: `/pages/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${totalPrice.value}&diningType=${diningType.value}` 
+               url: `/subpkg-pay/pay/pay?orderId=${orderId}&orderNumber=${orderNumber}&amount=${totalPrice.value}&diningType=${diningType.value}` 
             })
          } else {
             uni.showToast({ title: res.data.msg || '失败', icon: 'none' })

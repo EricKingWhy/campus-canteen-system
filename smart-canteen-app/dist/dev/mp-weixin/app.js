@@ -14,14 +14,14 @@ if (!Math) {
   "./pages/favorite/favorite.js";
   "./pages/addOrEditAddress/addOrEditAddress.js";
   "./pages/remark/remark.js";
-  "./pages/pay/pay.js";
-  "./pages/pay/success.js";
   "./pages/orderDetail/orderDetail.js";
   "./pages/history/history.js";
   "./pages/updateMy/updateMy.js";
   "./pages/info-setting/info-setting.js";
   "./pages/health-analysis/health-analysis.js";
   "./pages/user/weekly-report.js";
+  "./subpkg-pay/pay/pay.js";
+  "./subpkg-pay/pay/success.js";
 }
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "App",

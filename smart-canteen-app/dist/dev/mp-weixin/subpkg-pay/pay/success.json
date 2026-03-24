@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "支付成功",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "uni-icons": "../../node-modules/@dcloudio/uni-ui/lib/uni-icons/uni-icons"
+  }
+}
